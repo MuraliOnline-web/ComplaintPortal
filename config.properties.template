@@ -1,0 +1,10 @@
+# Database Configuration
+db.url=jdbc:mysql://localhost:3306/complaint_portal
+db.user=root
+db.password=YOUR_DB_PASSWORD_HERE
+
+# SMTP Configuration
+smtp.host=smtp.gmail.com
+smtp.port=587
+smtp.user=your-email@gmail.com
+smtp.password=YOUR_APP_PASSWORD_HERE

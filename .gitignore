@@ -1,0 +1,45 @@
+# Credentials and Local Configuration
+config.properties
+*.env
+.env
+.env.local
+.env.*.local
+
+# IDE
+.classpath
+.eclipse
+.project
+.settings/
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+*.iml
+.metadata/
+
+# Build
+target/
+build/
+*.class
+*.jar
+*.war
+*.ear
+WebContent/WEB-INF/classes/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs and runtime temp
+*.log
+logs/
+tmp/
+temp/
+
+# JVM crash/debug dumps
+hs_err_pid*
+replay_pid*
+
+# VS Code / workspace caches
+.history/
