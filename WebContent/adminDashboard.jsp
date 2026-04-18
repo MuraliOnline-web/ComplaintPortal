@@ -199,7 +199,7 @@
     <nav class="navbar navbar-expand-lg bg-white bg-opacity-75 backdrop-blur-sm sticky-top border-bottom border-light-subtle">
         <div class="container py-2">
             <a class="navbar-brand fw-bold d-flex align-items-center gap-2" href="index.jsp">
-                <img src="assets/images/logo.jpg" alt="Complaint Portal" style="width:40px;height:40px;border-radius:12px;object-fit:cover;">
+                <img src="assets/images/logo.svg" alt="Complaint Portal" style="width:40px;height:40px;border-radius:12px;object-fit:cover;">
                 <span>Complaint Portal</span>
             </a>
             <div class="dropdown ms-auto">
@@ -219,7 +219,6 @@
     <main class="container py-4 py-lg-5">
         <nav aria-label="breadcrumb" class="mb-4">
             <ol class="breadcrumb small">
-                <li class="breadcrumb-item"><a href="index.jsp">Home</a></li>
                 <li class="breadcrumb-item active" aria-current="page">Admin Dashboard</li>
             </ol>
         </nav>

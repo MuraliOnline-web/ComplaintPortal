@@ -24,12 +24,23 @@
             min-height: 100vh;
         }
 
+        .auth-layout {
+            min-height: calc(100vh - 72px);
+            align-items: stretch;
+        }
+
+        .auth-media-col,
+        .auth-form-col {
+            display: flex;
+        }
+
         .auth-visual {
             background:
                 linear-gradient(180deg, rgba(15, 23, 42, 0.3), rgba(15, 23, 42, 0.68)),
                 url('assets/images/ElectricWires.jpeg') center/cover;
             color: #fff;
             min-height: 100%;
+            width: 100%;
             padding: 2rem;
             display: flex;
             flex-direction: column;
@@ -58,6 +69,9 @@
 
         .auth-panel {
             padding: 2rem;
+            width: 100%;
+            max-width: 760px;
+            margin: auto;
         }
 
         .auth-card {
@@ -134,6 +148,30 @@
         .input-with-icon {
             padding-left: 2.5rem;
         }
+
+        @media (min-width: 992px) {
+            .auth-shell > .container {
+                max-width: 1280px;
+            }
+
+            .auth-layout {
+                min-height: calc(100vh - 88px);
+            }
+
+            .auth-panel {
+                padding: 2.5rem;
+            }
+        }
+
+        @media (max-width: 991.98px) {
+            .auth-layout {
+                min-height: auto;
+            }
+
+            .auth-panel {
+                max-width: 640px;
+            }
+        }
     </style>
 </head>
 <body class="auth-page">
@@ -163,13 +201,13 @@
                 </ol>
             </nav>
         </div>
-        <div class="row g-0 min-vh-100">
-            <div class="col-12 col-md-5">
+        <div class="row g-0 auth-layout">
+            <div class="col-12 col-lg-6 auth-media-col">
                 <div class="auth-visual">
                     <div>
                         <div class="d-flex align-items-center gap-2 mb-4">
                             <div class="rounded-4 bg-white d-inline-flex align-items-center justify-content-center" style="width:48px;height:48px;">
-                                <img src="assets/images/logo.jpg" alt="Complaint Portal" class="img-fluid rounded-4">
+                                <img src="assets/images/logo.svg" alt="Complaint Portal" class="img-fluid rounded-4">
                             </div>
                             <div>
                                 <div class="fw-bold fs-5">Complaint Portal</div>
@@ -196,8 +234,8 @@
                 </div>
             </div>
 
-            <div class="col-12 col-md-7 d-flex align-items-center justify-content-center p-3 p-lg-5">
-                <div class="auth-panel w-100" style="max-width: 560px;">
+            <div class="col-12 col-lg-6 auth-form-col p-3 p-lg-4">
+                <div class="auth-panel">
                     <div class="auth-card p-4 p-md-5">
                         <% if ("1".equals(request.getParameter("required"))) { %>
                             <div class="alert alert-info">Please login first to continue.</div>

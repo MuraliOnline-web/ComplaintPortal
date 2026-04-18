@@ -125,7 +125,7 @@
                     <div>
                         <div class="d-flex align-items-center gap-2 mb-4">
                             <div class="rounded-4 bg-white d-inline-flex align-items-center justify-content-center" style="width:48px;height:48px;">
-                                <img src="assets/images/logo.jpg" alt="Complaint Portal" class="img-fluid rounded-4">
+                                <img src="assets/images/logo.svg" alt="Complaint Portal" class="img-fluid rounded-4">
                             </div>
                             <div>
                                 <div class="fw-bold fs-5">Complaint Portal</div>

@@ -82,7 +82,7 @@
 <body class="dashboard-page">
     <nav class="navbar navbar-expand-lg bg-white bg-opacity-75 backdrop-blur-sm sticky-top border-bottom border-light-subtle">
         <div class="container py-2">
-            <a class="navbar-brand fw-bold d-flex align-items-center gap-2" href="index.jsp"><img src="assets/images/logo.jpg" alt="Complaint Portal" style="width:40px;height:40px;border-radius:12px;object-fit:cover;"><span>Complaint Portal</span></a>
+            <a class="navbar-brand fw-bold d-flex align-items-center gap-2" href="index.jsp"><img src="assets/images/logo.svg" alt="Complaint Portal" style="width:40px;height:40px;border-radius:12px;object-fit:cover;"><span>Complaint Portal</span></a>
             <div class="ms-auto d-flex gap-2"><a href="adminDashboard.jsp" class="btn btn-outline-primary">Admin Dashboard</a><a href="actions/LogoutAction.jsp" class="btn btn-outline-danger" data-confirm-logout data-confirm-message="You are about to log out of the admin tools page." data-logout-url="actions/LogoutAction.jsp">Logout</a></div>
         </div>
     </nav>

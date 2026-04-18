@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-labelledby="logoTitle logoDesc">
+  <title id="logoTitle">Complaint Portal Logo</title>
+  <desc id="logoDesc">Rounded gradient tile with city bars and a check badge.</desc>
+  <defs>
+    <linearGradient id="tile" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#2563eb"/>
+      <stop offset="55%" stop-color="#4f46e5"/>
+      <stop offset="100%" stop-color="#0ea5e9"/>
+    </linearGradient>
+    <linearGradient id="shine" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.45"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+
+  <rect x="8" y="8" width="112" height="112" rx="28" fill="url(#tile)"/>
+  <path d="M20 20h88a20 20 0 0 1 20 20v4H20z" fill="url(#shine)"/>
+
+  <g fill="#ffffff" fill-opacity="0.96">
+    <rect x="30" y="68" width="10" height="24" rx="2"/>
+    <rect x="46" y="58" width="10" height="34" rx="2"/>
+    <rect x="62" y="48" width="10" height="44" rx="2"/>
+    <rect x="78" y="62" width="10" height="30" rx="2"/>
+  </g>
+
+  <rect x="24" y="92" width="58" height="5" rx="2.5" fill="#dbeafe"/>
+
+  <circle cx="92" cy="40" r="16" fill="#ffffff"/>
+  <path d="M84 40l5 5 11-11" fill="none" stroke="#2563eb" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
