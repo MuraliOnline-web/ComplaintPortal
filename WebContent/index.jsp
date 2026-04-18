@@ -1,82 +1,285 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%
+    String successMessage = (String) session.getAttribute("flashMessage");
+    String errorMessage = (String) session.getAttribute("flashError");
+    if (successMessage != null) session.removeAttribute("flashMessage");
+    if (errorMessage != null) session.removeAttribute("flashError");
+%>
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Complaint Portal - Home</title>
-    <link rel="stylesheet" type="text/css" href="assets/css/style.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" integrity="sha384-gH6tQd6rYt6v7s5FQ4u+Nw6mM2J+Z1oQXbQ9yKqNqCkzJ10c1qf6jv9vZ5GxXKbi" crossorigin="anonymous">
-</head>
-<body>
-    <%
-        String flashMessage = null;
-        String flashType = null;
-        if (session != null) {
-            Object fm = session.getAttribute("flashMessage");
-            Object ft = session.getAttribute("flashType");
-            if (fm != null) {
-                flashMessage = String.valueOf(fm);
-                flashType = (ft == null) ? "info" : String.valueOf(ft);
-                session.removeAttribute("flashMessage");
-                session.removeAttribute("flashType");
+    <meta name="description" content="File complaints, track progress, and stay connected with your city services.">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" crossorigin="anonymous">
+    <style>
+        body.homepage {
+            background:
+                radial-gradient(circle at top left, rgba(79, 70, 229, 0.18), transparent 32%),
+                radial-gradient(circle at top right, rgba(14, 165, 233, 0.12), transparent 28%),
+                linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+            color: #0f172a;
+        }
+
+        .home-shell {
+            min-height: 100vh;
+        }
+
+        .home-navbar {
+            backdrop-filter: blur(14px);
+            background: rgba(255, 255, 255, 0.72);
+            border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+        }
+
+        .brand-mark {
+            width: 46px;
+            height: 46px;
+            border-radius: 14px;
+            object-fit: cover;
+            box-shadow: 0 12px 24px rgba(79, 70, 229, 0.18);
+        }
+
+        .hero-card {
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 28px;
+            background: rgba(255, 255, 255, 0.8);
+            box-shadow: 0 24px 80px rgba(15, 23, 42, 0.08);
+            overflow: hidden;
+        }
+
+        .hero-copy {
+            padding: clamp(2rem, 4vw, 4rem);
+        }
+
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.45rem 0.8rem;
+            border-radius: 999px;
+            background: rgba(79, 70, 229, 0.08);
+            color: #4338ca;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        .hero-title {
+            font-size: clamp(2.6rem, 6vw, 5.2rem);
+            line-height: 0.95;
+            letter-spacing: -0.05em;
+            font-weight: 800;
+            margin-top: 1rem;
+        }
+
+        .hero-title span {
+            background: linear-gradient(90deg, #4f46e5, #0ea5e9);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .feature-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            border-radius: 999px;
+            padding: 0.6rem 0.9rem;
+            background: #ffffff;
+            border: 1px solid rgba(148, 163, 184, 0.25);
+            box-shadow: 0 12px 30px rgba(15, 23, 42, 0.05);
+            margin: 0.35rem 0.35rem 0 0;
+            font-size: 0.92rem;
+        }
+
+        .showcase-panel {
+            min-height: 100%;
+            background:
+                linear-gradient(180deg, rgba(15, 23, 42, 0.35), rgba(15, 23, 42, 0.65)),
+                url('assets/images/road.jpg') center/cover;
+            padding: 2rem;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .showcase-stat {
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            border-radius: 18px;
+            padding: 1rem;
+            backdrop-filter: blur(14px);
+        }
+
+        .cta-row .btn {
+            border-radius: 14px;
+            padding: 0.9rem 1.15rem;
+            font-weight: 600;
+        }
+
+        .section-title {
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            color: #0f172a;
+        }
+
+        .feature-card {
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 22px;
+            background: rgba(255, 255, 255, 0.8);
+            box-shadow: 0 16px 40px rgba(15, 23, 42, 0.06);
+            height: 100%;
+        }
+
+        .feature-icon {
+            width: 46px;
+            height: 46px;
+            border-radius: 14px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #4f46e5, #0ea5e9);
+            color: #fff;
+            font-weight: 700;
+        }
+
+        @media (max-width: 991px) {
+            .showcase-panel {
+                min-height: 360px;
             }
         }
-    %>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light px-3">
-        <a class="navbar-brand" href="index.jsp">Complaint Portal</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu" aria-controls="navMenu" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navMenu">
-            <ul class="navbar-nav me-auto">
-                <% if (session != null && session.getAttribute("role") != null) { 
-                       String _role = String.valueOf(session.getAttribute("role"));
-                       String dashHref = "admin".equalsIgnoreCase(_role) ? "adminDashboard.jsp" : ("officer".equalsIgnoreCase(_role) ? "officerDashboard.jsp" : "userDashboard.jsp"); %>
-                    <li class="nav-item"><a class="nav-link" href="<%= dashHref %>">Dashboard</a></li>
-                <% } %>
-            </ul>
-            <ul class="navbar-nav ms-auto">
-                <% if (session != null && session.getAttribute("role") != null) { %>
-                    <li class="nav-item"><span class="navbar-text me-2">Welcome, <%= session.getAttribute("userName") != null ? session.getAttribute("userName") : session.getAttribute("role") %></span></li>
-                    <li class="nav-item"><a class="btn btn-outline-danger btn-sm" href="actions/LogoutAction.jsp">Logout</a></li>
-                <% } else { %>
-                    <li class="nav-item me-2"><a class="btn btn-outline-primary btn-sm" href="userRegister.jsp">User Register</a></li>
-                    <li class="nav-item me-2"><a class="btn btn-primary btn-sm" href="userLogin.jsp">User Login</a></li>
-                    <li class="nav-item"><a class="btn btn-secondary btn-sm" href="login.jsp">Admin/Officer Login</a></li>
-                <% } %>
-            </ul>
-        </div>
-    </nav>
+    </style>
+</head>
+<body class="homepage">
+    <%@ include file="includes/ui-enhancements.jspf" %>
+    <!-- Hidden message containers for toast notifications -->
+    <% if (successMessage != null) { %>
+        <div id="successMessage" style="display:none;"><%= successMessage %></div>
+    <% } %>
+    <% if (errorMessage != null) { %>
+        <div id="errorMessage" style="display:none;"><%= errorMessage %></div>
+    <% } %>
+    
+    <div class="home-shell">
+        <nav class="navbar navbar-expand-lg home-navbar sticky-top py-3">
+            <div class="container">
+                <a class="navbar-brand d-flex align-items-center gap-3 fw-bold text-dark" href="index.jsp">
+                    <img src="assets/images/logo.jpg" alt="Complaint Portal" class="brand-mark">
+                    <span>Complaint Portal</span>
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#topNav" aria-controls="topNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="topNav">
+                    <div class="ms-auto d-flex gap-2 mt-3 mt-lg-0">
+                        <a class="btn btn-outline-dark" href="userLogin.jsp">Sign In</a>
+                        <a class="btn btn-primary" href="userRegister.jsp">Get Started</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
 
-    <div class="px-3 pt-3">
-        <% if (flashMessage != null) { %>
-            <div class="alert alert-<%= flashType %> auto-dismiss-notification" role="alert"><%= flashMessage %></div>
-        <% } %>
+        <main class="container py-4 py-lg-5">
+            <nav aria-label="breadcrumb" class="mb-4">
+                <ol class="breadcrumb small">
+                    <li class="breadcrumb-item active" aria-current="page">Home</li>
+                </ol>
+            </nav>
+            <section class="hero-card mb-5">
+                <div class="row g-0">
+                    <div class="col-lg-7">
+                        <div class="hero-copy">
+                            <div class="eyebrow">
+                                <span class="rounded-circle bg-success" style="width:10px;height:10px;display:inline-block;"></span>
+                                Civic services made visible
+                            </div>
+                            <h1 class="hero-title mb-3">
+                                Your complaint.<br>
+                                <span>Your city responds.</span>
+                            </h1>
+                            <p class="lead text-secondary mb-4" style="max-width: 46rem;">
+                                File issues, track updates, and keep your local services accountable from one clean portal.
+                                Designed for citizens, officers, and administrators.
+                            </p>
+
+                            <div class="cta-row d-flex flex-wrap gap-3 mb-4">
+                                <a class="btn btn-primary btn-lg" href="userRegister.jsp">Get Started</a>
+                                <a class="btn btn-outline-primary btn-lg" href="userLogin.jsp">Sign In</a>
+                            </div>
+
+                            <div class="d-flex flex-wrap mt-4">
+                                <div class="feature-pill">Fast complaint filing</div>
+                                <div class="feature-pill">Live progress tracking</div>
+                                <div class="feature-pill">Officer workflows</div>
+                                <div class="feature-pill">Admin review & resolution</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-5">
+                        <div class="showcase-panel">
+                            <div>
+                                <div class="small text-uppercase fw-semibold opacity-75 mb-2">Community dashboard</div>
+                                <h2 class="display-6 fw-bold mb-3">Clear, trustworthy, public-facing service updates.</h2>
+                                <p class="mb-0 opacity-75">
+                                    See who is responsible, what is happening, and when it is resolved.
+                                </p>
+                            </div>
+                            <div class="row g-3 mt-4">
+                                <div class="col-6">
+                                    <div class="showcase-stat">
+                                        <div class="small opacity-75">Filed Today</div>
+                                        <div class="fs-3 fw-bold">128</div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="showcase-stat">
+                                        <div class="small opacity-75">Resolved</div>
+                                        <div class="fs-3 fw-bold">84%</div>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="showcase-stat">
+                                        <div class="small opacity-75">Primary actions</div>
+                                        <div class="fw-semibold">Sign in to continue, or register a new user account.</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="mb-5">
+                <div class="row g-4">
+                    <div class="col-md-4">
+                        <div class="feature-card p-4">
+                            <div class="feature-icon mb-3">1</div>
+                            <h3 class="h5 fw-bold">Submit issues quickly</h3>
+                            <p class="text-secondary mb-0">A focused complaint form for citizens with clear categories and evidence upload.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="feature-card p-4">
+                            <div class="feature-icon mb-3">2</div>
+                            <h3 class="h5 fw-bold">Track resolution</h3>
+                            <p class="text-secondary mb-0">Users and staff can see complaint status, notes, and updates in one place.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="feature-card p-4">
+                            <div class="feature-icon mb-3">3</div>
+                            <h3 class="h5 fw-bold">Work by role</h3>
+                            <p class="text-secondary mb-0">Separate dashboards for citizens, officers, and administrators keep the workflow clean.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
     </div>
 
-    <div class="container-3d mt-4">
-        <header class="mb-4 text-center">
-            <img src="assets/images/logo.jpg" alt="Logo" class="logo">
-        </header>
-    </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-kQTa9d6k0C2eG2qGJ4d2w8eQmR0m+0+Yy0K8c2r8Z9ZQK7Q0tZQyF1rQKj7Yh0rN" crossorigin="anonymous"></script>
-    <script>
-        (function () {
-            const notifications = document.querySelectorAll('.auto-dismiss-notification');
-            notifications.forEach(function (el) {
-                el.style.transition = 'opacity 0.4s ease';
-                setTimeout(function () {
-                    el.style.opacity = '0';
-                    setTimeout(function () {
-                        if (el && el.parentNode) {
-                            el.parentNode.removeChild(el);
-                        }
-                    }, 450);
-                }, 2500);
-            });
-        })();
-    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+    <script src="assets/js/main.js"></script>
 </body>
 </html>

@@ -1,4 +1,124 @@
-// main.js - subtle cursor-aware interactions for inputs and buttons
+// main.js - Enhanced with toasts, form loading states, and UI improvements
+
+// ==================== TOAST NOTIFICATIONS ====================
+// Show toast notifications for success/error messages
+function showToast(message, type = 'success') {
+    const toastContainer = document.getElementById('toastContainer');
+    if (!toastContainer) {
+        const container = document.createElement('div');
+        container.id = 'toastContainer';
+        container.style.cssText = 'position:fixed;top:20px;right:20px;z-index:9999;';
+        document.body.appendChild(container);
+    }
+    
+    const toastId = 'toast-' + Date.now();
+    const bgClass = type === 'success' ? 'bg-success' : (type === 'error' ? 'bg-danger' : 'bg-info');
+    
+    const toastEl = document.createElement('div');
+    toastEl.id = toastId;
+    toastEl.className = 'toast align-items-center text-white border-0 shadow-lg mb-2';
+    toastEl.setAttribute('role', 'alert');
+    toastEl.setAttribute('aria-live', 'assertive');
+    toastEl.setAttribute('aria-atomic', 'true');
+
+    const row = document.createElement('div');
+    row.className = 'd-flex';
+
+    const body = document.createElement('div');
+    body.className = 'toast-body ' + bgClass + ' rounded';
+
+    const strong = document.createElement('strong');
+    strong.textContent = type === 'success' ? '✓ Success: ' : (type === 'error' ? '✕ Error: ' : 'ℹ Info: ');
+    body.appendChild(strong);
+    body.appendChild(document.createTextNode(message));
+
+    row.appendChild(body);
+    toastEl.appendChild(row);
+
+    document.getElementById('toastContainer').appendChild(toastEl);
+    const toast = new bootstrap.Toast(toastEl);
+    toast.show();
+    
+    toastEl.addEventListener('hidden.bs.toast', () => toastEl.remove());
+}
+
+// Auto-show toast from session attribute if present
+document.addEventListener('DOMContentLoaded', function() {
+    const successMessage = document.getElementById('successMessage');
+    const errorMessage = document.getElementById('errorMessage');
+    
+    if (successMessage && successMessage.textContent.trim()) {
+        showToast(successMessage.textContent.trim(), 'success');
+        successMessage.remove();
+    }
+    if (errorMessage && errorMessage.textContent.trim()) {
+        showToast(errorMessage.textContent.trim(), 'error');
+        errorMessage.remove();
+    }
+
+    // Ensure visible button-like controls have accessible labels.
+    document.querySelectorAll('button, a.btn, [role="button"]').forEach(function (element) {
+        if (!element.hasAttribute('aria-label')) {
+            const label = (element.textContent || '').replace(/\s+/g, ' ').trim();
+            if (label) {
+                element.setAttribute('aria-label', label);
+            }
+        }
+    });
+
+    // Generic password visibility toggles for inputs mapped via data-target.
+    document.querySelectorAll('[data-password-toggle]').forEach(function (toggleButton) {
+        const targetSelector = toggleButton.getAttribute('data-target');
+        if (!targetSelector) {
+            return;
+        }
+
+        const passwordInput = document.querySelector(targetSelector);
+        if (!passwordInput) {
+            return;
+        }
+
+        toggleButton.addEventListener('mousedown', function (event) {
+            event.preventDefault();
+        });
+
+        toggleButton.addEventListener('click', function () {
+            const showing = passwordInput.type === 'text';
+            passwordInput.type = showing ? 'password' : 'text';
+            toggleButton.classList.toggle('active', !showing);
+            toggleButton.setAttribute('aria-pressed', String(!showing));
+            passwordInput.focus();
+        });
+    });
+});
+
+// ==================== FORM LOADING STATES ====================
+// Disable form submission and show loading state
+function disableFormOnSubmit(formSelector = 'form') {
+    document.querySelectorAll(formSelector).forEach(form => {
+        form.addEventListener('submit', function(e) {
+            if (e.defaultPrevented || this.hasAttribute('data-confirm-form') || this.classList.contains('no-loading')) {
+                return;
+            }
+
+            const submitBtn = this.querySelector('button[type="submit"]');
+            if (submitBtn) {
+                if (!submitBtn.dataset.originalHtml) {
+                    submitBtn.dataset.originalHtml = submitBtn.innerHTML;
+                }
+                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Processing...';
+                submitBtn.disabled = true;
+            }
+        });
+    });
+}
+
+// Call on page load
+document.addEventListener('DOMContentLoaded', function() {
+    disableFormOnSubmit('form');
+});
+
+// ==================== EXISTING CURSOR EFFECTS ====================
 document.addEventListener('mousemove', function(e){
     const container = document.querySelector('.container-3d');
     if(!container) return;

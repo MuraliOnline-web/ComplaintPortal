@@ -1,0 +1,651 @@
+<style>
+    body.page-loading {
+        overflow: hidden;
+    }
+
+    body.page-ready {
+        animation: fadeInPage 0.35s ease both;
+    }
+
+    @keyframes fadeInPage {
+        from { opacity: 0; transform: translateY(8px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .page-loader {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(248, 250, 252, 0.88);
+        backdrop-filter: blur(10px);
+        opacity: 1;
+        transition: opacity 0.25s ease, visibility 0.25s ease;
+    }
+
+    .page-loader.is-hidden {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+    }
+
+    .page-loader-card {
+        min-width: 180px;
+        border-radius: 24px;
+        padding: 1.5rem 1.75rem;
+        background: rgba(255, 255, 255, 0.92);
+        box-shadow: 0 20px 60px rgba(15, 23, 42, 0.15);
+        text-align: center;
+    }
+
+    .page-loader-card .spinner-border {
+        width: 2.25rem;
+        height: 2.25rem;
+    }
+
+    .breadcrumb {
+        margin-bottom: 0;
+    }
+
+    .breadcrumb-item + .breadcrumb-item::before {
+        color: #94a3b8;
+    }
+
+    .breadcrumb-item a {
+        text-decoration: none;
+        color: #4f46e5;
+        font-weight: 600;
+    }
+
+    .breadcrumb-item.active {
+        color: #64748b;
+    }
+
+    .lift-card,
+    .dashboard-card,
+    .metric-card,
+    .auth-card,
+    .page-card,
+    .result-card,
+    .detail-box,
+    .chart-box {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .lift-card:hover,
+    .dashboard-card:hover,
+    .metric-card:hover,
+    .auth-card:hover,
+    .page-card:hover,
+    .result-card:hover,
+    .detail-box:hover,
+    .chart-box:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 24px 70px rgba(15, 23, 42, 0.10);
+    }
+
+    .btn {
+        transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
+    }
+
+    .btn:hover:not(:disabled) {
+        transform: translateY(-1px);
+    }
+
+    .btn:active:not(:disabled) {
+        transform: translateY(0);
+        filter: brightness(0.97);
+    }
+
+    .modal-backdrop.show {
+        opacity: 0.32;
+    }
+
+    .location-map-shell {
+        position: relative;
+        height: min(62vh, 520px);
+        min-height: 360px;
+        border-radius: 18px;
+        overflow: hidden;
+        background: #f8fafc;
+    }
+
+    .location-map-frame {
+        border-radius: 18px;
+        overflow: hidden;
+        min-height: 360px;
+        background: #f8fafc;
+        transition: opacity 0.2s ease;
+    }
+
+    .location-map-frame.opacity-0 {
+        opacity: 0;
+    }
+
+    .location-map-overlay,
+    .location-map-empty {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+        text-align: center;
+        background: rgba(248, 250, 252, 0.92);
+        backdrop-filter: blur(8px);
+        z-index: 2;
+    }
+
+    .location-map-empty {
+        color: #475569;
+        font-weight: 600;
+    }
+
+    .table-toolbar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+    }
+
+    .table-search-group,
+    .table-sort-group {
+        min-width: min(100%, 320px);
+    }
+
+    .btn:focus-visible,
+    .form-control:focus-visible,
+    .form-select:focus-visible,
+    .btn-close:focus-visible,
+    a:focus-visible {
+        outline: 3px solid rgba(79, 70, 229, 0.32);
+        outline-offset: 2px;
+    }
+
+    .modal-dialog.modal-xl {
+        max-width: min(1140px, calc(100vw - 1rem));
+    }
+
+    .modal-dialog.modal-dialog-scrollable .modal-content {
+        max-height: calc(100vh - 1rem);
+    }
+
+    @media (max-width: 576px) {
+        .page-loader-card {
+            min-width: calc(100vw - 32px);
+        }
+
+        .location-map-shell,
+        .location-map-frame {
+            min-height: 280px;
+            height: 52vh;
+        }
+
+        .modal-dialog.modal-xl {
+            max-width: calc(100vw - 0.75rem);
+            margin: 0.375rem auto;
+        }
+    }
+</style>
+
+<div id="pageLoader" class="page-loader">
+    <div class="page-loader-card">
+        <div class="spinner-border text-primary mb-3" role="status" aria-hidden="true"></div>
+        <div class="fw-semibold">Loading page</div>
+        <div class="text-secondary small">Please wait</div>
+    </div>
+</div>
+
+<div class="modal fade" id="confirmActionModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+            <div class="modal-header border-0 pb-0">
+                <div>
+                    <h5 class="modal-title fw-bold mb-1" id="confirmActionTitle">Are you sure?</h5>
+                    <p class="text-secondary small mb-0" id="confirmActionText">Please confirm this action.</p>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body pt-3">
+                <div class="alert alert-warning mb-0">This action will continue only after confirmation.</div>
+            </div>
+            <div class="modal-footer border-0 pt-0">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" id="confirmActionButton">Yes, continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="locationModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+            <div class="modal-header border-0">
+                <div>
+                    <h5 class="modal-title fw-bold mb-1" id="locationModalTitle">Complaint location</h5>
+                    <p class="text-secondary small mb-0" id="locationModalAddress"></p>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body pt-0">
+                <div class="row g-3 mb-3">
+                    <div class="col-md-4">
+                        <div class="detail-box p-3 h-100">
+                            <div class="text-secondary small">Title</div>
+                            <div class="fw-semibold" id="locationModalComplaintTitle">-</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="detail-box p-3 h-100">
+                            <div class="text-secondary small">Address</div>
+                            <div class="fw-semibold" id="locationModalComplaintAddress">-</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="detail-box p-3 h-100">
+                            <div class="text-secondary small">Status</div>
+                            <div class="fw-semibold" id="locationModalComplaintStatus">-</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="location-map-shell border">
+                    <div class="location-map-overlay" id="locationMapLoading" aria-live="polite">
+                        <div>
+                            <div class="spinner-border text-primary mb-3" role="status" aria-hidden="true"></div>
+                            <div class="fw-semibold">Loading map</div>
+                            <div class="text-secondary small">Preparing location preview</div>
+                        </div>
+                    </div>
+                    <div class="location-map-empty d-none" id="locationMapEmpty">Location not available</div>
+                    <iframe id="locationModalFrame" width="100%" height="100%" style="border:0; display:block;" loading="lazy" title="Complaint location map" allowfullscreen></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+(function () {
+    const pageLoader = document.getElementById('pageLoader');
+    const confirmModalEl = document.getElementById('confirmActionModal');
+    const locationModalEl = document.getElementById('locationModal');
+    const confirmTitleEl = document.getElementById('confirmActionTitle');
+    const confirmTextEl = document.getElementById('confirmActionText');
+    const confirmButtonEl = document.getElementById('confirmActionButton');
+    const locationTitleEl = document.getElementById('locationModalTitle');
+    const locationAddressEl = document.getElementById('locationModalAddress');
+    const locationComplaintTitleEl = document.getElementById('locationModalComplaintTitle');
+    const locationComplaintAddressEl = document.getElementById('locationModalComplaintAddress');
+    const locationComplaintStatusEl = document.getElementById('locationModalComplaintStatus');
+    const locationFrameEl = document.getElementById('locationModalFrame');
+    const locationMapLoadingEl = document.getElementById('locationMapLoading');
+    const locationMapEmptyEl = document.getElementById('locationMapEmpty');
+
+    let pendingForm = null;
+    let pendingHref = '';
+    let confirmModal = null;
+    let locationModal = null;
+    let loaderFallbackTimer = null;
+    let confirmBusy = false;
+    let lastConfirmTrigger = null;
+    let lastLocationTrigger = null;
+    let activeLocationRequestId = 0;
+    let defaultConfirmText = confirmButtonEl ? confirmButtonEl.textContent : 'Yes, continue';
+
+    function clearLoaderFallback() {
+        if (loaderFallbackTimer) {
+            clearTimeout(loaderFallbackTimer);
+            loaderFallbackTimer = null;
+        }
+    }
+
+    function showLoader() {
+        if (pageLoader) {
+            pageLoader.classList.remove('is-hidden');
+        }
+        document.body.classList.add('page-loading');
+        clearLoaderFallback();
+        loaderFallbackTimer = setTimeout(hideLoader, 5000);
+    }
+
+    function hideLoader() {
+        clearLoaderFallback();
+        document.body.classList.remove('page-loading');
+        document.body.classList.add('page-ready');
+        if (pageLoader) {
+            pageLoader.classList.add('is-hidden');
+        }
+    }
+
+    function restoreFocus(element) {
+        if (element && typeof element.focus === 'function') {
+            window.setTimeout(function () {
+                element.focus({ preventScroll: true });
+            }, 0);
+        }
+    }
+
+    function setMapLoadingState(isLoading) {
+        if (locationMapLoadingEl) {
+            locationMapLoadingEl.classList.toggle('d-none', !isLoading);
+        }
+        if (locationMapEmptyEl) {
+            locationMapEmptyEl.classList.add('d-none');
+        }
+        if (locationFrameEl) {
+            locationFrameEl.classList.toggle('opacity-0', isLoading);
+            locationFrameEl.classList.remove('d-none');
+        }
+    }
+
+    function setMapEmptyState(message) {
+        activeLocationRequestId += 1;
+        if (locationMapLoadingEl) {
+            locationMapLoadingEl.classList.add('d-none');
+        }
+        if (locationMapEmptyEl) {
+            locationMapEmptyEl.textContent = message || 'Location not available';
+            locationMapEmptyEl.classList.remove('d-none');
+        }
+        if (locationFrameEl) {
+            locationFrameEl.dataset.locationRequestId = String(activeLocationRequestId);
+            locationFrameEl.classList.add('d-none');
+            locationFrameEl.classList.remove('opacity-0');
+            locationFrameEl.setAttribute('aria-hidden', 'true');
+            locationFrameEl.src = 'about:blank';
+            locationFrameEl.removeAttribute('src');
+        }
+    }
+
+    function resetLocationModal() {
+        activeLocationRequestId += 1;
+        if (locationTitleEl) locationTitleEl.textContent = 'Complaint location';
+        if (locationAddressEl) locationAddressEl.textContent = '';
+        if (locationComplaintTitleEl) locationComplaintTitleEl.textContent = '-';
+        if (locationComplaintAddressEl) locationComplaintAddressEl.textContent = '-';
+        if (locationComplaintStatusEl) locationComplaintStatusEl.textContent = '-';
+        if (locationFrameEl) {
+            locationFrameEl.dataset.locationRequestId = String(activeLocationRequestId);
+            locationFrameEl.src = 'about:blank';
+            locationFrameEl.classList.add('d-none');
+            locationFrameEl.classList.remove('opacity-0');
+            locationFrameEl.setAttribute('aria-hidden', 'true');
+        }
+        if (locationMapLoadingEl) locationMapLoadingEl.classList.add('d-none');
+        if (locationMapEmptyEl) {
+            locationMapEmptyEl.classList.add('d-none');
+            locationMapEmptyEl.textContent = 'Location not available';
+        }
+    }
+
+    function openLocationModal(trigger) {
+        if (!locationModal) return;
+        lastLocationTrigger = trigger || document.activeElement;
+        const title = trigger.getAttribute('data-location-title') || '-';
+        const address = (trigger.getAttribute('data-location-address') || '').trim();
+        const status = trigger.getAttribute('data-location-status') || '-';
+        const normalizedAddress = address.replace(/\s+/g, ' ').trim();
+        const invalidAddress = !normalizedAddress || /^(?:-|n\/?a|na|unknown|not\s+available|none)$/i.test(normalizedAddress);
+
+        activeLocationRequestId += 1;
+        const requestId = activeLocationRequestId;
+
+        if (locationTitleEl) locationTitleEl.textContent = 'Complaint location';
+        if (locationAddressEl) locationAddressEl.textContent = invalidAddress ? 'Location not available' : normalizedAddress;
+        if (locationComplaintTitleEl) locationComplaintTitleEl.textContent = title;
+        if (locationComplaintAddressEl) locationComplaintAddressEl.textContent = invalidAddress ? 'Location not available' : normalizedAddress;
+        if (locationComplaintStatusEl) locationComplaintStatusEl.textContent = status;
+
+        if (invalidAddress) {
+            setMapEmptyState('Location not available');
+        } else if (locationFrameEl) {
+            locationFrameEl.dataset.locationRequestId = String(requestId);
+            setMapLoadingState(true);
+            locationFrameEl.setAttribute('aria-hidden', 'false');
+            locationFrameEl.classList.add('d-none');
+            locationFrameEl.classList.add('opacity-0');
+            locationFrameEl.src = 'about:blank';
+            window.setTimeout(function () {
+                if (locationFrameEl && locationFrameEl.dataset.locationRequestId === String(requestId)) {
+                    locationFrameEl.src = 'https://www.google.com/maps?q=' + encodeURIComponent(normalizedAddress) + '&output=embed';
+                }
+            }, 0);
+        }
+
+        locationModal.show();
+    }
+
+    function resetConfirmButton() {
+        if (!confirmButtonEl) return;
+        confirmBusy = false;
+        confirmButtonEl.disabled = false;
+        confirmButtonEl.textContent = defaultConfirmText;
+        confirmButtonEl.removeAttribute('aria-busy');
+    }
+
+    function ensureModal(modalEl) {
+        if (!modalEl || typeof bootstrap === 'undefined') return null;
+        return bootstrap.Modal.getOrCreateInstance(modalEl);
+    }
+
+    function setupSearchAndSort() {
+        document.querySelectorAll('[data-table-filter]').forEach(function (table) {
+            const searchSelector = table.getAttribute('data-search-input');
+            const sortSelector = table.getAttribute('data-sort-input');
+            const tbody = table.querySelector('tbody');
+            if (!tbody) return;
+
+            const rows = Array.from(tbody.querySelectorAll('tr[data-search-text]'));
+            const searchInput = searchSelector ? document.querySelector(searchSelector) : null;
+            const sortInput = sortSelector ? document.querySelector(sortSelector) : null;
+            let noResultsRow = tbody.querySelector('[data-filter-no-results]');
+
+            function applyFilterAndSort() {
+                const query = searchInput ? searchInput.value.trim().toLowerCase() : '';
+                const sortValue = sortInput ? sortInput.value : '';
+                let visibleRows = rows.filter(function (row) {
+                    const text = (row.getAttribute('data-search-text') || '').toLowerCase();
+                    return !query || text.indexOf(query) !== -1;
+                });
+
+                if (sortValue) {
+                    visibleRows.sort(function (a, b) {
+                        if (sortValue === 'date-desc') {
+                            return (parseInt(b.getAttribute('data-sort-date') || '0', 10) || 0) - (parseInt(a.getAttribute('data-sort-date') || '0', 10) || 0);
+                        }
+                        if (sortValue === 'date-asc') {
+                            return (parseInt(a.getAttribute('data-sort-date') || '0', 10) || 0) - (parseInt(b.getAttribute('data-sort-date') || '0', 10) || 0);
+                        }
+                        if (sortValue === 'status-asc') {
+                            return (a.getAttribute('data-sort-status') || '').localeCompare(b.getAttribute('data-sort-status') || '', undefined, { sensitivity: 'base' });
+                        }
+                        if (sortValue === 'status-desc') {
+                            return (b.getAttribute('data-sort-status') || '').localeCompare(a.getAttribute('data-sort-status') || '', undefined, { sensitivity: 'base' });
+                        }
+                        return 0;
+                    });
+                }
+
+                rows.forEach(function (row) { row.style.display = 'none'; });
+                if (noResultsRow) {
+                    noResultsRow.remove();
+                    noResultsRow = null;
+                }
+                visibleRows.forEach(function (row) {
+                    row.style.display = '';
+                    tbody.appendChild(row);
+                });
+
+                const emptyState = table.querySelector('[data-empty-state]');
+                if (emptyState) {
+                    emptyState.style.display = visibleRows.length ? 'none' : '';
+                }
+
+                if (!emptyState && rows.length > 0 && visibleRows.length === 0) {
+                    noResultsRow = document.createElement('tr');
+                    noResultsRow.setAttribute('data-filter-no-results', 'true');
+                    const cell = document.createElement('td');
+                    cell.colSpan = table.querySelectorAll('thead th').length || 1;
+                    cell.className = 'text-center text-secondary py-4';
+                    cell.textContent = 'No complaints matched your search.';
+                    noResultsRow.appendChild(cell);
+                    tbody.appendChild(noResultsRow);
+                }
+            }
+
+            if (searchInput) searchInput.addEventListener('input', applyFilterAndSort);
+            if (sortInput) sortInput.addEventListener('change', applyFilterAndSort);
+            applyFilterAndSort();
+        });
+    }
+
+    function setupConfirmationDialogs() {
+        confirmModal = ensureModal(confirmModalEl);
+        locationModal = ensureModal(locationModalEl);
+
+        if (locationFrameEl) {
+            locationFrameEl.addEventListener('load', function () {
+                if (locationFrameEl.getAttribute('src') && locationFrameEl.getAttribute('src') !== 'about:blank') {
+                    if (locationFrameEl.dataset.locationRequestId !== String(activeLocationRequestId)) {
+                        return;
+                    }
+                    if (locationMapLoadingEl) locationMapLoadingEl.classList.add('d-none');
+                    locationFrameEl.classList.remove('opacity-0');
+                    locationFrameEl.classList.remove('d-none');
+                    if (locationMapEmptyEl) locationMapEmptyEl.classList.add('d-none');
+                }
+            });
+        }
+
+        if (locationModalEl) {
+            locationModalEl.addEventListener('hidden.bs.modal', function () {
+                resetLocationModal();
+                restoreFocus(lastLocationTrigger);
+                lastLocationTrigger = null;
+            });
+        }
+
+        if (confirmModalEl) {
+            confirmModalEl.addEventListener('hidden.bs.modal', function () {
+                pendingForm = null;
+                pendingHref = '';
+                resetConfirmButton();
+                restoreFocus(lastConfirmTrigger);
+                lastConfirmTrigger = null;
+            });
+        }
+
+        document.addEventListener('click', function (event) {
+            const logoutLink = event.target.closest('[data-confirm-logout]');
+            if (logoutLink) {
+                event.preventDefault();
+                lastConfirmTrigger = logoutLink;
+                pendingForm = null;
+                pendingHref = logoutLink.getAttribute('data-logout-url') || logoutLink.getAttribute('href') || '';
+                if (confirmTitleEl) confirmTitleEl.textContent = 'Are you sure?';
+                if (confirmTextEl) confirmTextEl.textContent = logoutLink.getAttribute('data-confirm-message') || 'You are about to log out.';
+                if (confirmButtonEl) confirmButtonEl.textContent = 'Yes, log out';
+                if (confirmModal) confirmModal.show();
+                return;
+            }
+
+            const locationButton = event.target.closest('[data-location-open]');
+            if (locationButton) {
+                event.preventDefault();
+                openLocationModal(locationButton);
+            }
+        });
+
+        document.addEventListener('submit', function (event) {
+            const form = event.target;
+            if (!(form instanceof HTMLFormElement)) return;
+            if (!form.hasAttribute('data-confirm-form')) return;
+            event.preventDefault();
+            lastConfirmTrigger = event.submitter || document.activeElement || form.querySelector('button[type="submit"]');
+            pendingForm = form;
+            pendingHref = '';
+            resetConfirmButton();
+            defaultConfirmText = form.getAttribute('data-confirm-button') || 'Yes, continue';
+            if (confirmTitleEl) confirmTitleEl.textContent = form.getAttribute('data-confirm-title') || 'Are you sure?';
+            if (confirmTextEl) confirmTextEl.textContent = form.getAttribute('data-confirm-message') || 'Please confirm this action.';
+            if (confirmButtonEl) confirmButtonEl.textContent = defaultConfirmText;
+            if (confirmModal) confirmModal.show();
+        });
+
+        if (confirmButtonEl) {
+            confirmButtonEl.addEventListener('click', function () {
+                if (confirmBusy) return;
+                confirmBusy = true;
+                confirmButtonEl.disabled = true;
+                confirmButtonEl.textContent = 'Processing...';
+                confirmButtonEl.setAttribute('aria-busy', 'true');
+                if (pendingForm) {
+                    const form = pendingForm;
+                    pendingForm = null;
+                    if (confirmModal) confirmModal.hide();
+                    showLoader();
+                    setTimeout(function () { form.submit(); }, 50);
+                    return;
+                }
+                if (pendingHref) {
+                    const href = pendingHref;
+                    pendingHref = '';
+                    if (confirmModal) confirmModal.hide();
+                    showLoader();
+                    window.location.href = href;
+                }
+            });
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('button, a.btn, [role="button"]').forEach(function (element) {
+            if (!element.hasAttribute('aria-label')) {
+                const label = (element.textContent || '').replace(/\s+/g, ' ').trim();
+                if (label) {
+                    element.setAttribute('aria-label', label);
+                }
+            }
+        });
+        setupSearchAndSort();
+        setupConfirmationDialogs();
+    });
+
+    if (document.readyState === 'complete') {
+        hideLoader();
+    } else {
+        window.addEventListener('load', hideLoader, { once: true });
+    }
+
+    window.addEventListener('pageshow', function () {
+        hideLoader();
+    });
+
+    document.addEventListener('click', function (event) {
+        const trigger = event.target.closest('a[data-show-loader], button[data-show-loader]');
+        if (trigger) {
+            showLoader();
+        }
+    });
+
+    document.addEventListener('submit', function (event) {
+        const form = event.target;
+        if (!(form instanceof HTMLFormElement)) return;
+        if (event.defaultPrevented || form.hasAttribute('data-confirm-form') || form.classList.contains('no-loading')) return;
+        window.setTimeout(function () {
+            if (!event.defaultPrevented && document.body.contains(form)) {
+                showLoader();
+            }
+        }, 0);
+    });
+
+    window.CPUI = {
+        showLoader: showLoader,
+        hideLoader: hideLoader
+    };
+})();
+</script>

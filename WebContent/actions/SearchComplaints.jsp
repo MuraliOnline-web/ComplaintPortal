@@ -59,18 +59,20 @@
         }
         ResultSet rs = pst.executeQuery();
 
-        out.println("<div class='container-3d'>");
-        out.println("<h3>Filtered Complaints" + (includeArchive?" (including archive)":"") + "</h3>");
+        out.println("<!DOCTYPE html><html lang='en'><head><meta charset='UTF-8'><meta name='viewport' content='width=device-width, initial-scale=1'>");
+        out.println("<title>Filtered Complaints</title><link rel='stylesheet' href='../assets/css/style.css'><link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css' crossorigin='anonymous'><style>body.result-page{min-height:100vh;background:radial-gradient(circle at top left, rgba(79,70,229,.14), transparent 30%),radial-gradient(circle at bottom right, rgba(14,165,233,.1), transparent 32%),linear-gradient(180deg,#f8fafc 0%,#eef2ff 100%);} .result-card{border:1px solid rgba(148,163,184,.2);border-radius:28px;background:rgba(255,255,255,.9);box-shadow:0 24px 80px rgba(15,23,42,.08);}</style></head><body class='result-page'>");
+        out.println("<main class='container py-4 py-lg-5'><div class='result-card p-4 p-md-5'><div class='d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4'><div><div class='text-uppercase small fw-semibold text-primary'>Search results</div><h1 class='h2 fw-bold mb-2'>Filtered Complaints" + (includeArchive ? " (including archive)" : "") + "</h1><p class='text-secondary mb-0'>Matched complaints for the chosen filters.</p></div><a class='btn btn-outline-primary' href='" + base + dash + "'>Back to Dashboard</a></div>");
         if (date != null && !date.isEmpty()) out.println("<p><b>Date:</b> " + date + "</p>");
         if (status != null && !status.isEmpty()) out.println("<p><b>Status:</b> " + status + "</p>");
         if (category != null && !category.isEmpty()) out.println("<p><b>Category:</b> " + category + "</p>");
-        out.println("<table class='table table-bordered'>");
-        out.println("<tr><th>ID</th><th>Code</th><th>User</th><th>Category</th><th>Description</th><th>Address</th><th>Status</th><th>Created</th></tr>");
+        out.println("<div class='table-responsive'><table class='table align-middle'><thead><tr><th>ID</th><th>Code</th><th>User</th><th>Category</th><th>Description</th><th>Address</th><th>Status</th><th>Created</th></tr></thead><tbody>");
 
+        boolean any = false;
         while(rs.next())
         {
+            any = true;
             out.println("<tr>");
-            out.println("<td>" + rs.getInt("complaint_id") + "</td>");
+            out.println("<td class='fw-semibold'>" + rs.getInt("complaint_id") + "</td>");
             out.println("<td>" + (rs.getString("complaint_code") == null ? "-" : rs.getString("complaint_code")) + "</td>");
             out.println("<td>" + rs.getString("name") + "</td>");
             out.println("<td>" + rs.getString("category") + "</td>");
@@ -80,9 +82,10 @@
             out.println("<td>" + rs.getTimestamp("created_at") + "</td>");
             out.println("</tr>");
         }
-        out.println("</table>");
-        out.println("<a href='" + base + dash + "'>Back to Dashboard</a>");
-        out.println("</div>");
+        if (!any) {
+            out.println("<tr><td colspan='8' class='text-center text-secondary py-4'>No complaints matched the filters.</td></tr>");
+        }
+        out.println("</tbody></table></div></div></main><script src='https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js' crossorigin='anonymous'></script></body></html>");
     } 
     catch(Exception e)
     {

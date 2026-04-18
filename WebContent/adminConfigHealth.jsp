@@ -17,57 +17,38 @@
     response.setDateHeader("Expires", 0);
     String ctx = request.getContextPath();
     String base = request.getRequestURI().contains("/WebContent/") ? (ctx + "/WebContent") : ctx;
-
     String role = (String) session.getAttribute("role");
-    if (role == null || !"admin".equals(role)) {
-        response.sendRedirect(base + "/login.jsp?denied=1");
-        return;
-    }
+    if (role == null || !"admin".equals(role)) { response.sendRedirect(base + "/login.jsp?denied=1"); return; }
 
     String dbUrl = ConfigLoader.getDbUrl();
     String dbUser = ConfigLoader.getDbUser();
     String dbPassword = ConfigLoader.getDbPassword();
-
     String smtpHost = ConfigLoader.getSmtpHost();
     String smtpPort = ConfigLoader.getSmtpPort();
     String smtpUser = ConfigLoader.getSmtpUser();
     String smtpPassword = ConfigLoader.getSmtpPassword();
-
     boolean dbConfigured = dbUrl != null && !dbUrl.isBlank() && dbUser != null && !dbUser.isBlank() && dbPassword != null && !dbPassword.isBlank();
     boolean smtpConfigured = smtpHost != null && !smtpHost.isBlank() && smtpPort != null && !smtpPort.isBlank() && smtpUser != null && !smtpUser.isBlank() && smtpPassword != null && !smtpPassword.isBlank();
 
     String runDb = request.getParameter("dbtest");
     String runSmtp = request.getParameter("smtptest");
-
     String dbTestStatus = "Not run";
     String dbTestDetail = "";
     if ("1".equals(runDb)) {
-        if (!dbConfigured) {
-            dbTestStatus = "Failed";
-            dbTestDetail = "DB configuration is incomplete.";
-        } else {
+        if (!dbConfigured) { dbTestStatus = "Failed"; dbTestDetail = "DB configuration is incomplete."; }
+        else {
             Connection checkCon = null;
-            try {
-                Class.forName("com.mysql.cj.jdbc.Driver");
-                checkCon = DriverManager.getConnection(dbUrl, dbUser, dbPassword);
-                dbTestStatus = "Success";
-                dbTestDetail = "Database connection opened successfully.";
-            } catch (Exception ex) {
-                dbTestStatus = "Failed";
-                dbTestDetail = ex.getClass().getSimpleName() + ": " + ex.getMessage();
-            } finally {
-                try { if (checkCon != null) checkCon.close(); } catch (Exception ignore) {}
-            }
+            try { Class.forName("com.mysql.cj.jdbc.Driver"); checkCon = DriverManager.getConnection(dbUrl, dbUser, dbPassword); dbTestStatus = "Success"; dbTestDetail = "Database connection opened successfully."; }
+            catch (Exception ex) { dbTestStatus = "Failed"; dbTestDetail = ex.getClass().getSimpleName() + ": " + ex.getMessage(); }
+            finally { try { if (checkCon != null) checkCon.close(); } catch (Exception ignore) {} }
         }
     }
 
     String smtpTestStatus = "Not run";
     String smtpTestDetail = "";
     if ("1".equals(runSmtp)) {
-        if (!smtpConfigured) {
-            smtpTestStatus = "Failed";
-            smtpTestDetail = "SMTP configuration is incomplete.";
-        } else {
+        if (!smtpConfigured) { smtpTestStatus = "Failed"; smtpTestDetail = "SMTP configuration is incomplete."; }
+        else {
             Transport transport = null;
             try {
                 Properties props = new Properties();
@@ -80,59 +61,48 @@
                 transport.connect(smtpHost, Integer.parseInt(smtpPort), smtpUser, smtpPassword);
                 smtpTestStatus = "Success";
                 smtpTestDetail = "SMTP login/connect successful.";
-            } catch (Exception ex) {
-                smtpTestStatus = "Failed";
-                smtpTestDetail = ex.getClass().getSimpleName() + ": " + ex.getMessage();
-            } finally {
-                try { if (transport != null) transport.close(); } catch (Exception ignore) {}
-            }
+            } catch (Exception ex) { smtpTestStatus = "Failed"; smtpTestDetail = ex.getClass().getSimpleName() + ": " + ex.getMessage(); }
+            finally { try { if (transport != null) transport.close(); } catch (Exception ignore) {} }
         }
     }
 %>
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Config Health Check</title>
-    <link rel="stylesheet" type="text/css" href="assets/css/style.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" integrity="sha384-gH6tQd6rYt6v7s5FQ4u+Nw6mM2J+Z1oQXbQ9yKqNqCkzJ10c1qf6jv9vZ5GxXKbi" crossorigin="anonymous">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" crossorigin="anonymous">
+    <style>
+        body.dashboard-page { min-height: 100vh; background: radial-gradient(circle at top left, rgba(79, 70, 229, 0.14), transparent 30%), radial-gradient(circle at bottom right, rgba(14, 165, 233, 0.1), transparent 32%), linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%); }
+        .dashboard-card { border: 1px solid rgba(148, 163, 184, 0.2); border-radius: 24px; background: rgba(255, 255, 255, 0.88); box-shadow: 0 20px 60px rgba(15, 23, 42, 0.07); }
+    </style>
 </head>
-<body>
-    <div class="container-3d">
-        <h2>Configuration Health Check</h2>
-        <p>This page is admin-only and masks secret values.</p>
+<body class="dashboard-page">
+    <nav class="navbar navbar-expand-lg bg-white bg-opacity-75 backdrop-blur-sm sticky-top border-bottom border-light-subtle">
+        <div class="container py-2">
+            <a class="navbar-brand fw-bold d-flex align-items-center gap-2" href="index.jsp"><img src="assets/images/logo.jpg" alt="Complaint Portal" style="width:40px;height:40px;border-radius:12px;object-fit:cover;"><span>Complaint Portal</span></a>
+            <div class="ms-auto d-flex gap-2"><a href="adminDashboard.jsp" class="btn btn-outline-primary">Admin Dashboard</a><a href="actions/LogoutAction.jsp" class="btn btn-outline-danger" data-confirm-logout data-confirm-message="You are about to log out of the admin tools page." data-logout-url="actions/LogoutAction.jsp">Logout</a></div>
+        </div>
+    </nav>
 
-        <div class="card p-3 mb-3">
-            <h5>Database Config</h5>
-            <p><b>Configured:</b> <%= dbConfigured ? "Yes" : "No" %></p>
-            <p><b>DB_URL:</b> <%= mask(dbUrl) %></p>
-            <p><b>DB_USER:</b> <%= mask(dbUser) %></p>
-            <p><b>DB_PASSWORD:</b> <%= mask(dbPassword) %></p>
-            <p><b>DB Test:</b> <%= dbTestStatus %></p>
-            <% if (!dbTestDetail.isBlank()) { %>
-                <p><b>DB Detail:</b> <%= dbTestDetail %></p>
-            <% } %>
-            <button type="button" class="btn btn-primary btn-3d" onclick="window.location.href='<%= base %>/adminConfigHealth.jsp?dbtest=1';">Run DB Connectivity Test</button>
+    <main class="container py-4 py-lg-5">
+        <div class="dashboard-card p-4 p-lg-5 mb-4">
+            <div class="text-uppercase small fw-semibold text-primary">Health Check</div>
+            <h1 class="h2 fw-bold mb-2">Configuration Health Check</h1>
+            <p class="text-secondary mb-0">This page is admin-only and masks secret values.</p>
         </div>
 
-        <div class="card p-3 mb-3">
-            <h5>SMTP Config</h5>
-            <p><b>Configured:</b> <%= smtpConfigured ? "Yes" : "No" %></p>
-            <p><b>SMTP_HOST:</b> <%= mask(smtpHost) %></p>
-            <p><b>SMTP_PORT:</b> <%= mask(smtpPort) %></p>
-            <p><b>SMTP_USER:</b> <%= mask(smtpUser) %></p>
-            <p><b>SMTP_PASSWORD:</b> <%= mask(smtpPassword) %></p>
-            <p><b>SMTP Test:</b> <%= smtpTestStatus %></p>
-            <% if (!smtpTestDetail.isBlank()) { %>
-                <p><b>SMTP Detail:</b> <%= smtpTestDetail %></p>
-            <% } %>
-            <button type="button" class="btn btn-primary btn-3d" onclick="window.location.href='<%= base %>/adminConfigHealth.jsp?smtptest=1';">Run SMTP Connectivity Test</button>
+        <div class="row g-4">
+            <div class="col-lg-6"><div class="dashboard-card p-4 h-100"><h2 class="h4 fw-bold mb-3">Database Config</h2><p><b>Configured:</b> <%= dbConfigured ? "Yes" : "No" %></p><p><b>DB_URL:</b> <%= mask(dbUrl) %></p><p><b>DB_USER:</b> <%= mask(dbUser) %></p><p><b>DB_PASSWORD:</b> <%= mask(dbPassword) %></p><p><b>DB Test:</b> <%= dbTestStatus %></p><% if (!dbTestDetail.isBlank()) { %><p><b>DB Detail:</b> <%= dbTestDetail %></p><% } %><button type="button" class="btn btn-primary" onclick="window.location.href='<%= base %>/adminConfigHealth.jsp?dbtest=1';">Run DB Connectivity Test</button></div></div>
+            <div class="col-lg-6"><div class="dashboard-card p-4 h-100"><h2 class="h4 fw-bold mb-3">SMTP Config</h2><p><b>Configured:</b> <%= smtpConfigured ? "Yes" : "No" %></p><p><b>SMTP_HOST:</b> <%= mask(smtpHost) %></p><p><b>SMTP_PORT:</b> <%= mask(smtpPort) %></p><p><b>SMTP_USER:</b> <%= mask(smtpUser) %></p><p><b>SMTP_PASSWORD:</b> <%= mask(smtpPassword) %></p><p><b>SMTP Test:</b> <%= smtpTestStatus %></p><% if (!smtpTestDetail.isBlank()) { %><p><b>SMTP Detail:</b> <%= smtpTestDetail %></p><% } %><button type="button" class="btn btn-primary" onclick="window.location.href='<%= base %>/adminConfigHealth.jsp?smtptest=1';">Run SMTP Connectivity Test</button></div></div>
         </div>
 
-        <div class="form-group" style="display:flex; gap:10px; flex-wrap:wrap;">
-            <button type="button" class="btn btn-secondary btn-3d" onclick="window.location.href='<%= base %>/adminDashboard.jsp';">Back to Admin Dashboard</button>
-            <button type="button" class="btn btn-primary btn-3d" onclick="window.location.href='<%= base %>/index.jsp';">Back to Home</button>
-        </div>
-    </div>
+        <div class="d-flex flex-wrap gap-2 mt-4"><button type="button" class="btn btn-secondary" onclick="window.location.href='<%= base %>/adminDashboard.jsp';">Back to Admin Dashboard</button><button type="button" class="btn btn-primary" onclick="window.location.href='<%= base %>/index.jsp';">Back to Home</button></div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
     <script src="assets/js/main.js"></script>
 </body>
 </html>

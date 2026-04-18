@@ -165,11 +165,11 @@
             session.setAttribute("flashMessage", "Login successful. Welcome, " + uname + ".");
             session.setAttribute("flashType", "success");
 
-            // Redirect by actual DB role
+            // Redirect by actual DB role to proper dashboard
             if ("admin".equalsIgnoreCase(dbRole)) {
-                safeRedirect(response, base + "/index.jsp");
+                safeRedirect(response, base + "/adminDashboard.jsp");
             } else if ("officer".equalsIgnoreCase(dbRole)) {
-                safeRedirect(response, base + "/index.jsp");
+                safeRedirect(response, base + "/officerDashboard.jsp");
             } else {
                 // Not an allowed role for this login portal
                 session.invalidate();

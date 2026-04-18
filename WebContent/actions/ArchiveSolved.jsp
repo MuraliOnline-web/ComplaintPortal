@@ -96,13 +96,9 @@
         }
         con.commit();
 
-        out.println("<div class='container-3d'>");
-        out.println("<h3>Archive Completed</h3>");
-        out.println("<p>Time window: <b>" + start + "</b> to <b>" + end + "</b></p>");
-        out.println("<p>Solved complaints moved: <b>" + movedComplaints + "</b></p>");
-        out.println("<p>Notifications moved: <b>" + movedNotifs + "</b></p>");
-        out.println("<a class='btn btn-secondary btn-3d' href='../analytics.jsp?g=" + g + ("day".equals(g)?"&date="+ (date==null?today.toString():date): ("month".equals(g)?"&month="+(month==null?java.time.YearMonth.from(today).toString():month):"&year="+(year==null?String.valueOf(today.getYear()):year))) + "'>Back to Analytics</a>");
-        out.println("</div>");
+        out.println("<!DOCTYPE html><html lang='en'><head><meta charset='UTF-8'><meta name='viewport' content='width=device-width, initial-scale=1'>");
+        out.println("<title>Archive Completed</title><link rel='stylesheet' href='../assets/css/style.css'><link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css' crossorigin='anonymous'><style>body.result-page{min-height:100vh;background:radial-gradient(circle at top left, rgba(79,70,229,.14), transparent 30%),radial-gradient(circle at bottom right, rgba(14,165,233,.1), transparent 32%),linear-gradient(180deg,#f8fafc 0%,#eef2ff 100%);} .result-card{border:1px solid rgba(148,163,184,.2);border-radius:28px;background:rgba(255,255,255,.9);box-shadow:0 24px 80px rgba(15,23,42,.08);}</style></head><body class='result-page'>");
+        out.println("<main class='container py-4 py-lg-5'><div class='result-card p-4 p-md-5'><div class='text-uppercase small fw-semibold text-primary'>Archive completed</div><h1 class='h2 fw-bold mb-2'>Archive Completed</h1><p class='text-secondary'>Time window: <b>" + start + "</b> to <b>" + end + "</b></p><div class='row g-3'><div class='col-md-4'><div class='border rounded-4 p-3 bg-white'><div class='text-secondary small'>Solved complaints moved</div><div class='fw-bold fs-4'>" + movedComplaints + "</div></div></div><div class='col-md-4'><div class='border rounded-4 p-3 bg-white'><div class='text-secondary small'>Notifications moved</div><div class='fw-bold fs-4'>" + movedNotifs + "</div></div></div></div><div class='mt-4'><a class='btn btn-secondary' href='../analytics.jsp?g=" + g + ("day".equals(g)?("&date="+ (date==null?today.toString():date)): ("month".equals(g)?("&month="+(month==null?java.time.YearMonth.from(today).toString():month)):"&year="+(year==null?String.valueOf(today.getYear()):year))) + "'>Back to Analytics</a></div></div></main><script src='https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js' crossorigin='anonymous'></script></body></html>");
     } catch(Exception e) {
         con.rollback();
         e.printStackTrace();
