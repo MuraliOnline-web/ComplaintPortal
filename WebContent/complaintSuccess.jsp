@@ -1,12 +1,30 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="org.apache.taglibs.standard.tag.rt.core.*" %>
+<%
+    String ctx = request.getContextPath();
+    String base = request.getRequestURI().contains("/WebContent/") ? (ctx + "/WebContent") : ctx;
+    String homeHref = base + "/index.jsp";
+    String dashboardHref = base + "/userDashboard.jsp";
+    String registerComplaintHref = base + "/registerComplaint.jsp";
+    String styleHref = base + "/assets/css/style.css";
+    String scriptHref = base + "/assets/js/main.js";
+    try {
+        if (application.getResource("/index.jsp") != null) homeHref = ctx + "/index.jsp";
+        if (application.getResource("/userDashboard.jsp") != null) dashboardHref = ctx + "/userDashboard.jsp";
+        if (application.getResource("/registerComplaint.jsp") != null) registerComplaintHref = ctx + "/registerComplaint.jsp";
+        if (application.getResource("/assets/css/style.css") != null) styleHref = ctx + "/assets/css/style.css";
+        if (application.getResource("/assets/js/main.js") != null) scriptHref = ctx + "/assets/js/main.js";
+    } catch (Exception ignore) {
+        // Keep default path
+    }
+%>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Complaint Registered</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="<%= styleHref %>">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" crossorigin="anonymous">
     <style>
         body.success-page {
@@ -31,8 +49,8 @@
     <main class="container py-4 py-lg-5">
         <nav aria-label="breadcrumb" class="mb-4">
             <ol class="breadcrumb small justify-content-center">
-                <li class="breadcrumb-item"><a href="index.jsp">Home</a></li>
-                <li class="breadcrumb-item"><a href="userDashboard.jsp">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="<%= homeHref %>">Home</a></li>
+                <li class="breadcrumb-item"><a href="<%= dashboardHref %>">Dashboard</a></li>
                 <li class="breadcrumb-item active" aria-current="page">Complaint Registered</li>
             </ol>
         </nav>
@@ -53,14 +71,14 @@
             <p class="text-secondary mb-4">We will update you once it is resolved. Use the complaint code or ID to track progress from your dashboard.</p>
 
             <div class="d-flex flex-wrap justify-content-center gap-2">
-                <a class="btn btn-primary btn-lg" href="userDashboard.jsp">Go to Dashboard</a>
-                <a class="btn btn-outline-primary btn-lg" href="registerComplaint.jsp">Register another complaint</a>
-                <a class="btn btn-outline-secondary btn-lg" href="index.jsp">Home</a>
+                <a class="btn btn-primary btn-lg" href="<%= dashboardHref %>">Go to Dashboard</a>
+                <a class="btn btn-outline-primary btn-lg" href="<%= registerComplaintHref %>">Register another complaint</a>
+                <a class="btn btn-outline-secondary btn-lg" href="<%= homeHref %>">Home</a>
             </div>
         </div>
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
-    <script src="assets/js/main.js"></script>
+    <script src="<%= scriptHref %>"></script>
 </body>
 </html>

@@ -92,6 +92,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
+
 // ==================== FORM LOADING STATES ====================
 // Disable form submission and show loading state
 function disableFormOnSubmit(formSelector = 'form') {

@@ -13,11 +13,29 @@
     
     String role = (String) session.getAttribute("role");
     if (role == null || (!"officer".equals(role) && !"admin".equals(role))) {
-        response.sendRedirect("login.jsp?denied=1");
+        response.sendRedirect(base + "/login.jsp?denied=1");
         return;
     }
 
     String officerName = session.getAttribute("userName") != null ? String.valueOf(session.getAttribute("userName")) : "Officer";
+    String ctx = request.getContextPath();
+    String base = request.getRequestURI().contains("/WebContent/") ? (ctx + "/WebContent") : ctx;
+    String homeHref = base + "/index.jsp";
+    String analyticsHref = base + "/analytics.jsp";
+    String logoutHref = base + "/actions/LogoutAction.jsp";
+    String styleHref = base + "/assets/css/style.css";
+    String scriptHref = base + "/assets/js/main.js";
+    String logoHref = base + "/assets/images/logo.svg";
+    try {
+        if (application.getResource("/index.jsp") != null) homeHref = ctx + "/index.jsp";
+        if (application.getResource("/analytics.jsp") != null) analyticsHref = ctx + "/analytics.jsp";
+        if (application.getResource("/actions/LogoutAction.jsp") != null) logoutHref = ctx + "/actions/LogoutAction.jsp";
+        if (application.getResource("/assets/css/style.css") != null) styleHref = ctx + "/assets/css/style.css";
+        if (application.getResource("/assets/js/main.js") != null) scriptHref = ctx + "/assets/js/main.js";
+        if (application.getResource("/assets/images/logo.svg") != null) logoHref = ctx + "/assets/images/logo.svg";
+    } catch (Exception ignore) {
+        // Use computed fallbacks.
+    }
     List<Map<String, Object>> complaintRows = new ArrayList<>();
     int totalCount = 0;
     int pendingCount = 0;
@@ -106,7 +124,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Officer Dashboard</title>
-    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="<%= styleHref %>">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" crossorigin="anonymous">
     <style>
         body.dashboard-page {
@@ -182,8 +200,8 @@
     
     <nav class="navbar navbar-expand-lg bg-white bg-opacity-75 backdrop-blur-sm sticky-top border-bottom border-light-subtle">
         <div class="container py-2">
-            <a class="navbar-brand fw-bold d-flex align-items-center gap-2" href="index.jsp">
-                <img src="assets/images/logo.svg" alt="Complaint Portal" style="width:40px;height:40px;border-radius:12px;object-fit:cover;">
+            <a class="navbar-brand fw-bold d-flex align-items-center gap-2" href="<%= homeHref %>">
+                <img src="<%= logoHref %>" alt="Complaint Portal" style="width:40px;height:40px;border-radius:12px;object-fit:cover;">
                 <span>Complaint Portal</span>
             </a>
             <div class="dropdown ms-auto">
@@ -194,7 +212,7 @@
                 <ul class="dropdown-menu dropdown-menu-end shadow-lg">
                     <li><h6 class="dropdown-header">Signed in as Officer</h6></li>
                     <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="actions/LogoutAction.jsp" data-confirm-logout data-confirm-message="You are about to log out of the officer dashboard." data-logout-url="actions/LogoutAction.jsp">Logout</a></li>
+                        <li><a class="dropdown-item" href="<%= logoutHref %>" data-confirm-logout data-confirm-message="You are about to log out of the officer dashboard." data-logout-url="<%= logoutHref %>">Logout</a></li>
                 </ul>
             </div>
         </div>
@@ -214,7 +232,7 @@
                     <p class="text-secondary mb-0">Review pending complaints and submit your field report with evidence.</p>
                 </div>
                 <div class="d-flex flex-wrap gap-2">
-                    <a href="analytics.jsp" class="btn btn-outline-primary">Analytics</a>
+                    <a href="<%= analyticsHref %>" class="btn btn-outline-primary">Analytics</a>
                 </div>
             </div>
         </div>
@@ -326,6 +344,6 @@
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
-    <script src="assets/js/main.js"></script>
+    <script src="<%= scriptHref %>"></script>
 </body>
 </html>

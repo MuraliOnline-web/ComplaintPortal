@@ -1,16 +1,35 @@
 <!-- Insert complaint into DB -->
 <%@ page import="java.io.*,java.sql.*,jakarta.servlet.http.*,jakarta.servlet.http.Part" %>
 <%@ page import="jakarta.mail.*,jakarta.mail.internet.*,java.util.Properties" %>
+<%@ page import="java.util.Base64" %>
 <%@ page import="java.net.URLEncoder" %>
 <%@ page import="util.ConfigLoader" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%!
+    private static void safeRedirect(jakarta.servlet.http.HttpServletResponse response, String location) throws IOException {
+        response.setStatus(302);
+        response.setHeader("Location", location);
+    }
+%>
 <%
     String role = (String) session.getAttribute("role");
     Integer sessionUserId = (Integer) session.getAttribute("userId");
     String ctx = request.getContextPath();
     String base = request.getRequestURI().contains("/WebContent/") ? (ctx + "/WebContent") : ctx;
+    String registerComplaintPath = base + "/registerComplaint.jsp";
+    String complaintSuccessPath = base + "/complaintSuccess.jsp";
+    try {
+        if (application.getResource("/registerComplaint.jsp") == null && application.getResource("/WebContent/registerComplaint.jsp") != null) {
+            registerComplaintPath = ctx + "/WebContent/registerComplaint.jsp";
+        }
+        if (application.getResource("/complaintSuccess.jsp") == null && application.getResource("/WebContent/complaintSuccess.jsp") != null) {
+            complaintSuccessPath = ctx + "/WebContent/complaintSuccess.jsp";
+        }
+    } catch (Exception ignore) {
+        // Fall back to base-derived paths
+    }
     if (role == null || !"user".equals(role) || sessionUserId == null) {
-        response.sendRedirect(base + "/userLogin.jsp?required=1");
+        safeRedirect(response, base + "/userLogin.jsp?required=1");
         return;
     }
 
@@ -71,25 +90,49 @@
     if (category == null || category.isBlank()) missing.append("category, ");
     if (description == null || description.isBlank()) missing.append("description, ");
     if (missing.length() > 0) {
-        response.sendRedirect(base + "/registerComplaint.jsp?error=" + URLEncoder.encode("please fill all required fields.", "UTF-8"));
+        safeRedirect(response, registerComplaintPath + "?error=" + URLEncoder.encode("please fill all required fields.", "UTF-8"));
         return;
     }
 
-    // File upload handling (graceful if multipart isn't configured)
+    // File upload handling: prefer base64 payload from standard form, fallback to multipart part.
     String photoPath = null;
     try {
-        Part photoPart = request.getPart("photo");
-        if (photoPart != null && photoPart.getSize() > 0) 
-        {
-            String original = photoPart.getSubmittedFileName();
-            String safeName = (original == null ? "upload.jpg" : original.replaceAll("[^a-zA-Z0-9._-]", "_"));
-            String fileName = System.currentTimeMillis() + "_" + safeName;
-            String basePath = application.getRealPath("/");
-            String uploadDir = basePath + (basePath.endsWith(File.separator) ? "" : File.separator) + "assets" + File.separator + "images" + File.separator + "uploads" + File.separator;
-            File dir = new File(uploadDir);
-            if (!dir.exists()) dir.mkdirs();
-            photoPart.write(uploadDir + fileName);
-            photoPath = "assets/images/uploads/" + fileName;
+        String photoData = request.getParameter("photoData");
+        String photoName = request.getParameter("photoName");
+
+        if (photoData != null && !photoData.isBlank()) {
+            int commaIdx = photoData.indexOf(',');
+            if (commaIdx > 0 && commaIdx < photoData.length() - 1) {
+                String payload = photoData.substring(commaIdx + 1);
+                byte[] fileBytes = Base64.getDecoder().decode(payload);
+
+                String original = (photoName == null || photoName.isBlank()) ? "upload.jpg" : photoName;
+                String safeName = original.replaceAll("[^a-zA-Z0-9._-]", "_");
+                String fileName = System.currentTimeMillis() + "_" + safeName;
+                String basePath = application.getRealPath("/");
+                String uploadDir = basePath + (basePath.endsWith(File.separator) ? "" : File.separator) + "assets" + File.separator + "images" + File.separator + "uploads" + File.separator;
+                File dir = new File(uploadDir);
+                if (!dir.exists()) dir.mkdirs();
+
+                try (FileOutputStream fos = new FileOutputStream(uploadDir + fileName)) {
+                    fos.write(fileBytes);
+                }
+                photoPath = "assets/images/uploads/" + fileName;
+            }
+        } else {
+            Part photoPart = request.getPart("photo");
+            if (photoPart != null && photoPart.getSize() > 0) 
+            {
+                String original = photoPart.getSubmittedFileName();
+                String safeName = (original == null ? "upload.jpg" : original.replaceAll("[^a-zA-Z0-9._-]", "_"));
+                String fileName = System.currentTimeMillis() + "_" + safeName;
+                String basePath = application.getRealPath("/");
+                String uploadDir = basePath + (basePath.endsWith(File.separator) ? "" : File.separator) + "assets" + File.separator + "images" + File.separator + "uploads" + File.separator;
+                File dir = new File(uploadDir);
+                if (!dir.exists()) dir.mkdirs();
+                photoPart.write(uploadDir + fileName);
+                photoPath = "assets/images/uploads/" + fileName;
+            }
         }
     } catch (Throwable uploadEx) {
         // If multipart isn't configured, skip photo and proceed
@@ -101,7 +144,7 @@
     String dbUser = ConfigLoader.getDbUser();
     String dbPassword = ConfigLoader.getDbPassword();
     if (dbUrl == null || dbUrl.isBlank() || dbUser == null || dbUser.isBlank() || dbPassword == null || dbPassword.isBlank()) {
-        response.sendRedirect(base + "/registerComplaint.jsp?error=" + URLEncoder.encode("Database is not configured. Contact admin.", "UTF-8"));
+        safeRedirect(response, registerComplaintPath + "?error=" + URLEncoder.encode("Database is not configured. Contact admin.", "UTF-8"));
         return;
     }
 
@@ -120,7 +163,7 @@
             email = rsUser.getString("email");
             mobile = rsUser.getString("mobile");
         } else {
-            response.sendRedirect(base + "/userLogin.jsp?required=1");
+            safeRedirect(response, base + "/userLogin.jsp?required=1");
             return;
         }
         rsUser.close();
@@ -191,18 +234,20 @@
 
         // Redirect to a dedicated success page
         String safeName = (name == null || name.isBlank()) ? "User" : name;
-        String target = base + "/complaintSuccess.jsp?id=" + complaintId + "&code=" + URLEncoder.encode(complaintCode, "UTF-8") + "&name=" + URLEncoder.encode(safeName, "UTF-8");
-        response.sendRedirect(target);
-        return;
+        String target = complaintSuccessPath + "?id=" + complaintId + "&code=" + URLEncoder.encode(complaintCode, "UTF-8") + "&name=" + URLEncoder.encode(safeName, "UTF-8");
+        safeRedirect(response, target);
     } 
     catch(Exception e)
     {
         e.printStackTrace();
-        response.sendRedirect(base + "/registerComplaint.jsp?error=" + URLEncoder.encode("Error occurred while submitting complaint.", "UTF-8"));
-        return;
+        safeRedirect(response, registerComplaintPath + "?error=" + URLEncoder.encode("Error occurred while submitting complaint.", "UTF-8"));
     } 
     finally 
     {
-        if(con!=null) con.close();
+        try {
+            if (con != null) con.close();
+        } catch (Exception ignore) {
+            // Ignore close errors during cleanup
+        }
     }
 %>

@@ -2,6 +2,23 @@
 <%
     String ctx = request.getContextPath();
     String base = request.getRequestURI().contains("/WebContent/") ? (ctx + "/WebContent") : ctx;
+    String homeHref = base + "/index.jsp";
+    String loginHref = base + "/login.jsp";
+    String forgotPasswordHref = base + "/forgotPassword.jsp";
+    String registerHref = base + "/userRegister.jsp";
+    String styleHref = base + "/assets/css/style.css";
+    String scriptHref = base + "/assets/js/main.js";
+    String logoHref = base + "/assets/images/logo.svg";
+    String visualHref = base + "/assets/images/ElectricWires.jpeg";
+    try {
+        if (application.getResource("/index.jsp") != null) homeHref = ctx + "/index.jsp";
+        if (application.getResource("/assets/css/style.css") != null) styleHref = ctx + "/assets/css/style.css";
+        if (application.getResource("/assets/js/main.js") != null) scriptHref = ctx + "/assets/js/main.js";
+        if (application.getResource("/assets/images/logo.svg") != null) logoHref = ctx + "/assets/images/logo.svg";
+        if (application.getResource("/assets/images/ElectricWires.jpeg") != null) visualHref = ctx + "/assets/images/ElectricWires.jpeg";
+    } catch (Exception ignore) {
+        // Use computed fallbacks.
+    }
 %>
 <!DOCTYPE html>
 <html lang="en">
@@ -9,7 +26,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>User Login</title>
-    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="<%= styleHref %>">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" crossorigin="anonymous">
     <style>
         body.auth-page {
@@ -37,7 +54,7 @@
         .auth-visual {
             background:
                 linear-gradient(180deg, rgba(15, 23, 42, 0.3), rgba(15, 23, 42, 0.68)),
-                url('assets/images/ElectricWires.jpeg') center/cover;
+                url('<%= visualHref %>') center/cover;
             color: #fff;
             min-height: 100%;
             width: 100%;
@@ -196,7 +213,7 @@
         <div class="container py-3">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb small">
-                    <li class="breadcrumb-item"><a href="index.jsp">Home</a></li>
+                    <li class="breadcrumb-item"><a href="<%= homeHref %>">Home</a></li>
                     <li class="breadcrumb-item active" aria-current="page">User Login</li>
                 </ol>
             </nav>
@@ -207,7 +224,7 @@
                     <div>
                         <div class="d-flex align-items-center gap-2 mb-4">
                             <div class="rounded-4 bg-white d-inline-flex align-items-center justify-content-center" style="width:48px;height:48px;">
-                                <img src="assets/images/logo.svg" alt="Complaint Portal" class="img-fluid rounded-4">
+                                <img src="<%= logoHref %>" alt="Complaint Portal" class="img-fluid rounded-4">
                             </div>
                             <div>
                                 <div class="fw-bold fs-5">Complaint Portal</div>
@@ -264,8 +281,8 @@
                         </div>
 
                         <div class="role-tabs mb-4">
-                            <a class="role-tab active text-center text-decoration-none" href="userLogin.jsp">User Login</a>
-                            <a class="role-tab text-center text-decoration-none" href="login.jsp">Admin / Officer Login</a>
+                            <a class="role-tab active text-center text-decoration-none" href="<%= base %>/userLogin.jsp">User Login</a>
+                            <a class="role-tab text-center text-decoration-none" href="<%= loginHref %>">Admin / Officer Login</a>
                         </div>
 
                         <form action="actions/UserLoginAction.jsp" method="post" class="space-y-4">
@@ -292,12 +309,12 @@
                             <button type="submit" class="btn btn-primary btn-lg w-100">Send OTP</button>
 
                             <div class="d-flex justify-content-between align-items-center mt-3 flex-wrap gap-2">
-                                <a href="forgotPassword.jsp" class="text-decoration-none">Problems logging in?</a>
-                                <a href="index.jsp" class="btn btn-outline-secondary">Home</a>
+                                <a href="<%= forgotPasswordHref %>" class="text-decoration-none">Problems logging in?</a>
+                                <a href="<%= homeHref %>" class="btn btn-outline-secondary">Home</a>
                             </div>
 
                             <div class="mt-4 text-center text-secondary">
-                                New here? <a href="userRegister.jsp" class="fw-semibold text-decoration-none">Create account</a>
+                                New here? <a href="<%= registerHref %>" class="fw-semibold text-decoration-none">Create account</a>
                             </div>
                         </form>
                     </div>
@@ -307,6 +324,6 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
-    <script src="assets/js/main.js"></script>
+    <script src="<%= scriptHref %>"></script>
 </body>
 </html>

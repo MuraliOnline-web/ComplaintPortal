@@ -1,5 +1,21 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%
+    String ctx = request.getContextPath();
+    String base = request.getRequestURI().contains("/WebContent/") ? (ctx + "/WebContent") : ctx;
+    String homeHref = base + "/index.jsp";
+    String styleHref = base + "/assets/css/style.css";
+    String scriptHref = base + "/assets/js/main.js";
+    String logoHref = base + "/assets/images/logo.svg";
+    String roadImageHref = base + "/assets/images/road.jpg";
+    try {
+        if (application.getResource("/index.jsp") != null) homeHref = ctx + "/index.jsp";
+        if (application.getResource("/assets/css/style.css") != null) styleHref = ctx + "/assets/css/style.css";
+        if (application.getResource("/assets/js/main.js") != null) scriptHref = ctx + "/assets/js/main.js";
+        if (application.getResource("/assets/images/logo.svg") != null) logoHref = ctx + "/assets/images/logo.svg";
+        if (application.getResource("/assets/images/road.jpg") != null) roadImageHref = ctx + "/assets/images/road.jpg";
+    } catch (Exception ignore) {
+        // Use computed fallbacks.
+    }
     String successMessage = (String) session.getAttribute("flashMessage");
     String errorMessage = (String) session.getAttribute("flashError");
     if (successMessage != null) session.removeAttribute("flashMessage");
@@ -12,7 +28,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Complaint Portal - Home</title>
     <meta name="description" content="File complaints, track progress, and stay connected with your city services.">
-    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="<%= styleHref %>">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" crossorigin="anonymous">
     <style>
         body.homepage {
@@ -123,7 +139,7 @@
             min-height: 340px;
             background:
                 linear-gradient(180deg, rgba(15, 23, 42, 0.35), rgba(15, 23, 42, 0.65)),
-                url('assets/images/road.jpg') center/cover;
+                url('<%= roadImageHref %>') center/cover;
             padding: 2rem;
             color: #fff;
             display: flex;
@@ -257,8 +273,8 @@
     <div class="home-shell">
         <nav class="navbar navbar-expand-lg home-navbar sticky-top py-3">
             <div class="container">
-                <a class="navbar-brand d-flex align-items-center gap-3 fw-bold text-dark" href="index.jsp">
-                    <img src="assets/images/logo.svg" alt="Complaint Portal" class="brand-mark">
+                <a class="navbar-brand d-flex align-items-center gap-3 fw-bold text-dark" href="<%= homeHref %>">
+                    <img src="<%= logoHref %>" alt="Complaint Portal" class="brand-mark">
                     <span>Complaint Portal</span>
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#topNav" aria-controls="topNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -266,14 +282,14 @@
                 </button>
                 <div class="collapse navbar-collapse" id="topNav">
                     <ul class="navbar-nav mx-auto mt-3 mt-lg-0 gap-lg-2">
-                        <li class="nav-item"><a class="nav-link" href="index.jsp#home">Home</a></li>
-                        <li class="nav-item"><a class="nav-link" href="index.jsp#about">About</a></li>
-                        <li class="nav-item"><a class="nav-link" href="index.jsp#services">Services</a></li>
-                        <li class="nav-item"><a class="nav-link" href="index.jsp#description">Description</a></li>
+                        <li class="nav-item"><a class="nav-link" href="<%= homeHref %>#home">Home</a></li>
+                        <li class="nav-item"><a class="nav-link" href="<%= homeHref %>#about">About</a></li>
+                        <li class="nav-item"><a class="nav-link" href="<%= homeHref %>#services">Services</a></li>
+                        <li class="nav-item"><a class="nav-link" href="<%= homeHref %>#description">Description</a></li>
                     </ul>
                     <div class="d-flex gap-2 mt-3 mt-lg-0">
-                        <a class="btn btn-outline-dark" href="userLogin.jsp">Sign In</a>
-                        <a class="btn btn-primary" href="userRegister.jsp">Get Started</a>
+                        <a class="btn btn-outline-dark" href="<%= base %>/userLogin.jsp">Sign In</a>
+                        <a class="btn btn-primary" href="<%= base %>/userRegister.jsp">Get Started</a>
                     </div>
                 </div>
             </div>
@@ -386,6 +402,6 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
-    <script src="assets/js/main.js"></script>
+    <script src="<%= scriptHref %>"></script>
 </body>
 </html>

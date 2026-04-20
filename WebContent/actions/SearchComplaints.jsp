@@ -2,6 +2,20 @@
 <%@ page import="java.sql.*" %>
 <%@ page import="util.ConfigLoader" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%!
+    private static void safeRedirect(jakarta.servlet.http.HttpServletResponse response, String location) throws java.io.IOException {
+        response.setStatus(302);
+        response.setHeader("Location", location);
+    String assetsBase = base;
+    try {
+        if (application.getResource("/assets/css/style.css") == null && application.getResource("/WebContent/assets/css/style.css") != null) {
+            assetsBase = ctx + "/WebContent";
+        }
+    } catch (Exception ignore) {
+        // Keep computed base.
+    }
+    }
+%>
 <%
     // Role guard: only admin/officer
     String _role = (String) session.getAttribute("role");
@@ -9,7 +23,7 @@
     String base = request.getRequestURI().contains("/WebContent/") ? (ctx + "/WebContent") : ctx;
     String dash = "officer".equals(_role) ? "/officerDashboard.jsp" : "/adminDashboard.jsp";
     if(_role == null || (!"admin".equals(_role) && !"officer".equals(_role))) {
-        response.sendRedirect(base + "/login.jsp");
+        safeRedirect(response, base + "/login.jsp");
         return;
     }
 
@@ -22,7 +36,7 @@
     String dbUser = ConfigLoader.getDbUser();
     String dbPassword = ConfigLoader.getDbPassword();
     if (dbUrl == null || dbUrl.isBlank() || dbUser == null || dbUser.isBlank() || dbPassword == null || dbPassword.isBlank()) {
-        response.sendRedirect(base + "/analytics.jsp?error=db");
+        safeRedirect(response, base + "/analytics.jsp?error=db");
         return;
     }
 
@@ -60,7 +74,7 @@
         ResultSet rs = pst.executeQuery();
 
         out.println("<!DOCTYPE html><html lang='en'><head><meta charset='UTF-8'><meta name='viewport' content='width=device-width, initial-scale=1'>");
-        out.println("<title>Filtered Complaints</title><link rel='stylesheet' href='../assets/css/style.css'><link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css' crossorigin='anonymous'><style>body.result-page{min-height:100vh;background:radial-gradient(circle at top left, rgba(79,70,229,.14), transparent 30%),radial-gradient(circle at bottom right, rgba(14,165,233,.1), transparent 32%),linear-gradient(180deg,#f8fafc 0%,#eef2ff 100%);} .result-card{border:1px solid rgba(148,163,184,.2);border-radius:28px;background:rgba(255,255,255,.9);box-shadow:0 24px 80px rgba(15,23,42,.08);}</style></head><body class='result-page'>");
+        out.println("<title>Filtered Complaints</title><link rel='stylesheet' href='" + assetsBase + "/assets/css/style.css'><link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css' crossorigin='anonymous'><style>body.result-page{min-height:100vh;background:radial-gradient(circle at top left, rgba(79,70,229,.14), transparent 30%),radial-gradient(circle at bottom right, rgba(14,165,233,.1), transparent 32%),linear-gradient(180deg,#f8fafc 0%,#eef2ff 100%);} .result-card{border:1px solid rgba(148,163,184,.2);border-radius:28px;background:rgba(255,255,255,.9);box-shadow:0 24px 80px rgba(15,23,42,.08);}</style></head><body class='result-page'>");
         out.println("<main class='container py-4 py-lg-5'><div class='result-card p-4 p-md-5'><div class='d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4'><div><div class='text-uppercase small fw-semibold text-primary'>Search results</div><h1 class='h2 fw-bold mb-2'>Filtered Complaints" + (includeArchive ? " (including archive)" : "") + "</h1><p class='text-secondary mb-0'>Matched complaints for the chosen filters.</p></div><a class='btn btn-outline-primary' href='" + base + dash + "'>Back to Dashboard</a></div>");
         if (date != null && !date.isEmpty()) out.println("<p><b>Date:</b> " + date + "</p>");
         if (status != null && !status.isEmpty()) out.println("<p><b>Status:</b> " + status + "</p>");
@@ -90,7 +104,7 @@
     catch(Exception e)
     {
         e.printStackTrace();
-        response.sendRedirect(base + "/analytics.jsp?error=invalidFilter");
+        safeRedirect(response, base + "/analytics.jsp?error=invalidFilter");
         return;
     } 
     finally 

@@ -12,7 +12,7 @@
     
     String role = (String) session.getAttribute("role");
     if (role == null || !"user".equals(role)) {
-        response.sendRedirect("userLogin.jsp?required=1");
+        response.sendRedirect(request.getContextPath() + (request.getRequestURI().contains("/WebContent/") ? "/WebContent" : "") + "/userLogin.jsp?required=1");
         return;
     }
 
@@ -20,6 +20,25 @@
     String userName = session.getAttribute("userName") != null ? String.valueOf(session.getAttribute("userName")) : "User";
     String userEmail = session.getAttribute("userEmail") != null ? String.valueOf(session.getAttribute("userEmail")) : "";
     String userMobile = session.getAttribute("userMobile") != null ? String.valueOf(session.getAttribute("userMobile")) : "";
+    String ctx = request.getContextPath();
+    String base = request.getRequestURI().contains("/WebContent/") ? (ctx + "/WebContent") : ctx;
+    String homeHref = base + "/index.jsp";
+    String registerComplaintHref = base + "/registerComplaint.jsp";
+    String trackComplaintHref = base + "/trackComplaint.jsp";
+    String logoutHref = base + "/actions/LogoutAction.jsp";
+    String styleHref = base + "/assets/css/style.css";
+    String scriptHref = base + "/assets/js/main.js";
+    String logoHref = base + "/assets/images/logo.svg";
+    try {
+        if (application.getResource("/index.jsp") != null) homeHref = ctx + "/index.jsp";
+        if (application.getResource("/registerComplaint.jsp") != null) registerComplaintHref = ctx + "/registerComplaint.jsp";
+        if (application.getResource("/trackComplaint.jsp") != null) trackComplaintHref = ctx + "/trackComplaint.jsp";
+        if (application.getResource("/actions/LogoutAction.jsp") != null) logoutHref = ctx + "/actions/LogoutAction.jsp";
+        if (application.getResource("/assets/js/main.js") != null) scriptHref = ctx + "/assets/js/main.js";
+        if (application.getResource("/assets/images/logo.svg") != null) logoHref = ctx + "/assets/images/logo.svg";
+    } catch (Exception ignore) {
+        // Use computed fallbacks.
+    }
 
     List<Map<String, Object>> complaintRows = new ArrayList<>();
     int totalCount = 0;
@@ -117,7 +136,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>User Dashboard</title>
-    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="<%= styleHref %>">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" crossorigin="anonymous">
     <style>
         body.dashboard-page {
@@ -201,8 +220,8 @@
     <div class="dashboard-shell">
         <nav class="navbar navbar-expand-lg bg-white bg-opacity-75 backdrop-blur-sm sticky-top border-bottom border-light-subtle">
             <div class="container py-2">
-                <a class="navbar-brand fw-bold d-flex align-items-center gap-2" href="index.jsp">
-                    <img src="assets/images/logo.svg" alt="Complaint Portal" style="width:40px;height:40px;border-radius:12px;object-fit:cover;">
+                <a class="navbar-brand fw-bold d-flex align-items-center gap-2" href="<%= homeHref %>">
+                    <img src="<%= logoHref %>" alt="Complaint Portal" style="width:40px;height:40px;border-radius:12px;object-fit:cover;">
                     <span>Complaint Portal</span>
                 </a>
                 <div class="dropdown ms-auto">
@@ -214,7 +233,7 @@
                         <li><h6 class="dropdown-header">Signed in as</h6></li>
                         <li><span class="dropdown-item-text small text-muted"><%= userEmail %></span></li>
                         <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="actions/LogoutAction.jsp" data-confirm-logout data-confirm-message="You are about to log out of your account." data-logout-url="actions/LogoutAction.jsp">Logout</a></li>
+                        <li><a class="dropdown-item" href="<%= logoutHref %>" data-confirm-logout data-confirm-message="You are about to log out of your account." data-logout-url="<%= logoutHref %>">Logout</a></li>
                     </ul>
                 </div>
             </div>
@@ -223,7 +242,7 @@
         <main class="container py-4 py-lg-5">
             <nav aria-label="breadcrumb" class="mb-4">
                 <ol class="breadcrumb small">
-                    <li class="breadcrumb-item"><a href="index.jsp">Home</a></li>
+                    <li class="breadcrumb-item"><a href="<%= homeHref %>">Home</a></li>
                     <li class="breadcrumb-item active" aria-current="page">User Dashboard</li>
                 </ol>
             </nav>
@@ -235,8 +254,8 @@
                         <p class="text-secondary mb-0">Track your complaint history and submit new issues with the portal.</p>
                     </div>
                     <div class="d-flex flex-wrap gap-2">
-                        <a href="registerComplaint.jsp" class="btn btn-primary">New Complaint</a>
-                        <a href="trackComplaint.jsp" class="btn btn-outline-primary">Track Complaint</a>
+                        <a href="<%= registerComplaintHref %>" class="btn btn-primary">New Complaint</a>
+                        <a href="<%= trackComplaintHref %>" class="btn btn-outline-primary">Track Complaint</a>
                     </div>
                 </div>
             </div>
@@ -294,7 +313,7 @@
                                             <div class="text-muted mb-2" style="font-size:2.5rem;">📋</div>
                                             <div class="fw-semibold text-secondary">No complaints yet</div>
                                             <div class="small text-muted mb-3">Start by filing your first complaint</div>
-                                            <a href="registerComplaint.jsp" class="btn btn-primary btn-sm">Submit Complaint</a>
+                                            <a href="<%= registerComplaintHref %>" class="btn btn-primary btn-sm">Submit Complaint</a>
                                         </td>
                                     </tr>
                                 </c:when>
@@ -332,6 +351,6 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
-    <script src="assets/js/main.js"></script>
+    <script src="<%= scriptHref %>"></script>
 </body>
 </html>

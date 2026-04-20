@@ -1,11 +1,17 @@
 <%@ page import="java.sql.*" %>
 <%@ page import="util.ConfigLoader" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%!
+    private static void safeRedirect(jakarta.servlet.http.HttpServletResponse response, String location) throws java.io.IOException {
+        response.setStatus(302);
+        response.setHeader("Location", location);
+    }
+%>
 <%
     // Role guard: only admin/officer
     String role = (String) session.getAttribute("role");
     if(role == null || (!"admin".equals(role) && !"officer".equals(role))) {
-        response.sendRedirect("../login.jsp");
+        safeRedirect(response, "../login.jsp");
         return;
     }
 
@@ -34,7 +40,7 @@
             end   = java.time.LocalDate.of(y,12,31).toString() + " 23:59:59";
         }
     } catch (Exception ex) {
-        response.sendRedirect("../analytics.jsp?error=invalidFilter");
+        safeRedirect(response, "../analytics.jsp?error=invalidFilter");
         return;
     }
 
@@ -42,7 +48,7 @@
     String dbUser = ConfigLoader.getDbUser();
     String dbPassword = ConfigLoader.getDbPassword();
     if (dbUrl == null || dbUrl.isBlank() || dbUser == null || dbUser.isBlank() || dbPassword == null || dbPassword.isBlank()) {
-        response.sendRedirect("../analytics.jsp?error=db");
+        safeRedirect(response, "../analytics.jsp?error=db");
         return;
     }
 
@@ -102,7 +108,7 @@
     } catch(Exception e) {
         con.rollback();
         e.printStackTrace();
-        response.sendRedirect("../analytics.jsp?error=invalidFilter");
+        safeRedirect(response, "../analytics.jsp?error=invalidFilter");
         return;
     } finally {
         con.setAutoCommit(true);

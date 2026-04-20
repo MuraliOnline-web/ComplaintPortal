@@ -2,6 +2,22 @@
 <%
     String ctx = request.getContextPath();
     String base = request.getRequestURI().contains("/WebContent/") ? (ctx + "/WebContent") : ctx;
+    String homeHref = base + "/index.jsp";
+    String loginHref = base + "/userLogin.jsp";
+    String styleHref = base + "/assets/css/style.css";
+    String scriptHref = base + "/assets/js/main.js";
+    String logoHref = base + "/assets/images/logo.svg";
+    String visualHref = base + "/assets/images/watertaps.jpg";
+    try {
+        if (application.getResource("/index.jsp") != null) homeHref = ctx + "/index.jsp";
+        if (application.getResource("/userLogin.jsp") != null) loginHref = ctx + "/userLogin.jsp";
+        if (application.getResource("/assets/css/style.css") != null) styleHref = ctx + "/assets/css/style.css";
+        if (application.getResource("/assets/js/main.js") != null) scriptHref = ctx + "/assets/js/main.js";
+        if (application.getResource("/assets/images/logo.svg") != null) logoHref = ctx + "/assets/images/logo.svg";
+        if (application.getResource("/assets/images/watertaps.jpg") != null) visualHref = ctx + "/assets/images/watertaps.jpg";
+    } catch (Exception ignore) {
+        // Use computed fallbacks.
+    }
 %>
 <!DOCTYPE html>
 <html lang="en">
@@ -9,7 +25,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Forgot Password</title>
-    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="<%= styleHref %>">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" crossorigin="anonymous">
     <style>
         body.auth-page {
@@ -31,7 +47,7 @@
         .auth-visual {
             background:
                 linear-gradient(180deg, rgba(15, 23, 42, 0.32), rgba(15, 23, 42, 0.68)),
-                url('assets/images/watertaps.jpg') center/cover;
+                url('<%= visualHref %>') center/cover;
             color: #fff;
             min-height: 100%;
             padding: 3rem;
@@ -63,8 +79,8 @@
         <div class="container py-3">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb small">
-                    <li class="breadcrumb-item"><a href="index.jsp">Home</a></li>
-                    <li class="breadcrumb-item"><a href="userLogin.jsp">Login</a></li>
+                    <li class="breadcrumb-item"><a href="<%= homeHref %>">Home</a></li>
+                    <li class="breadcrumb-item"><a href="<%= loginHref %>">Login</a></li>
                     <li class="breadcrumb-item active" aria-current="page">Forgot Password</li>
                 </ol>
             </nav>
@@ -75,7 +91,7 @@
                     <div>
                         <div class="d-flex align-items-center gap-2 mb-4">
                             <div class="rounded-4 bg-white d-inline-flex align-items-center justify-content-center" style="width:48px;height:48px;">
-                                <img src="assets/images/logo.svg" alt="Complaint Portal" class="img-fluid rounded-4">
+                                <img src="<%= logoHref %>" alt="Complaint Portal" class="img-fluid rounded-4">
                             </div>
                             <div>
                                 <div class="fw-bold fs-5">Complaint Portal</div>
@@ -124,7 +140,7 @@
                             </div>
                             <div class="col-12 d-flex flex-wrap gap-2 justify-content-between align-items-center mt-2">
                                 <button type="submit" class="btn btn-primary btn-lg">Send OTP</button>
-                                <a href="<%= base %>/userLogin.jsp" class="btn btn-outline-secondary">Back to Login</a>
+                                <a href="<%= loginHref %>" class="btn btn-outline-secondary">Back to Login</a>
                             </div>
                         </form>
                     </div>
@@ -133,6 +149,6 @@
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
-    <script src="assets/js/main.js"></script>
+    <script src="<%= scriptHref %>"></script>
 </body>
 </html>

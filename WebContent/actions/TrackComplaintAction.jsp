@@ -2,6 +2,12 @@
 <%@ page import="java.sql.*" %>
 <%@ page import="util.ConfigLoader" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%!
+    private static void safeRedirect(jakarta.servlet.http.HttpServletResponse response, String location) throws java.io.IOException {
+        response.setStatus(302);
+        response.setHeader("Location", location);
+    }
+%>
 <%
     String email = request.getParameter("email");
     String code = request.getParameter("code");
@@ -10,7 +16,7 @@
     try { if (idStr != null && !idStr.isBlank()) complaintId = Integer.parseInt(idStr.trim()); } catch(Exception ignore) {}
 
     if ((code == null || code.isBlank()) && complaintId == null) {
-        response.sendRedirect("../trackComplaint.jsp?error=1");
+        safeRedirect(response, "../trackComplaint.jsp?error=1");
         return;
     }
 
@@ -18,7 +24,7 @@
     String dbUser = ConfigLoader.getDbUser();
     String dbPassword = ConfigLoader.getDbPassword();
     if (dbUrl == null || dbUrl.isBlank() || dbUser == null || dbUser.isBlank() || dbPassword == null || dbPassword.isBlank()) {
-        response.sendRedirect("../trackComplaint.jsp?error=db");
+        safeRedirect(response, "../trackComplaint.jsp?error=db");
         return;
     }
 
@@ -59,14 +65,14 @@
         }
         else
         {
-            response.sendRedirect("../trackComplaint.jsp?error=notfound");
+            safeRedirect(response, "../trackComplaint.jsp?error=notfound");
             return;
         }
     } 
     catch(Exception e)
     {
         e.printStackTrace();
-        response.sendRedirect("../trackComplaint.jsp?error=1");
+        safeRedirect(response, "../trackComplaint.jsp?error=1");
         return;
     } 
     finally 

@@ -17,6 +17,22 @@
     response.setDateHeader("Expires", 0);
     String ctx = request.getContextPath();
     String base = request.getRequestURI().contains("/WebContent/") ? (ctx + "/WebContent") : ctx;
+    String homeHref = base + "/index.jsp";
+    String dashboardHref = base + "/adminDashboard.jsp";
+    String logoutHref = base + "/actions/LogoutAction.jsp";
+    String styleHref = base + "/assets/css/style.css";
+    String scriptHref = base + "/assets/js/main.js";
+    String logoHref = base + "/assets/images/logo.svg";
+    try {
+        if (application.getResource("/index.jsp") != null) homeHref = ctx + "/index.jsp";
+        if (application.getResource("/adminDashboard.jsp") != null) dashboardHref = ctx + "/adminDashboard.jsp";
+        if (application.getResource("/actions/LogoutAction.jsp") != null) logoutHref = ctx + "/actions/LogoutAction.jsp";
+        if (application.getResource("/assets/css/style.css") != null) styleHref = ctx + "/assets/css/style.css";
+        if (application.getResource("/assets/js/main.js") != null) scriptHref = ctx + "/assets/js/main.js";
+        if (application.getResource("/assets/images/logo.svg") != null) logoHref = ctx + "/assets/images/logo.svg";
+    } catch (Exception ignore) {
+        // Use computed fallbacks.
+    }
     String role = (String) session.getAttribute("role");
     if (role == null || !"admin".equals(role)) { response.sendRedirect(base + "/login.jsp?denied=1"); return; }
 
@@ -72,7 +88,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Config Health Check</title>
-    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="<%= styleHref %>">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" crossorigin="anonymous">
     <style>
         body.dashboard-page { min-height: 100vh; background: radial-gradient(circle at top left, rgba(79, 70, 229, 0.14), transparent 30%), radial-gradient(circle at bottom right, rgba(14, 165, 233, 0.1), transparent 32%), linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%); }
@@ -82,8 +98,8 @@
 <body class="dashboard-page">
     <nav class="navbar navbar-expand-lg bg-white bg-opacity-75 backdrop-blur-sm sticky-top border-bottom border-light-subtle">
         <div class="container py-2">
-            <a class="navbar-brand fw-bold d-flex align-items-center gap-2" href="index.jsp"><img src="assets/images/logo.svg" alt="Complaint Portal" style="width:40px;height:40px;border-radius:12px;object-fit:cover;"><span>Complaint Portal</span></a>
-            <div class="ms-auto d-flex gap-2"><a href="adminDashboard.jsp" class="btn btn-outline-primary">Admin Dashboard</a><a href="actions/LogoutAction.jsp" class="btn btn-outline-danger" data-confirm-logout data-confirm-message="You are about to log out of the admin tools page." data-logout-url="actions/LogoutAction.jsp">Logout</a></div>
+            <a class="navbar-brand fw-bold d-flex align-items-center gap-2" href="<%= homeHref %>"><img src="<%= logoHref %>" alt="Complaint Portal" style="width:40px;height:40px;border-radius:12px;object-fit:cover;"><span>Complaint Portal</span></a>
+            <div class="ms-auto d-flex gap-2"><a href="<%= dashboardHref %>" class="btn btn-outline-primary">Admin Dashboard</a><a href="<%= logoutHref %>" class="btn btn-outline-danger" data-confirm-logout data-confirm-message="You are about to log out of the admin tools page." data-logout-url="<%= logoutHref %>">Logout</a></div>
         </div>
     </nav>
 
@@ -99,10 +115,10 @@
             <div class="col-lg-6"><div class="dashboard-card p-4 h-100"><h2 class="h4 fw-bold mb-3">SMTP Config</h2><p><b>Configured:</b> <%= smtpConfigured ? "Yes" : "No" %></p><p><b>SMTP_HOST:</b> <%= mask(smtpHost) %></p><p><b>SMTP_PORT:</b> <%= mask(smtpPort) %></p><p><b>SMTP_USER:</b> <%= mask(smtpUser) %></p><p><b>SMTP_PASSWORD:</b> <%= mask(smtpPassword) %></p><p><b>SMTP Test:</b> <%= smtpTestStatus %></p><% if (!smtpTestDetail.isBlank()) { %><p><b>SMTP Detail:</b> <%= smtpTestDetail %></p><% } %><button type="button" class="btn btn-primary" onclick="window.location.href='<%= base %>/adminConfigHealth.jsp?smtptest=1';">Run SMTP Connectivity Test</button></div></div>
         </div>
 
-        <div class="d-flex flex-wrap gap-2 mt-4"><button type="button" class="btn btn-secondary" onclick="window.location.href='<%= base %>/adminDashboard.jsp';">Back to Admin Dashboard</button><button type="button" class="btn btn-primary" onclick="window.location.href='<%= base %>/index.jsp';">Back to Home</button></div>
+        <div class="d-flex flex-wrap gap-2 mt-4"><button type="button" class="btn btn-secondary" onclick="window.location.href='<%= dashboardHref %>';">Back to Admin Dashboard</button><button type="button" class="btn btn-primary" onclick="window.location.href='<%= homeHref %>';">Back to Home</button></div>
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
-    <script src="assets/js/main.js"></script>
+    <script src="<%= scriptHref %>"></script>
 </body>
 </html>

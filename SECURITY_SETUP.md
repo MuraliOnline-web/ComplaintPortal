@@ -87,6 +87,7 @@ export SMTP_PASSWORD="your_new_app_password"
 # Make permanent by adding to ~/.bashrc or ~/.zshrc
 ```
 
+
 ### Option 2: Local config.properties File (Development Only)
 
 1. **Create `config.properties`** in your resources folder:

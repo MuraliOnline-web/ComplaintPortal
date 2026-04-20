@@ -150,4 +150,4 @@ DROP INDEX email;
 ALTER TABLE users
 ADD CONSTRAINT uq_users_email UNIQUE (email);
 
-SHOW INDEX FROM users
+SHOW INDEX FROM users;

@@ -2,6 +2,22 @@
 <%
     String ctx = request.getContextPath();
     String base = request.getRequestURI().contains("/WebContent/") ? (ctx + "/WebContent") : ctx;
+    String homeHref = base + "/index.jsp";
+    String userLoginHref = base + "/userLogin.jsp";
+    String forgotPasswordHref = base + "/forgotPassword.jsp";
+    String styleHref = base + "/assets/css/style.css";
+    String scriptHref = base + "/assets/js/main.js";
+    String logoHref = base + "/assets/images/logo.svg";
+    String visualHref = base + "/assets/images/watertaps.jpg";
+    try {
+        if (application.getResource("/index.jsp") != null) homeHref = ctx + "/index.jsp";
+        if (application.getResource("/assets/css/style.css") != null) styleHref = ctx + "/assets/css/style.css";
+        if (application.getResource("/assets/js/main.js") != null) scriptHref = ctx + "/assets/js/main.js";
+        if (application.getResource("/assets/images/logo.svg") != null) logoHref = ctx + "/assets/images/logo.svg";
+        if (application.getResource("/assets/images/watertaps.jpg") != null) visualHref = ctx + "/assets/images/watertaps.jpg";
+    } catch (Exception ignore) {
+        // Use computed fallbacks.
+    }
 %>
 <!DOCTYPE html>
 <html lang="en">
@@ -9,7 +25,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Admin / Officer Login</title>
-    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="<%= styleHref %>">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" crossorigin="anonymous">
     <style>
         body.auth-page {
@@ -31,7 +47,7 @@
         .auth-visual {
             background:
                 linear-gradient(180deg, rgba(15, 23, 42, 0.32), rgba(15, 23, 42, 0.7)),
-                url('assets/images/watertaps.jpg') center/cover;
+                url('<%= visualHref %>') center/cover;
             color: #fff;
             min-height: 100%;
             padding: 2rem;
@@ -142,7 +158,7 @@
         <div class="container py-3">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb small">
-                    <li class="breadcrumb-item"><a href="index.jsp">Home</a></li>
+                    <li class="breadcrumb-item"><a href="<%= homeHref %>">Home</a></li>
                     <li class="breadcrumb-item active" aria-current="page">Login</li>
                 </ol>
             </nav>
@@ -153,7 +169,7 @@
                     <div>
                         <div class="d-flex align-items-center gap-2 mb-4">
                             <div class="rounded-4 bg-white d-inline-flex align-items-center justify-content-center" style="width:48px;height:48px;">
-                                <img src="assets/images/logo.svg" alt="Complaint Portal" class="img-fluid rounded-4">
+                                <img src="<%= logoHref %>" alt="Complaint Portal" class="img-fluid rounded-4">
                             </div>
                             <div>
                                 <div class="fw-bold fs-5">Complaint Portal</div>
@@ -181,8 +197,8 @@
                         </div>
 
                         <div class="role-tabs mb-4">
-                            <a class="role-tab text-center text-decoration-none" href="userLogin.jsp">User Login</a>
-                            <a class="role-tab active text-center text-decoration-none" href="login.jsp">Admin / Officer Login</a>
+                            <a class="role-tab text-center text-decoration-none" href="<%= userLoginHref %>">User Login</a>
+                            <a class="role-tab active text-center text-decoration-none" href="<%= base %>/login.jsp">Admin / Officer Login</a>
                         </div>
 
                         <% if ("1".equals(request.getParameter("error"))) { %>
@@ -225,8 +241,8 @@
                             <div class="col-12 d-flex flex-wrap gap-2 justify-content-between align-items-center mt-2">
                                 <button type="submit" class="btn btn-primary btn-lg">Login</button>
                                 <div class="d-flex gap-2">
-                                    <a href="index.jsp" class="btn btn-outline-secondary">Home</a>
-                                    <a href="forgotPassword.jsp" class="btn btn-outline-primary">Problems logging in?</a>
+                                    <a href="<%= homeHref %>" class="btn btn-outline-secondary">Home</a>
+                                    <a href="<%= forgotPasswordHref %>" class="btn btn-outline-primary">Problems logging in?</a>
                                 </div>
                             </div>
                         </form>
@@ -237,6 +253,6 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
-    <script src="assets/js/main.js"></script>
+    <script src="<%= scriptHref %>"></script>
 </body>
 </html>

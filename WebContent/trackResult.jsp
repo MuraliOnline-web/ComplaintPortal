@@ -3,6 +3,30 @@
 <%
     String ctx = request.getContextPath();
     String base = request.getRequestURI().contains("/WebContent/") ? (ctx + "/WebContent") : ctx;
+    String homeHref = base + "/index.jsp";
+    String trackComplaintHref = base + "/trackComplaint.jsp";
+    String styleHref = base + "/assets/css/style.css";
+    String scriptHref = base + "/assets/js/main.js";
+    String roadImageHref = base + "/assets/images/road.jpg";
+    try {
+        if (application.getResource("/index.jsp") != null) {
+            homeHref = ctx + "/index.jsp";
+        }
+        if (application.getResource("/trackComplaint.jsp") != null) {
+            trackComplaintHref = ctx + "/trackComplaint.jsp";
+        }
+        if (application.getResource("/assets/css/style.css") != null) {
+            styleHref = ctx + "/assets/css/style.css";
+        }
+        if (application.getResource("/assets/js/main.js") != null) {
+            scriptHref = ctx + "/assets/js/main.js";
+        }
+        if (application.getResource("/assets/images/road.jpg") != null) {
+            roadImageHref = ctx + "/assets/images/road.jpg";
+        }
+    } catch (Exception ignore) {
+        // Fall back to the computed base path.
+    }
 %>
 <!DOCTYPE html>
 <html lang="en">
@@ -10,7 +34,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Complaint Tracking Result</title>
-    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="<%= styleHref %>">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" crossorigin="anonymous">
     <style>
         body.result-page {
@@ -56,8 +80,8 @@
     <main class="container py-4 py-lg-5">
         <nav aria-label="breadcrumb" class="mb-4">
             <ol class="breadcrumb small">
-                <li class="breadcrumb-item"><a href="index.jsp">Home</a></li>
-                <li class="breadcrumb-item"><a href="trackComplaint.jsp">Track Complaint</a></li>
+                <li class="breadcrumb-item"><a href="<%= homeHref %>">Home</a></li>
+                <li class="breadcrumb-item"><a href="<%= trackComplaintHref %>">Track Complaint</a></li>
                 <li class="breadcrumb-item active" aria-current="page">Result</li>
             </ol>
         </nav>
@@ -119,13 +143,13 @@
             <% } %>
 
             <div class="d-flex flex-wrap gap-2 mt-4">
-                <a href="trackComplaint.jsp" class="btn btn-primary">Track Another Complaint</a>
-                <a href="index.jsp" class="btn btn-outline-secondary">Back to Home</a>
+                <a href="<%= trackComplaintHref %>" class="btn btn-primary">Track Another Complaint</a>
+                <a href="<%= homeHref %>" class="btn btn-outline-secondary">Back to Home</a>
             </div>
         </div>
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
-    <script src="assets/js/main.js"></script>
+    <script src="<%= scriptHref %>"></script>
 </body>
 </html>

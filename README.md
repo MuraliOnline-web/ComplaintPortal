@@ -2,6 +2,8 @@
 
 This project is a Java web application for complaint registration, tracking, and complaint handling by admins and field officers. It uses JSP pages for the UI, JSP action handlers for server-side logic, MySQL for persistence, and SMTP for OTP and notification emails.
 
+The current runtime workflow is root-deployed under Tomcat, with compatibility shims at the project root forwarding to the editable JSP sources in WebContent. That means users open root URLs such as /index.jsp, while the maintained application pages remain under WebContent/.
+
 ## Project Overview
 
 - Citizens can register, log in with email OTP, file complaints, and track complaint status.
@@ -13,7 +15,44 @@ This project is a Java web application for complaint registration, tracking, and
 ```text
 .
 ├── config.properties.template
+├── INTEGRATION_VERIFICATION_REPORT.md
+├── README.md
 ├── SECURITY_SETUP.md
+├── SMOKE_TEST_CHECKLIST.md
+├── STABLE_BUILD_SUMMARY.md
+├── actions/
+│   ├── ArchiveSolved.jsp
+│   ├── FieldOfficerUpdate.jsp
+│   ├── ForgotPasswordAction.jsp
+│   ├── GenerateReports.jsp
+│   ├── GetComplaintByCode.jsp
+│   ├── LoginAction.jsp
+│   ├── LogoutAction.jsp
+│   ├── RegisterComplaintAction.jsp
+│   ├── ResetPasswordAction.jsp
+│   ├── SearchComplaints.jsp
+│   ├── SendPendingReminders.jsp
+│   ├── TrackComplaintAction.jsp
+│   ├── UpdateStatus.jsp
+│   ├── UpdateStatusSafe.jsp
+│   ├── UserLoginAction.jsp
+│   ├── UserRegisterAction.jsp
+│   └── VerifyOtpAction.jsp
+├── index.jsp
+├── login.jsp
+├── userLogin.jsp
+├── userRegister.jsp
+├── verifyOtp.jsp
+├── registerComplaint.jsp
+├── complaintSuccess.jsp
+├── trackComplaint.jsp
+├── trackResult.jsp
+├── userDashboard.jsp
+├── adminDashboard.jsp
+├── officerDashboard.jsp
+├── analytics.jsp
+├── forgotPassword.jsp
+├── resetPassword.jsp
 ├── db/
 │   ├── archive.sql
 │   ├── migration_auth_zero_cost.sql
@@ -74,11 +113,23 @@ This project is a Java web application for complaint registration, tracking, and
         └── lib/
 ```
 
+The root-level JSP files and actions are compatibility shims for Tomcat root deployment. The editable application sources remain under WebContent/, and the root copies forward requests so the app works after redeploy and refresh.
+
+## Root Documentation
+
+The repository keeps its markdown docs at the top level so they are easy to find from the workspace root.
+
+- [README.md](README.md) - main project guide
+- [SECURITY_SETUP.md](SECURITY_SETUP.md) - credential cleanup and secure configuration notes
+- [SMOKE_TEST_CHECKLIST.md](SMOKE_TEST_CHECKLIST.md) - redeploy smoke test steps
+- [STABLE_BUILD_SUMMARY.md](STABLE_BUILD_SUMMARY.md) - stable build and runtime summary
+- [INTEGRATION_VERIFICATION_REPORT.md](INTEGRATION_VERIFICATION_REPORT.md) - backend and JSP verification report
+
 ## Application Workflow
 
-1. `index.jsp` is the public landing page and route hub.
-2. New users register through `userRegister.jsp` and `actions/UserRegisterAction.jsp`.
-3. User login uses email plus password in `userLogin.jsp`, then `actions/UserLoginAction.jsp` sends an OTP.
+1. Open the app at the root URL, which lands on the root `index.jsp` shim and then routes into the maintained page under `WebContent/index.jsp`.
+2. New users register through the root `userRegister.jsp` entry page and `actions/UserRegisterAction.jsp`.
+3. User login uses the root `userLogin.jsp`, then `actions/UserLoginAction.jsp` sends an OTP.
 4. OTP verification happens in `verifyOtp.jsp` and `actions/VerifyOtpAction.jsp`.
 5. After verification, users reach `userDashboard.jsp` where they can create and track complaints.
 6. Complaint submission goes through `registerComplaint.jsp` and `actions/RegisterComplaintAction.jsp`.
@@ -142,7 +193,7 @@ This project is a Java web application for complaint registration, tracking, and
 ## Core Backend Components
 
 - `src/util/ConfigLoader.java` loads configuration from environment variables first and falls back to `config.properties`.
-- `WebContent/WEB-INF/web.xml` sets `index.jsp` as the welcome page and configures the session timeout.
+- `WEB-INF/web.xml` sets `index.jsp` as the welcome page and configures the session timeout.
 - `db/schema.sql` defines the MySQL schema used by the application.
 
 ## Database Tables
@@ -172,24 +223,25 @@ Common keys:
 ## Runtime Notes
 
 - The app is JSP-based and intended for deployment on a Jakarta-compatible servlet container such as Tomcat.
-- `WEB-INF/lib/` should contain required libraries such as the MySQL connector and mail dependencies.
+- `WEB-INF/lib/` at the deployment root should contain required libraries such as the MySQL connector, mail, and JSTL dependencies.
 - Uploaded complaint and report photos are written under `WebContent/assets/images/uploads/` at runtime.
+- The root shims exist so the app keeps working when the container serves the deployment root directly.
 
 ## Security Notes
 
 - Do not commit real database or SMTP credentials.
-- `SECURITY_SETUP.md` documents the cleanup steps for exposed secrets.
+- [SECURITY_SETUP.md](SECURITY_SETUP.md) documents the cleanup steps for exposed secrets.
 - Admin and officer accounts should be created manually with strong passwords.
 
 ## Entry Pages
 
-- Public home: `WebContent/index.jsp`
-- User login: `WebContent/userLogin.jsp`
-- User registration: `WebContent/userRegister.jsp`
-- Admin/officer login: `WebContent/login.jsp`
-- User dashboard: `WebContent/userDashboard.jsp`
-- Admin dashboard: `WebContent/adminDashboard.jsp`
-- Officer dashboard: `WebContent/officerDashboard.jsp`
+- Public home: `index.jsp`
+- User login: `userLogin.jsp`
+- User registration: `userRegister.jsp`
+- Admin/officer login: `login.jsp`
+- User dashboard: `userDashboard.jsp`
+- Admin dashboard: `adminDashboard.jsp`
+- Officer dashboard: `officerDashboard.jsp`
 
 ## Typical Use Cases
 
@@ -206,9 +258,10 @@ Use `db/schema.sql` to create the database and tables, then add privileged users
 1. Install a Java 21+ JDK and a Jakarta-compatible servlet container such as Tomcat 10.x.
 2. Create the database and tables by running `db/schema.sql` in MySQL.
 3. Copy `config.properties.template` to a local `config.properties` file and set the database and SMTP values.
-4. Place the MySQL JDBC driver and Jakarta Mail libraries in `WebContent/WEB-INF/lib/` if they are not already bundled.
-5. Deploy the project to Tomcat as a web application.
-6. Start the server and open `index.jsp` from the deployed app.
+4. Place the MySQL JDBC driver, Jakarta Mail libraries, and JSTL libraries in `WEB-INF/lib/` at the deployed app root if they are not already bundled.
+5. Deploy the project so the root shims and `WEB-INF/` are in the webapp root, with WebContent kept as the source layout.
+6. Start the server and open `http://localhost:8081/advjavaproject/` (with trailing slash) or `http://localhost:8081/advjavaproject/index.jsp`.
+7. Avoid opening `http://localhost:8081/advjavaproject` without the trailing slash on environments where Tomcat context-root redirect behavior is customized, because it may return 500 even when the app itself is healthy.
 
 ### Suggested SQL Import Order
 
@@ -222,6 +275,7 @@ Use `db/schema.sql` to create the database and tables, then add privileged users
 - `db.user` and `db.password` match the database account.
 - `smtp.host`, `smtp.port`, `smtp.user`, and `smtp.password` are set for OTP and notification mail.
 - Uploaded files can be written to `WebContent/assets/images/uploads/` by the server process.
+- The deployed root contains `WEB-INF/` and the root JSP compatibility shims.
 
 ## Notes
 

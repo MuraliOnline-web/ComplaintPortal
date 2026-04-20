@@ -2,6 +2,22 @@
 <%
     String ctx = request.getContextPath();
     String base = request.getRequestURI().contains("/WebContent/") ? (ctx + "/WebContent") : ctx;
+    String homeHref = base + "/index.jsp";
+    String loginHref = base + "/userLogin.jsp";
+    String styleHref = base + "/assets/css/style.css";
+    String scriptHref = base + "/assets/js/main.js";
+    String logoHref = base + "/assets/images/logo.svg";
+    String visualHref = base + "/assets/images/Sanitation.jpg";
+    try {
+        if (application.getResource("/index.jsp") != null) homeHref = ctx + "/index.jsp";
+        if (application.getResource("/userLogin.jsp") != null) loginHref = ctx + "/userLogin.jsp";
+        if (application.getResource("/assets/css/style.css") != null) styleHref = ctx + "/assets/css/style.css";
+        if (application.getResource("/assets/js/main.js") != null) scriptHref = ctx + "/assets/js/main.js";
+        if (application.getResource("/assets/images/logo.svg") != null) logoHref = ctx + "/assets/images/logo.svg";
+        if (application.getResource("/assets/images/Sanitation.jpg") != null) visualHref = ctx + "/assets/images/Sanitation.jpg";
+    } catch (Exception ignore) {
+        // Use computed fallbacks.
+    }
     String waitValue = request.getParameter("wait");
     String expValue = request.getParameter("exp");
     int waitSeconds = 0;
@@ -23,7 +39,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Reset Password</title>
-    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="<%= styleHref %>">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" crossorigin="anonymous">
     </style>
 </head>
@@ -48,7 +64,7 @@
         .auth-visual {
             background:
                 linear-gradient(180deg, rgba(15, 23, 42, 0.32), rgba(15, 23, 42, 0.68)),
-                url('assets/images/Sanitation.jpg') center/cover;
+                url('<%= visualHref %>') center/cover;
             color: #fff;
             min-height: 100%;
             padding: 3rem;
@@ -93,7 +109,7 @@
                     <div>
                         <div class="d-flex align-items-center gap-2 mb-4">
                             <div class="rounded-4 bg-white d-inline-flex align-items-center justify-content-center" style="width:48px;height:48px;">
-                                <img src="assets/images/logo.svg" alt="Complaint Portal" class="img-fluid rounded-4">
+                                <img src="<%= logoHref %>" alt="Complaint Portal" class="img-fluid rounded-4">
                             </div>
                             <div>
                                 <div class="fw-bold fs-5">Complaint Portal</div>
@@ -244,6 +260,6 @@
         })();
     </script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
-    <script src="assets/js/main.js"></script>
+    <script src="<%= scriptHref %>"></script>
 </body>
 </html>

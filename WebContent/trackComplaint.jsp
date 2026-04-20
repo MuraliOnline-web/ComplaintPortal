@@ -2,6 +2,24 @@
 <%
     String ctx = request.getContextPath();
     String base = request.getRequestURI().contains("/WebContent/") ? (ctx + "/WebContent") : ctx;
+    String homeHref = base + "/index.jsp";
+    String dashboardHref = base + "/userDashboard.jsp";
+    String logoutHref = base + "/actions/LogoutAction.jsp";
+    String styleHref = base + "/assets/css/style.css";
+    String scriptHref = base + "/assets/js/main.js";
+    String logoHref = base + "/assets/images/logo.svg";
+    String roadImageHref = base + "/assets/images/road.jpg";
+    try {
+        if (application.getResource("/index.jsp") != null) homeHref = ctx + "/index.jsp";
+        if (application.getResource("/userDashboard.jsp") != null) dashboardHref = ctx + "/userDashboard.jsp";
+        if (application.getResource("/actions/LogoutAction.jsp") != null) logoutHref = ctx + "/actions/LogoutAction.jsp";
+        if (application.getResource("/assets/css/style.css") != null) styleHref = ctx + "/assets/css/style.css";
+        if (application.getResource("/assets/js/main.js") != null) scriptHref = ctx + "/assets/js/main.js";
+        if (application.getResource("/assets/images/logo.svg") != null) logoHref = ctx + "/assets/images/logo.svg";
+        if (application.getResource("/assets/images/road.jpg") != null) roadImageHref = ctx + "/assets/images/road.jpg";
+    } catch (Exception ignore) {
+        // Use computed fallbacks.
+    }
 %>
 <!DOCTYPE html>
 <html lang="en">
@@ -9,7 +27,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Track Complaint</title>
-    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="<%= styleHref %>">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" crossorigin="anonymous">
     <style>
         body.form-page {
@@ -31,7 +49,7 @@
         .hero-side {
             background:
                 linear-gradient(180deg, rgba(15, 23, 42, 0.32), rgba(15, 23, 42, 0.68)),
-                url('assets/images/road.jpg') center/cover;
+                url('<%= roadImageHref %>') center/cover;
             color: #fff;
             min-height: 100%;
             padding: 2.5rem;
@@ -45,13 +63,13 @@
     <%@ include file="includes/ui-enhancements.jspf" %>
     <nav class="navbar navbar-expand-lg bg-white bg-opacity-75 backdrop-blur-sm sticky-top border-bottom border-light-subtle">
         <div class="container py-2">
-            <a class="navbar-brand fw-bold d-flex align-items-center gap-2" href="index.jsp">
-                <img src="assets/images/logo.svg" alt="Complaint Portal" style="width:40px;height:40px;border-radius:12px;object-fit:cover;">
+            <a class="navbar-brand fw-bold d-flex align-items-center gap-2" href="<%= homeHref %>">
+                <img src="<%= logoHref %>" alt="Complaint Portal" style="width:40px;height:40px;border-radius:12px;object-fit:cover;">
                 <span>Complaint Portal</span>
             </a>
             <div class="ms-auto d-flex gap-2">
-                <a href="userDashboard.jsp" class="btn btn-outline-primary">Dashboard</a>
-                <a href="actions/LogoutAction.jsp" class="btn btn-outline-danger" data-confirm-logout data-confirm-message="You are about to log out of your account." data-logout-url="actions/LogoutAction.jsp">Logout</a>
+                <a href="<%= dashboardHref %>" class="btn btn-outline-primary">Dashboard</a>
+                <a href="<%= logoutHref %>" class="btn btn-outline-danger" data-confirm-logout data-confirm-message="You are about to log out of your account." data-logout-url="<%= logoutHref %>">Logout</a>
             </div>
         </div>
     </nav>
@@ -59,8 +77,8 @@
     <main class="container py-4 py-lg-5">
         <nav aria-label="breadcrumb" class="mb-4">
             <ol class="breadcrumb small">
-                <li class="breadcrumb-item"><a href="index.jsp">Home</a></li>
-                <li class="breadcrumb-item"><a href="userDashboard.jsp">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="<%= homeHref %>">Home</a></li>
+                <li class="breadcrumb-item"><a href="<%= dashboardHref %>">Dashboard</a></li>
                 <li class="breadcrumb-item active" aria-current="page">Track Complaint</li>
             </ol>
         </nav>
@@ -82,7 +100,7 @@
                                 <h2 class="h3 fw-bold mb-1">Track Your Complaint</h2>
                                 <p class="text-secondary mb-0">Search by complaint code or complaint ID together with your email address.</p>
                             </div>
-                            <a href="userDashboard.jsp" class="btn btn-outline-secondary">Back to Dashboard</a>
+                            <a href="<%= dashboardHref %>" class="btn btn-outline-secondary">Back to Dashboard</a>
                         </div>
 
                         <% if ("1".equals(request.getParameter("error"))) { %>
@@ -111,7 +129,7 @@
                             </div>
                             <div class="col-12 d-flex flex-wrap gap-2 justify-content-between align-items-center mt-2">
                                 <button type="submit" class="btn btn-primary btn-lg">Track Complaint</button>
-                                <a href="index.jsp" class="btn btn-outline-secondary">Home</a>
+                                <a href="<%= homeHref %>" class="btn btn-outline-secondary">Home</a>
                             </div>
                         </form>
                     </div>
@@ -121,6 +139,6 @@
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
-    <script src="assets/js/main.js"></script>
+    <script src="<%= scriptHref %>"></script>
 </body>
 </html>

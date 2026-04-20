@@ -1,8 +1,28 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%
     String role = (String) session.getAttribute("role");
+    String ctx = request.getContextPath();
+    String base = request.getRequestURI().contains("/WebContent/") ? (ctx + "/WebContent") : ctx;
+    String homeHref = base + "/index.jsp";
+    String dashboardHref = base + "/userDashboard.jsp";
+    String logoutHref = base + "/actions/LogoutAction.jsp";
+    String styleHref = base + "/assets/css/style.css";
+    String scriptHref = base + "/assets/js/main.js";
+    String logoHref = base + "/assets/images/logo.svg";
+    String roadImageHref = base + "/assets/images/road.jpg";
+    try {
+        if (application.getResource("/index.jsp") != null) homeHref = ctx + "/index.jsp";
+        if (application.getResource("/userDashboard.jsp") != null) dashboardHref = ctx + "/userDashboard.jsp";
+        if (application.getResource("/actions/LogoutAction.jsp") != null) logoutHref = ctx + "/actions/LogoutAction.jsp";
+        if (application.getResource("/assets/css/style.css") != null) styleHref = ctx + "/assets/css/style.css";
+        if (application.getResource("/assets/js/main.js") != null) scriptHref = ctx + "/assets/js/main.js";
+        if (application.getResource("/assets/images/logo.svg") != null) logoHref = ctx + "/assets/images/logo.svg";
+        if (application.getResource("/assets/images/road.jpg") != null) roadImageHref = ctx + "/assets/images/road.jpg";
+    } catch (Exception ignore) {
+        // Use computed fallbacks.
+    }
     if (role == null || !"user".equals(role)) {
-        response.sendRedirect("userLogin.jsp?required=1");
+        response.sendRedirect(base + "/userLogin.jsp?required=1");
         return;
     }
 
@@ -16,7 +36,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Register Complaint</title>
-    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="<%= styleHref %>">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" crossorigin="anonymous">
     <style>
         body.form-page {
@@ -38,7 +58,7 @@
         .hero-side {
             background:
                 linear-gradient(180deg, rgba(15, 23, 42, 0.32), rgba(15, 23, 42, 0.68)),
-                url('assets/images/road.jpg') center/cover;
+                url('<%= roadImageHref %>') center/cover;
             color: #fff;
             min-height: 100%;
             padding: 2.5rem;
@@ -83,13 +103,13 @@
     
     <nav class="navbar navbar-expand-lg bg-white bg-opacity-75 backdrop-blur-sm sticky-top border-bottom border-light-subtle">
         <div class="container py-2">
-            <a class="navbar-brand fw-bold d-flex align-items-center gap-2" href="index.jsp">
-                <img src="assets/images/logo.svg" alt="Complaint Portal" style="width:40px;height:40px;border-radius:12px;object-fit:cover;">
+            <a class="navbar-brand fw-bold d-flex align-items-center gap-2" href="<%= homeHref %>">
+                <img src="<%= logoHref %>" alt="Complaint Portal" style="width:40px;height:40px;border-radius:12px;object-fit:cover;">
                 <span>Complaint Portal</span>
             </a>
             <div class="ms-auto d-flex gap-2">
-                <a href="userDashboard.jsp" class="btn btn-outline-primary">Dashboard</a>
-                <a href="actions/LogoutAction.jsp" class="btn btn-outline-danger" data-confirm-logout data-confirm-message="You are about to log out of your account." data-logout-url="actions/LogoutAction.jsp">Logout</a>
+                <a href="<%= dashboardHref %>" class="btn btn-outline-primary">Dashboard</a>
+                <a href="<%= logoutHref %>" class="btn btn-outline-danger" data-confirm-logout data-confirm-message="You are about to log out of your account." data-logout-url="<%= logoutHref %>">Logout</a>
             </div>
         </div>
     </nav>
@@ -97,8 +117,8 @@
     <main class="container py-4 py-lg-5">
         <nav aria-label="breadcrumb" class="mb-4">
             <ol class="breadcrumb small">
-                <li class="breadcrumb-item"><a href="index.jsp">Home</a></li>
-                <li class="breadcrumb-item"><a href="userDashboard.jsp">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="<%= homeHref %>">Home</a></li>
+                <li class="breadcrumb-item"><a href="<%= dashboardHref %>">Dashboard</a></li>
                 <li class="breadcrumb-item active" aria-current="page">Register Complaint</li>
             </ol>
         </nav>
@@ -125,8 +145,8 @@
                                 <p class="text-secondary mb-0">The more detail you provide, the faster the resolution.</p>
                             </div>
                             <div class="d-flex gap-2">
-                                <a href="userDashboard.jsp" class="btn btn-outline-primary">Back to Dashboard</a>
-                                <a href="index.jsp" class="btn btn-outline-secondary">Home</a>
+                                <a href="<%= dashboardHref %>" class="btn btn-outline-primary">Back to Dashboard</a>
+                                <a href="<%= homeHref %>" class="btn btn-outline-secondary">Home</a>
                             </div>
                         </div>
 
@@ -137,7 +157,7 @@
                             <div class="alert alert-danger"><%= request.getParameter("error") %></div>
                         <% } %>
 
-                        <form action="actions/RegisterComplaintAction.jsp" method="post" enctype="multipart/form-data" class="row g-3">
+                        <form id="complaintForm" action="actions/RegisterComplaintAction.jsp" method="post" class="row g-3">
                             <div class="col-md-6">
                                 <label class="form-label fw-semibold">Name</label>
                                 <div class="position-relative field-wrap">
@@ -190,13 +210,15 @@
                             <div class="col-12">
                                 <label class="form-label fw-semibold">Photo attachment</label>
                                 <div class="upload-box">
-                                    <input type="file" name="photo" class="file-label" accept="image/*,application/pdf">
-                                    <div class="text-secondary small mt-2">Optional. Supported: image or PDF.</div>
+                                    <input id="photoInput" type="file" name="photo" class="file-label" accept="image/*">
+                                    <input id="photoData" type="hidden" name="photoData">
+                                    <input id="photoName" type="hidden" name="photoName">
+                                    <div class="text-secondary small mt-2">Optional image upload. For stability, keep image size up to 1.5 MB.</div>
                                 </div>
                             </div>
                             <div class="col-12 d-flex flex-wrap gap-2 justify-content-between align-items-center mt-2">
                                 <button type="submit" class="btn btn-primary btn-lg">Submit Complaint</button>
-                                <a href="userDashboard.jsp" class="btn btn-outline-secondary">Cancel</a>
+                                <a href="<%= dashboardHref %>" class="btn btn-outline-secondary">Cancel</a>
                             </div>
                         </form>
                     </div>
@@ -206,6 +228,51 @@
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
-    <script src="assets/js/main.js"></script>
+    <script src="<%= scriptHref %>"></script>
+    <script>
+        (function () {
+            var form = document.getElementById('complaintForm');
+            var photoInput = document.getElementById('photoInput');
+            var photoData = document.getElementById('photoData');
+            var photoName = document.getElementById('photoName');
+            if (!form || !photoInput || !photoData || !photoName) return;
+
+            form.addEventListener('submit', function (e) {
+                if (!photoInput.files || photoInput.files.length === 0) {
+                    photoData.value = '';
+                    photoName.value = '';
+                    return;
+                }
+
+                var file = photoInput.files[0];
+                if (!file.type || file.type.indexOf('image/') !== 0) {
+                    e.preventDefault();
+                    alert('Please upload an image file.');
+                    return;
+                }
+
+                if (file.size > 1572864) {
+                    e.preventDefault();
+                    alert('Image is too large. Please upload up to 1.5 MB.');
+                    return;
+                }
+
+                // Convert selected image to base64 so submission remains stable without multipart parsing.
+                if (!photoData.value) {
+                    e.preventDefault();
+                    var reader = new FileReader();
+                    reader.onload = function () {
+                        photoData.value = String(reader.result || '');
+                        photoName.value = String(file.name || 'upload.jpg');
+                        form.submit();
+                    };
+                    reader.onerror = function () {
+                        alert('Could not read selected image. Please try another file.');
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        })();
+    </script>
 </body>
 </html>

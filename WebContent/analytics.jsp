@@ -5,6 +5,11 @@
     String role = (String) session.getAttribute("role");
     String ctx = request.getContextPath();
     String base = request.getRequestURI().contains("/WebContent/") ? (ctx + "/WebContent") : ctx;
+    String homeHref = base + "/index.jsp";
+    String dashboardHref = base + "/" + ("officer".equals(role) ? "officerDashboard.jsp" : "adminDashboard.jsp");
+    String logoutHref = base + "/actions/LogoutAction.jsp";
+    String styleHref = base + "/assets/css/style.css";
+    String logoHref = base + "/assets/images/logo.svg";
     if (role == null || (!"admin".equals(role) && !"officer".equals(role))) {
         response.sendRedirect(base + "/login.jsp");
         return;
@@ -21,6 +26,20 @@
     String selectedMonth = request.getParameter("month");
     String selectedYear = request.getParameter("year");
     java.time.LocalDate today = java.time.LocalDate.now();
+    try {
+        if (application.getResource("/index.jsp") != null) homeHref = ctx + "/index.jsp";
+        if (application.getResource("/actions/LogoutAction.jsp") != null) logoutHref = ctx + "/actions/LogoutAction.jsp";
+        if (application.getResource("/assets/css/style.css") != null) styleHref = ctx + "/assets/css/style.css";
+        if (application.getResource("/assets/images/logo.svg") != null) logoHref = ctx + "/assets/images/logo.svg";
+        if (application.getResource("/adminDashboard.jsp") != null) {
+            dashboardHref = ctx + "/adminDashboard.jsp";
+        }
+        if ("officer".equals(role) && application.getResource("/officerDashboard.jsp") != null) {
+            dashboardHref = ctx + "/officerDashboard.jsp";
+        }
+    } catch (Exception ignore) {
+        // Use computed fallbacks.
+    }
     if ("day".equals(g)) {
         if (selectedDate == null || selectedDate.isBlank()) selectedDate = today.toString();
         try { java.time.LocalDate.parse(selectedDate); } catch (Exception ex) { response.sendRedirect(base + "/analytics.jsp?error=invalidFilter"); return; }
@@ -40,7 +59,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Analytics</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="<%= styleHref %>">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" crossorigin="anonymous">
     <style>
         body.dashboard-page { min-height: 100vh; background: radial-gradient(circle at top left, rgba(79, 70, 229, 0.14), transparent 30%), radial-gradient(circle at bottom right, rgba(14, 165, 233, 0.1), transparent 32%), linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%); }
@@ -57,13 +76,13 @@
     <%@ include file="includes/ui-enhancements.jspf" %>
     <nav class="navbar navbar-expand-lg bg-white bg-opacity-75 backdrop-blur-sm sticky-top border-bottom border-light-subtle">
         <div class="container py-2">
-            <a class="navbar-brand fw-bold d-flex align-items-center gap-2" href="index.jsp">
-                <img src="assets/images/logo.svg" alt="Complaint Portal logo" style="width:40px;height:40px;border-radius:12px;object-fit:cover;">
+            <a class="navbar-brand fw-bold d-flex align-items-center gap-2" href="<%= homeHref %>">
+                <img src="<%= logoHref %>" alt="Complaint Portal logo" style="width:40px;height:40px;border-radius:12px;object-fit:cover;">
                 <span>Complaint Portal</span>
             </a>
             <div class="ms-auto d-flex gap-2 flex-wrap">
-                <a href="<%= "officer".equals(role) ? "officerDashboard.jsp" : "adminDashboard.jsp" %>" class="btn btn-outline-primary"><%= "officer".equals(role) ? "Officer Dashboard" : "Admin Dashboard" %></a>
-                <a href="actions/LogoutAction.jsp" class="btn btn-outline-danger" data-confirm-logout data-confirm-message="You are about to leave analytics and log out." data-logout-url="actions/LogoutAction.jsp">Logout</a>
+                <a href="<%= dashboardHref %>" class="btn btn-outline-primary"><%= "officer".equals(role) ? "Officer Dashboard" : "Admin Dashboard" %></a>
+                <a href="<%= logoutHref %>" class="btn btn-outline-danger" data-confirm-logout data-confirm-message="You are about to leave analytics and log out." data-logout-url="<%= logoutHref %>">Logout</a>
             </div>
         </div>
     </nav>
@@ -71,7 +90,7 @@
     <main class="container py-4 py-lg-5">
         <nav aria-label="breadcrumb" class="mb-4">
             <ol class="breadcrumb small">
-                <li class="breadcrumb-item"><a href="<%= base %>/<%= "officer".equals(role) ? "officerDashboard.jsp" : "adminDashboard.jsp" %>">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="<%= dashboardHref %>">Dashboard</a></li>
                 <li class="breadcrumb-item active" aria-current="page">Analytics</li>
             </ol>
         </nav>
@@ -384,6 +403,6 @@
         });
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
-    <script src="assets/js/main.js"></script>
+    <script src="<%= base %>/assets/js/main.js"></script>
 </body>
 </html>

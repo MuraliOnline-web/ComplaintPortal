@@ -5,11 +5,17 @@
 <%@ page import="jakarta.mail.*,jakarta.mail.internet.*,java.util.Properties" %>
 <%@ page import="util.ConfigLoader" %>
 <%@ page import="java.net.URLEncoder" %>
+<%!
+    private static void safeRedirect(jakarta.servlet.http.HttpServletResponse response, String location) throws java.io.IOException {
+        response.setStatus(302);
+        response.setHeader("Location", location);
+    }
+%>
 
 <%
     String role = (String) session.getAttribute("role");
     if (role == null || (!"officer".equals(role) && !"admin".equals(role))) {
-        response.sendRedirect("../login.jsp?denied=1");
+        safeRedirect(response, "../login.jsp?denied=1");
         return;
     }
 
@@ -20,7 +26,7 @@
             String officerName = request.getParameter("officerName");
 
             if (complaintIdRaw == null || complaintIdRaw.isBlank() || officerNotes == null || officerNotes.isBlank() || officerName == null || officerName.isBlank()) {
-                response.sendRedirect("../officerDashboard.jsp?error=" + URLEncoder.encode("All required fields must be filled.", "UTF-8"));
+                safeRedirect(response, "../officerDashboard.jsp?error=" + URLEncoder.encode("All required fields must be filled.", "UTF-8"));
                 return;
             }
 
@@ -28,7 +34,7 @@
             try {
                 complaintId = Integer.parseInt(complaintIdRaw.trim());
             } catch (Exception ex) {
-                response.sendRedirect("../officerDashboard.jsp?error=" + URLEncoder.encode("Invalid complaint id.", "UTF-8"));
+                safeRedirect(response, "../officerDashboard.jsp?error=" + URLEncoder.encode("Invalid complaint id.", "UTF-8"));
                 return;
             }
 
@@ -51,7 +57,7 @@
             String dbUser = ConfigLoader.getDbUser();
             String dbPassword = ConfigLoader.getDbPassword();
             if (dbUrl == null || dbUrl.isBlank() || dbUser == null || dbUser.isBlank() || dbPassword == null || dbPassword.isBlank()) {
-                response.sendRedirect("../officerDashboard.jsp?error=" + URLEncoder.encode("Database is not configured. Contact admin.", "UTF-8"));
+                safeRedirect(response, "../officerDashboard.jsp?error=" + URLEncoder.encode("Database is not configured. Contact admin.", "UTF-8"));
                 return;
             }
 
@@ -122,13 +128,13 @@
             ps.close();
             con.close();
 
-            response.sendRedirect("../officerDashboard.jsp?success=" + URLEncoder.encode("Visit report submitted successfully", "UTF-8"));
+            safeRedirect(response, "../officerDashboard.jsp?success=" + URLEncoder.encode("Visit report submitted successfully", "UTF-8"));
 
         } catch (Exception e) {
             e.printStackTrace();
-            response.sendRedirect("../officerDashboard.jsp?error=" + URLEncoder.encode("Error submitting report. Please try again.", "UTF-8"));
+            safeRedirect(response, "../officerDashboard.jsp?error=" + URLEncoder.encode("Error submitting report. Please try again.", "UTF-8"));
         }
     } else {
-        response.sendRedirect("../officerDashboard.jsp");
+        safeRedirect(response, "../officerDashboard.jsp");
     }
 %>

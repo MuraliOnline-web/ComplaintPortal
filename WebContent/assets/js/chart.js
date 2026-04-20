@@ -29,6 +29,7 @@ function renderStatusChart(pending, solved)
     });
 }
 
+
 function renderCategoryChart(categories, counts) 
 {
     const ctx2 = document.getElementById('categoryChart').getContext('2d');

@@ -88,6 +88,14 @@
     String role = (String) session.getAttribute("role");
     String ctx = request.getContextPath();
     String base = request.getRequestURI().contains("/WebContent/") ? (ctx + "/WebContent") : ctx;
+    String assetsBase = base;
+    try {
+        if (application.getResource("/assets/css/style.css") == null && application.getResource("/WebContent/assets/css/style.css") != null) {
+            assetsBase = ctx + "/WebContent";
+        }
+    } catch (Exception ignore) {
+        // Keep computed base.
+    }
     if(role == null || (!role.equals("admin") && !role.equals("officer"))) {
         safeRedirect(response, base + "/login.jsp");
         return;
@@ -130,7 +138,7 @@
 
         if (rs.next()) {
             out.println("<!DOCTYPE html><html lang='en'><head><meta charset='UTF-8'><meta name='viewport' content='width=device-width, initial-scale=1'>");
-            out.println("<title>Complaint Details</title><link rel='stylesheet' href='../assets/css/style.css'><link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css' crossorigin='anonymous'><style>body.result-page{min-height:100vh;background:radial-gradient(circle at top left, rgba(79,70,229,.14), transparent 30%),radial-gradient(circle at bottom right, rgba(14,165,233,.1), transparent 32%),linear-gradient(180deg,#f8fafc 0%,#eef2ff 100%);} .result-card{border:1px solid rgba(148,163,184,.2);border-radius:28px;background:rgba(255,255,255,.9);box-shadow:0 24px 80px rgba(15,23,42,.08);}</style></head><body class='result-page'>");
+            out.println("<title>Complaint Details</title><link rel='stylesheet' href='" + assetsBase + "/assets/css/style.css'><link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css' crossorigin='anonymous'><style>body.result-page{min-height:100vh;background:radial-gradient(circle at top left, rgba(79,70,229,.14), transparent 30%),radial-gradient(circle at bottom right, rgba(14,165,233,.1), transparent 32%),linear-gradient(180deg,#f8fafc 0%,#eef2ff 100%);} .result-card{border:1px solid rgba(148,163,184,.2);border-radius:28px;background:rgba(255,255,255,.9);box-shadow:0 24px 80px rgba(15,23,42,.08);}</style></head><body class='result-page'>");
             out.println("<main class='container py-4 py-lg-5'><div class='result-card p-4 p-md-5'><div class='d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4'><div><div class='text-uppercase small fw-semibold text-primary'>Complaint lookup</div><h1 class='h2 fw-bold mb-2'>Complaint Details</h1><p class='text-secondary mb-0'>Search result for the selected complaint code or ID.</p></div><a class='btn btn-outline-primary' href='" + base + dashboard + "'>Back to Dashboard</a></div><div class='row g-4'><div class='col-lg-8'><div class='border rounded-4 p-4 bg-white h-100'><div class='row g-3'>");
             out.println("<div class='col-md-6'><div class='text-secondary small'>Complaint ID</div><div class='fw-semibold fs-5'>" + rs.getInt("complaint_id") + "</div></div>");
             out.println("<div class='col-md-6'><div class='text-secondary small'>Complaint Code</div><div class='fw-semibold fs-5'>" + (rs.getString("complaint_code") == null ? "-" : rs.getString("complaint_code")) + "</div></div>");
@@ -143,7 +151,7 @@
             out.println("<div class='col-md-6'><div class='text-secondary small'>Last Updated</div><div class='fw-semibold'>" + rs.getTimestamp("updated_at") + "</div></div>");
             out.println("<div class='col-12'><div class='text-secondary small'>Officer Notes</div><div class='fw-semibold'>" + (rs.getString("officer_notes") == null ? "-" : rs.getString("officer_notes")) + "</div></div>");
             if (rs.getString("solved_photo_path") != null) {
-                out.println("<div class='col-12'><div class='text-secondary small mb-2'>Solved Photo</div><img src='../" + rs.getString("solved_photo_path") + "' class='img-fluid rounded-4 border' alt='Solved photo'></div>");
+                out.println("<div class='col-12'><div class='text-secondary small mb-2'>Solved Photo</div><img src='" + assetsBase + "/" + rs.getString("solved_photo_path") + "' class='img-fluid rounded-4 border' alt='Solved photo'></div>");
             }
             out.println("</div></div></div></div><div class='d-flex flex-wrap gap-2 mt-4'><a class='btn btn-secondary' href='" + base + ("admin".equals(role) ? "/adminDashboard.jsp" : "/officerDashboard.jsp") + "'>Back to Dashboard</a></div></div></main><script src='https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js' crossorigin='anonymous'></script></body></html>");
         } else {
