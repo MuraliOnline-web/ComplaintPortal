@@ -105,10 +105,11 @@
         return;
     }
 
-    Class.forName("com.mysql.cj.jdbc.Driver");
-    Connection con = DriverManager.getConnection(dbUrl, dbUser, dbPassword);
+    Connection con = null;
     try 
     {
+        Class.forName("com.mysql.cj.jdbc.Driver");
+        con = DriverManager.getConnection(dbUrl, dbUser, dbPassword);
         int userId = sessionUserId.intValue();
 
         PreparedStatement pstUser = con.prepareStatement("SELECT name, email, mobile FROM users WHERE user_id=? AND role='user'");
