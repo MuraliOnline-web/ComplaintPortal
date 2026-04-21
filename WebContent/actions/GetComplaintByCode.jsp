@@ -14,7 +14,7 @@
     private static String getConfig(jakarta.servlet.ServletContext app, String key, String defaultValue) {
         String envKey = key.toUpperCase().replace('.', '_');
         String envVal = System.getenv(envKey);
-        if (envVal != null && !envVal.isBlank()) {
+        if (envVal != null && !envVal.trim().isEmpty()) {
             return envVal;
         }
 
@@ -25,7 +25,7 @@
             if (in != null) {
                 props.load(in);
                 String val = props.getProperty(key);
-                if (val != null && !val.isBlank()) {
+                if (val != null && !val.trim().isEmpty()) {
                     return val;
                 }
             }
@@ -104,13 +104,13 @@
     String code = request.getParameter("code");
     String idParam = request.getParameter("id");
     Integer id = null;
-    if (idParam != null && !idParam.isBlank()) {
+    if (idParam != null && !idParam.trim().isEmpty()) {
         try { id = Integer.parseInt(idParam.trim()); } catch(Exception ignore) {}
     }
 
     String dashboard = "admin".equals(role) ? "/adminDashboard.jsp" : "/officerDashboard.jsp";
 
-    if ((code == null || code.isBlank()) && id == null) {
+    if ((code == null || code.trim().isEmpty()) && id == null) {
         safeRedirect(response, base + dashboard + "?searchError=1");
         return;
     }
@@ -118,7 +118,7 @@
     String dbUrl = getConfig(application, "db.url", "");
     String dbUser = getConfig(application, "db.user", "");
     String dbPassword = getConfig(application, "db.password", "");
-    if (dbUrl == null || dbUrl.isBlank() || dbUser == null || dbUser.isBlank() || dbPassword == null || dbPassword.isBlank()) {
+    if (dbUrl == null || dbUrl.trim().isEmpty() || dbUser == null || dbUser.trim().isEmpty() || dbPassword == null || dbPassword.trim().isEmpty()) {
         safeRedirect(response, base + dashboard + "?searchError=db");
         return;
     }
@@ -128,11 +128,11 @@
         String sql = "SELECT c.complaint_id, c.complaint_code, c.category, c.description, c.address, c.status, " +
                  "c.officer_notes, c.solved_photo_path, c.created_at, c.updated_at, u.name as user_name, u.email as user_email, u.mobile as user_mobile " +
                      "FROM complaints c JOIN users u ON c.user_id=u.user_id WHERE 1=1" +
-                     (code != null && !code.isBlank() ? " AND c.complaint_code=?" : "") +
+                     (code != null && !code.trim().isEmpty() ? " AND c.complaint_code=?" : "") +
                      (id != null ? " AND c.complaint_id=?" : "");
         PreparedStatement pst = con.prepareStatement(sql);
         int idx = 1;
-        if (code != null && !code.isBlank()) pst.setString(idx++, code.trim());
+        if (code != null && !code.trim().isEmpty()) pst.setString(idx++, code.trim());
         if (id != null) pst.setInt(idx++, id);
         ResultSet rs = pst.executeQuery();
 

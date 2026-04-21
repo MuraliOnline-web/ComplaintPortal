@@ -4,6 +4,7 @@
     String base = request.getRequestURI().contains("/WebContent/") ? (ctx + "/WebContent") : ctx;
     String homeHref = base + "/index.jsp";
     String dashboardHref = base + "/userDashboard.jsp";
+    String userDashboardLabel = "User Dashboard";
     String logoutHref = base + "/actions/LogoutAction.jsp";
     String styleHref = base + "/assets/css/style.css";
     String scriptHref = base + "/assets/js/main.js";
@@ -77,8 +78,7 @@
     <main class="container py-4 py-lg-5">
         <nav aria-label="breadcrumb" class="mb-4">
             <ol class="breadcrumb small">
-                <li class="breadcrumb-item"><a href="<%= homeHref %>">Home</a></li>
-                <li class="breadcrumb-item"><a href="<%= dashboardHref %>">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="<%= dashboardHref %>"><%= userDashboardLabel %></a></li>
                 <li class="breadcrumb-item active" aria-current="page">Track Complaint</li>
             </ol>
         </nav>
@@ -100,7 +100,6 @@
                                 <h2 class="h3 fw-bold mb-1">Track Your Complaint</h2>
                                 <p class="text-secondary mb-0">Search by complaint code or complaint ID together with your email address.</p>
                             </div>
-                            <a href="<%= dashboardHref %>" class="btn btn-outline-secondary">Back to Dashboard</a>
                         </div>
 
                         <% if ("1".equals(request.getParameter("error"))) { %>
@@ -129,7 +128,6 @@
                             </div>
                             <div class="col-12 d-flex flex-wrap gap-2 justify-content-between align-items-center mt-2">
                                 <button type="submit" class="btn btn-primary btn-lg">Track Complaint</button>
-                                <a href="<%= homeHref %>" class="btn btn-outline-secondary">Home</a>
                             </div>
                         </form>
                     </div>

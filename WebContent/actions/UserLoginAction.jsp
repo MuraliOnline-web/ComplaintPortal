@@ -28,7 +28,7 @@
     String loginMode = request.getParameter("loginMode");
     String identifier = request.getParameter("identifier");
 
-    if (identifier == null || identifier.isBlank()) {
+    if (identifier == null || identifier.trim().isEmpty()) {
         safeRedirect(response, base + "/userLogin.jsp?error=1");
         return;
     }
@@ -36,7 +36,7 @@
     String dbUrl = ConfigLoader.getDbUrl();
     String dbUser = ConfigLoader.getDbUser();
     String dbPassword = ConfigLoader.getDbPassword();
-    if (dbUrl == null || dbUrl.isBlank() || dbUser == null || dbUser.isBlank() || dbPassword == null || dbPassword.isBlank()) {
+    if (dbUrl == null || dbUrl.trim().isEmpty() || dbUser == null || dbUser.trim().isEmpty() || dbPassword == null || dbPassword.trim().isEmpty()) {
         safeRedirect(response, base + "/userLogin.jsp?error=config");
         return;
     }
@@ -74,22 +74,35 @@
         otpPst.executeUpdate();
         otpPst.close();
 
-        final String smtpUser = ConfigLoader.getSmtpUser();
-        final String smtpPass = ConfigLoader.getSmtpPassword();
-        final String smtpHost = ConfigLoader.getSmtpHost();
-        final String smtpPort = ConfigLoader.getSmtpPort();
+        final String smtpUser = ConfigLoader.getSmtpUser() == null ? null : ConfigLoader.getSmtpUser().trim();
+        final String smtpPass = ConfigLoader.getSmtpPassword() == null ? null : ConfigLoader.getSmtpPassword().trim();
+        final String smtpHost = ConfigLoader.getSmtpHost() == null ? null : ConfigLoader.getSmtpHost().trim();
+        final String smtpPort = ConfigLoader.getSmtpPort() == null ? null : ConfigLoader.getSmtpPort().trim();
 
-        boolean smtpConfigured = smtpUser != null && !smtpUser.isBlank() && smtpPass != null && !smtpPass.isBlank();
-        if (!smtpConfigured || smtpHost == null || smtpHost.isBlank() || smtpPort == null || smtpPort.isBlank()) {
+        boolean smtpConfigured = smtpUser != null && !smtpUser.trim().isEmpty() && smtpPass != null && !smtpPass.trim().isEmpty();
+        if (!smtpConfigured || smtpHost == null || smtpHost.trim().isEmpty() || smtpPort == null || smtpPort.trim().isEmpty()) {
             safeRedirect(response, base + "/userLogin.jsp?smtp=cfg");
             return;
         }
 
         Properties props = new Properties();
         props.put("mail.smtp.auth", "true");
-        props.put("mail.smtp.starttls.enable", "true");
         props.put("mail.smtp.host", smtpHost);
         props.put("mail.smtp.port", smtpPort);
+        props.put("mail.smtp.connectiontimeout", "10000");
+        props.put("mail.smtp.timeout", "10000");
+        props.put("mail.smtp.writetimeout", "10000");
+        props.put("mail.smtp.ssl.trust", smtpHost);
+        props.put("mail.smtp.ssl.protocols", "TLSv1.2");
+
+        boolean useImplicitSsl = "465".equals(smtpPort);
+        if (useImplicitSsl) {
+            props.put("mail.smtp.ssl.enable", "true");
+            props.put("mail.smtp.starttls.enable", "false");
+        } else {
+            props.put("mail.smtp.starttls.enable", "true");
+            props.put("mail.smtp.starttls.required", "true");
+        }
 
         try {
             Session mailSession = Session.getInstance(props, new Authenticator() {
@@ -105,7 +118,7 @@
             message.setText("Hi " + userName + ",\n\nYour OTP is: " + otp + "\nIt is valid for " + OTP_VALIDITY_MINUTES + " minutes.\n\n- Complaint Portal");
             Transport.send(message);
         } catch (Exception mailEx) {
-            application.log("OTP email send failed", mailEx);
+            application.log("OTP email send failed: host=" + smtpHost + ", port=" + smtpPort + ", user=" + smtpUser, mailEx);
             safeRedirect(response, base + "/userLogin.jsp?smtp=send");
             return;
         }

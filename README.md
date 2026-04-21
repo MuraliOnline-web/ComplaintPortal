@@ -1,6 +1,6 @@
 # Complaint Portal
 
-This project is a Java web application for complaint registration, tracking, and complaint handling by admins and field officers. It uses JSP pages for the UI, JSP action handlers for server-side logic, MySQL for persistence, and SMTP for OTP and notification emails.
+This project is a Java web application for complaint registration, tracking, and complaint handling by admins and field officers. It uses JSP pages for the UI, JSP action handlers for server-side logic, MySQL for persistence, and SMTP for OTP and notification emails. Complaint registration acknowledgements now include both complaint ID and complaint code.
 
 The current runtime workflow is root-deployed under Tomcat, with compatibility shims at the project root forwarding to the editable JSP sources in WebContent. That means users open root URLs such as /index.jsp, while the maintained application pages remain under WebContent/.
 
@@ -147,6 +147,7 @@ The repository keeps its markdown docs at the top level so they are easy to find
 - Forgot password flow with reset OTP
 - Password reset
 - Complaint registration
+- Complaint registration acknowledgement email with complaint ID and complaint code
 - Complaint tracking by complaint code or complaint ID
 - Logout
 
@@ -192,7 +193,7 @@ The repository keeps its markdown docs at the top level so they are easy to find
 
 ## Core Backend Components
 
-- `src/util/ConfigLoader.java` loads configuration from environment variables first and falls back to `config.properties`.
+- `src/util/ConfigLoader.java` loads configuration in this order: environment variables, Java system properties, local `config.properties`, then default values.
 - `WEB-INF/web.xml` sets `index.jsp` as the welcome page and configures the session timeout.
 - `db/schema.sql` defines the MySQL schema used by the application.
 
@@ -255,13 +256,17 @@ Use `db/schema.sql` to create the database and tables, then add privileged users
 
 ## Local Run Steps
 
-1. Install a Java 21+ JDK and a Jakarta-compatible servlet container such as Tomcat 10.x.
+1. Install a Java 11+ JDK and a Jakarta-compatible servlet container such as Tomcat 10.x.
 2. Create the database and tables by running `db/schema.sql` in MySQL.
 3. Copy `config.properties.template` to a local `config.properties` file and set the database and SMTP values.
 4. Place the MySQL JDBC driver, Jakarta Mail libraries, and JSTL libraries in `WEB-INF/lib/` at the deployed app root if they are not already bundled.
 5. Deploy the project so the root shims and `WEB-INF/` are in the webapp root, with WebContent kept as the source layout.
 6. Start the server and open `http://localhost:8081/advjavaproject/` (with trailing slash) or `http://localhost:8081/advjavaproject/index.jsp`.
 7. Avoid opening `http://localhost:8081/advjavaproject` without the trailing slash on environments where Tomcat context-root redirect behavior is customized, because it may return 500 even when the app itself is healthy.
+
+### Redeploy Note
+
+- After JSP or class-level compatibility/configuration changes, clear `tomcat/work/Catalina/localhost/<app-context>/` before restart so stale compiled JSP artifacts are not reused.
 
 ### Suggested SQL Import Order
 

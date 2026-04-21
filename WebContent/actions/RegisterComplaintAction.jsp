@@ -43,37 +43,37 @@
     // Multipart forms may not always expose text fields through getParameter in JSP.
     boolean isMultipart = request.getContentType() != null && request.getContentType().toLowerCase().startsWith("multipart/");
     if (isMultipart) {
-        if (name == null || name.isBlank()) {
+        if (name == null || name.trim().isEmpty()) {
             try {
                 Part p = request.getPart("name");
                 if (p != null) name = new String(p.getInputStream().readAllBytes(), java.nio.charset.StandardCharsets.UTF_8).trim();
             } catch (Exception ignore) {}
         }
-        if (email == null || email.isBlank()) {
+        if (email == null || email.trim().isEmpty()) {
             try {
                 Part p = request.getPart("email");
                 if (p != null) email = new String(p.getInputStream().readAllBytes(), java.nio.charset.StandardCharsets.UTF_8).trim();
             } catch (Exception ignore) {}
         }
-        if (mobile == null || mobile.isBlank()) {
+        if (mobile == null || mobile.trim().isEmpty()) {
             try {
                 Part p = request.getPart("mobile");
                 if (p != null) mobile = new String(p.getInputStream().readAllBytes(), java.nio.charset.StandardCharsets.UTF_8).trim();
             } catch (Exception ignore) {}
         }
-        if (address == null || address.isBlank()) {
+        if (address == null || address.trim().isEmpty()) {
             try {
                 Part p = request.getPart("address");
                 if (p != null) address = new String(p.getInputStream().readAllBytes(), java.nio.charset.StandardCharsets.UTF_8).trim();
             } catch (Exception ignore) {}
         }
-        if (category == null || category.isBlank()) {
+        if (category == null || category.trim().isEmpty()) {
             try {
                 Part p = request.getPart("category");
                 if (p != null) category = new String(p.getInputStream().readAllBytes(), java.nio.charset.StandardCharsets.UTF_8).trim();
             } catch (Exception ignore) {}
         }
-        if (description == null || description.isBlank()) {
+        if (description == null || description.trim().isEmpty()) {
             try {
                 Part p = request.getPart("description");
                 if (p != null) description = new String(p.getInputStream().readAllBytes(), java.nio.charset.StandardCharsets.UTF_8).trim();
@@ -83,12 +83,12 @@
 
     // Basic validation
     StringBuilder missing = new StringBuilder();
-    if (name == null || name.isBlank()) missing.append("name, ");
-    if (email == null || email.isBlank()) missing.append("email, ");
-    if (mobile == null || mobile.isBlank()) missing.append("mobile, ");
-    if (address == null || address.isBlank()) missing.append("address, ");
-    if (category == null || category.isBlank()) missing.append("category, ");
-    if (description == null || description.isBlank()) missing.append("description, ");
+    if (name == null || name.trim().isEmpty()) missing.append("name, ");
+    if (email == null || email.trim().isEmpty()) missing.append("email, ");
+    if (mobile == null || mobile.trim().isEmpty()) missing.append("mobile, ");
+    if (address == null || address.trim().isEmpty()) missing.append("address, ");
+    if (category == null || category.trim().isEmpty()) missing.append("category, ");
+    if (description == null || description.trim().isEmpty()) missing.append("description, ");
     if (missing.length() > 0) {
         safeRedirect(response, registerComplaintPath + "?error=" + URLEncoder.encode("please fill all required fields.", "UTF-8"));
         return;
@@ -100,13 +100,13 @@
         String photoData = request.getParameter("photoData");
         String photoName = request.getParameter("photoName");
 
-        if (photoData != null && !photoData.isBlank()) {
+        if (photoData != null && !photoData.trim().isEmpty()) {
             int commaIdx = photoData.indexOf(',');
             if (commaIdx > 0 && commaIdx < photoData.length() - 1) {
                 String payload = photoData.substring(commaIdx + 1);
                 byte[] fileBytes = Base64.getDecoder().decode(payload);
 
-                String original = (photoName == null || photoName.isBlank()) ? "upload.jpg" : photoName;
+                String original = (photoName == null || photoName.trim().isEmpty()) ? "upload.jpg" : photoName;
                 String safeName = original.replaceAll("[^a-zA-Z0-9._-]", "_");
                 String fileName = System.currentTimeMillis() + "_" + safeName;
                 String basePath = application.getRealPath("/");
@@ -143,7 +143,7 @@
     String dbUrl = ConfigLoader.getDbUrl();
     String dbUser = ConfigLoader.getDbUser();
     String dbPassword = ConfigLoader.getDbPassword();
-    if (dbUrl == null || dbUrl.isBlank() || dbUser == null || dbUser.isBlank() || dbPassword == null || dbPassword.isBlank()) {
+    if (dbUrl == null || dbUrl.trim().isEmpty() || dbUser == null || dbUser.trim().isEmpty() || dbPassword == null || dbPassword.trim().isEmpty()) {
         safeRedirect(response, registerComplaintPath + "?error=" + URLEncoder.encode("Database is not configured. Contact admin.", "UTF-8"));
         return;
     }
@@ -207,8 +207,8 @@
             final String SMTP_HOST = ConfigLoader.getSmtpHost();
             final String SMTP_PORT = ConfigLoader.getSmtpPort();
 
-            if (SYSTEM_EMAIL != null && !SYSTEM_EMAIL.isBlank() && SYSTEM_PASSWORD != null && !SYSTEM_PASSWORD.isBlank()
-                    && SMTP_HOST != null && !SMTP_HOST.isBlank() && SMTP_PORT != null && !SMTP_PORT.isBlank()) {
+            if (SYSTEM_EMAIL != null && !SYSTEM_EMAIL.trim().isEmpty() && SYSTEM_PASSWORD != null && !SYSTEM_PASSWORD.trim().isEmpty()
+                    && SMTP_HOST != null && !SMTP_HOST.trim().isEmpty() && SMTP_PORT != null && !SMTP_PORT.trim().isEmpty()) {
                 Properties props = new Properties();
                 props.put("mail.smtp.auth", "true");
                 props.put("mail.smtp.starttls.enable", "true");
@@ -224,7 +224,12 @@
                 message.setFrom(new InternetAddress(SYSTEM_EMAIL));
                 message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(email));
                 message.setSubject("Complaint Registered Successfully");
-                message.setText("Dear " + name + ",\nYour complaint ID is: " + complaintId + ". We will update you once resolved.");
+                message.setText("Dear " + name + ",\n\n"
+                    + "Your complaint has been registered successfully.\n"
+                    + "Complaint ID: " + complaintId + "\n"
+                    + "Complaint Code: " + complaintCode + "\n\n"
+                    + "Please keep both details for tracking updates.\n"
+                    + "We will update you once it is resolved.");
                 Transport.send(message);
             }
         } catch (Exception mailEx) {
@@ -233,7 +238,7 @@
         }
 
         // Redirect to a dedicated success page
-        String safeName = (name == null || name.isBlank()) ? "User" : name;
+        String safeName = (name == null || name.trim().isEmpty()) ? "User" : name;
         String target = complaintSuccessPath + "?id=" + complaintId + "&code=" + URLEncoder.encode(complaintCode, "UTF-8") + "&name=" + URLEncoder.encode(safeName, "UTF-8");
         safeRedirect(response, target);
     } 

@@ -27,7 +27,7 @@
     String base = request.getRequestURI().contains("/WebContent/") ? (ctx + "/WebContent") : ctx;
 
     String email = request.getParameter("email");
-    if (email == null || email.isBlank()) {
+    if (email == null || email.trim().isEmpty()) {
         safeRedirect(response, base + "/forgotPassword.jsp?error=Enter your registered email");
         return;
     }
@@ -35,7 +35,7 @@
     String dbUrl = ConfigLoader.getDbUrl();
     String dbUser = ConfigLoader.getDbUser();
     String dbPassword = ConfigLoader.getDbPassword();
-    if (dbUrl == null || dbUrl.isBlank() || dbUser == null || dbUser.isBlank() || dbPassword == null || dbPassword.isBlank()) {
+    if (dbUrl == null || dbUrl.trim().isEmpty() || dbUser == null || dbUser.trim().isEmpty() || dbPassword == null || dbPassword.trim().isEmpty()) {
         safeRedirect(response, base + "/forgotPassword.jsp?error=Database is not configured");
         return;
     }
@@ -93,8 +93,8 @@
         final String smtpPort = ConfigLoader.getSmtpPort();
 
         boolean smtpConfigured =
-            smtpUser != null && !smtpUser.isBlank() &&
-            smtpPass != null && !smtpPass.isBlank();
+            smtpUser != null && !smtpUser.trim().isEmpty() &&
+            smtpPass != null && !smtpPass.trim().isEmpty();
         if (!smtpConfigured) {
             safeRedirect(response, base + "/forgotPassword.jsp?smtp=cfg");
             return;

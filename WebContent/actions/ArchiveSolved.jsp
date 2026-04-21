@@ -17,7 +17,7 @@
 
     // Parameters: granularity g=day|month|year, and date/month/year
     String g = request.getParameter("g");
-    if (g == null || g.isBlank()) g = "day";
+    if (g == null || g.trim().isEmpty()) g = "day";
     String date = request.getParameter("date");      // yyyy-MM-dd
     String month = request.getParameter("month");    // yyyy-MM
     String year = request.getParameter("year");      // yyyy
@@ -27,15 +27,15 @@
     java.time.LocalDate today = java.time.LocalDate.now();
     try {
         if ("day".equals(g)) {
-            java.time.LocalDate d = (date==null||date.isBlank()) ? today : java.time.LocalDate.parse(date);
+            java.time.LocalDate d = (date==null||date.trim().isEmpty()) ? today : java.time.LocalDate.parse(date);
             start = d.toString() + " 00:00:00";
             end   = d.toString() + " 23:59:59";
         } else if ("month".equals(g)) {
-            java.time.YearMonth ym = (month==null||month.isBlank()) ? java.time.YearMonth.from(today) : java.time.YearMonth.parse(month);
+            java.time.YearMonth ym = (month==null||month.trim().isEmpty()) ? java.time.YearMonth.from(today) : java.time.YearMonth.parse(month);
             start = ym.atDay(1).toString() + " 00:00:00";
             end   = ym.atEndOfMonth().toString() + " 23:59:59";
         } else { // year
-            int y = (year==null||year.isBlank()) ? today.getYear() : Integer.parseInt(year);
+            int y = (year==null||year.trim().isEmpty()) ? today.getYear() : Integer.parseInt(year);
             start = java.time.LocalDate.of(y,1,1).toString() + " 00:00:00";
             end   = java.time.LocalDate.of(y,12,31).toString() + " 23:59:59";
         }
@@ -47,7 +47,7 @@
     String dbUrl = ConfigLoader.getDbUrl();
     String dbUser = ConfigLoader.getDbUser();
     String dbPassword = ConfigLoader.getDbPassword();
-    if (dbUrl == null || dbUrl.isBlank() || dbUser == null || dbUser.isBlank() || dbPassword == null || dbPassword.isBlank()) {
+    if (dbUrl == null || dbUrl.trim().isEmpty() || dbUser == null || dbUser.trim().isEmpty() || dbPassword == null || dbPassword.trim().isEmpty()) {
         safeRedirect(response, "../analytics.jsp?error=db");
         return;
     }

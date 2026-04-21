@@ -35,9 +35,9 @@
     String cityVillage = request.getParameter("cityVillage");
     String password = request.getParameter("password");
 
-    if (name == null || name.isBlank() ||
-        email == null || email.isBlank() || mobile == null || mobile.isBlank() ||
-        cityVillage == null || cityVillage.isBlank() || password == null || password.isBlank()) {
+    if (name == null || name.trim().isEmpty() ||
+        email == null || email.trim().isEmpty() || mobile == null || mobile.trim().isEmpty() ||
+        cityVillage == null || cityVillage.trim().isEmpty() || password == null || password.trim().isEmpty()) {
         safeRedirect(response, base + "/userRegister.jsp?error=All fields are required");
         return;
     }
@@ -45,7 +45,7 @@
     String dbUrl = ConfigLoader.getDbUrl();
     String dbUser = ConfigLoader.getDbUser();
     String dbPassword = ConfigLoader.getDbPassword();
-    if (dbUrl == null || dbUrl.isBlank() || dbUser == null || dbUser.isBlank() || dbPassword == null || dbPassword.isBlank()) {
+    if (dbUrl == null || dbUrl.trim().isEmpty() || dbUser == null || dbUser.trim().isEmpty() || dbPassword == null || dbPassword.trim().isEmpty()) {
         safeRedirect(response, base + "/userRegister.jsp?error=Database is not configured");
         return;
     }

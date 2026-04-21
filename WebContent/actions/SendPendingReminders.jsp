@@ -13,7 +13,7 @@
     }
 
     String date = request.getParameter("date");
-    if (date == null || date.isBlank()) {
+    if (date == null || date.trim().isEmpty()) {
         safeRedirect(response, "../analytics.jsp?error=invalidDate");
         return;
     }

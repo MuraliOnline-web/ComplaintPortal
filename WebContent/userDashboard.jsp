@@ -50,15 +50,15 @@
     String dbUser = System.getenv("DB_USER");
     String dbPassword = System.getenv("DB_PASSWORD");
 
-    if (dbUrl == null || dbUrl.isBlank()) dbUrl = System.getProperty("db.url");
-    if (dbUser == null || dbUser.isBlank()) dbUser = System.getProperty("db.user");
-    if (dbPassword == null || dbPassword.isBlank()) dbPassword = System.getProperty("db.password");
+    if (dbUrl == null || dbUrl.trim().isEmpty()) dbUrl = System.getProperty("db.url");
+    if (dbUser == null || dbUser.trim().isEmpty()) dbUser = System.getProperty("db.user");
+    if (dbPassword == null || dbPassword.trim().isEmpty()) dbPassword = System.getProperty("db.password");
 
-    if (dbUrl == null || dbUrl.isBlank()) dbUrl = application.getInitParameter("db.url");
-    if (dbUser == null || dbUser.isBlank()) dbUser = application.getInitParameter("db.user");
-    if (dbPassword == null || dbPassword.isBlank()) dbPassword = application.getInitParameter("db.password");
+    if (dbUrl == null || dbUrl.trim().isEmpty()) dbUrl = application.getInitParameter("db.url");
+    if (dbUser == null || dbUser.trim().isEmpty()) dbUser = application.getInitParameter("db.user");
+    if (dbPassword == null || dbPassword.trim().isEmpty()) dbPassword = application.getInitParameter("db.password");
 
-    if (dbUrl == null || dbUrl.isBlank() || dbUser == null || dbUser.isBlank() || dbPassword == null || dbPassword.isBlank()) {
+    if (dbUrl == null || dbUrl.trim().isEmpty() || dbUser == null || dbUser.trim().isEmpty() || dbPassword == null || dbPassword.trim().isEmpty()) {
         Properties props = new Properties();
         InputStream cfg = null;
         try {
@@ -66,9 +66,9 @@
             if (cfg == null) cfg = application.getResourceAsStream("/config.properties");
             if (cfg != null) {
                 props.load(cfg);
-                if (dbUrl == null || dbUrl.isBlank()) dbUrl = props.getProperty("db.url");
-                if (dbUser == null || dbUser.isBlank()) dbUser = props.getProperty("db.user");
-                if (dbPassword == null || dbPassword.isBlank()) dbPassword = props.getProperty("db.password");
+                if (dbUrl == null || dbUrl.trim().isEmpty()) dbUrl = props.getProperty("db.url");
+                if (dbUser == null || dbUser.trim().isEmpty()) dbUser = props.getProperty("db.user");
+                if (dbPassword == null || dbPassword.trim().isEmpty()) dbPassword = props.getProperty("db.password");
             }
         } catch (Exception ignore) {
             // Keep fallbacks empty and let validation show config message.
@@ -79,7 +79,7 @@
         }
     }
 
-    if (dbUrl == null || dbUrl.isBlank() || dbUser == null || dbUser.isBlank() || dbPassword == null || dbPassword.isBlank()) {
+    if (dbUrl == null || dbUrl.trim().isEmpty() || dbUser == null || dbUser.trim().isEmpty() || dbPassword == null || dbPassword.trim().isEmpty()) {
         dashboardError = "Database is not configured. Contact admin.";
     } else {
         Connection con = null;
@@ -213,7 +213,7 @@
     <div id="toastContainer"></div>
     
     <!-- Hidden message divs for toast system -->
-    <% if (flashMessage != null && !flashMessage.isBlank()) { %>
+    <% if (flashMessage != null && !flashMessage.trim().isEmpty()) { %>
         <div id="<%= "success".equals(flashType) ? "successMessage" : "errorMessage" %>" style="display:none;"><%= flashMessage %></div>
     <% } %>
     
@@ -226,7 +226,7 @@
                 </a>
                 <div class="dropdown ms-auto">
                     <button class="btn btn-light border dropdown-toggle d-flex align-items-center gap-2" data-bs-toggle="dropdown" aria-expanded="false">
-                        <span class="avatar-circle"><%= userName != null && !userName.isBlank() ? userName.trim().substring(0, 1).toUpperCase() : "U" %></span>
+                        <span class="avatar-circle"><%= userName != null && !userName.trim().isEmpty() ? userName.trim().substring(0, 1).toUpperCase() : "U" %></span>
                         <span class="d-none d-md-inline"><%= userName %></span>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end shadow-lg">
@@ -242,7 +242,6 @@
         <main class="container py-4 py-lg-5">
             <nav aria-label="breadcrumb" class="mb-4">
                 <ol class="breadcrumb small">
-                    <li class="breadcrumb-item"><a href="<%= homeHref %>">Home</a></li>
                     <li class="breadcrumb-item active" aria-current="page">User Dashboard</li>
                 </ol>
             </nav>

@@ -3,13 +3,11 @@
 <%
     String ctx = request.getContextPath();
     String base = request.getRequestURI().contains("/WebContent/") ? (ctx + "/WebContent") : ctx;
-    String homeHref = base + "/index.jsp";
     String dashboardHref = base + "/userDashboard.jsp";
     String registerComplaintHref = base + "/registerComplaint.jsp";
     String styleHref = base + "/assets/css/style.css";
     String scriptHref = base + "/assets/js/main.js";
     try {
-        if (application.getResource("/index.jsp") != null) homeHref = ctx + "/index.jsp";
         if (application.getResource("/userDashboard.jsp") != null) dashboardHref = ctx + "/userDashboard.jsp";
         if (application.getResource("/registerComplaint.jsp") != null) registerComplaintHref = ctx + "/registerComplaint.jsp";
         if (application.getResource("/assets/css/style.css") != null) styleHref = ctx + "/assets/css/style.css";
@@ -49,8 +47,7 @@
     <main class="container py-4 py-lg-5">
         <nav aria-label="breadcrumb" class="mb-4">
             <ol class="breadcrumb small justify-content-center">
-                <li class="breadcrumb-item"><a href="<%= homeHref %>">Home</a></li>
-                <li class="breadcrumb-item"><a href="<%= dashboardHref %>">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="<%= dashboardHref %>">User Dashboard</a></li>
                 <li class="breadcrumb-item active" aria-current="page">Complaint Registered</li>
             </ol>
         </nav>
@@ -73,7 +70,6 @@
             <div class="d-flex flex-wrap justify-content-center gap-2">
                 <a class="btn btn-primary btn-lg" href="<%= dashboardHref %>">Go to Dashboard</a>
                 <a class="btn btn-outline-primary btn-lg" href="<%= registerComplaintHref %>">Register another complaint</a>
-                <a class="btn btn-outline-secondary btn-lg" href="<%= homeHref %>">Home</a>
             </div>
         </div>
     </main>

@@ -48,7 +48,7 @@
         return;
     }
 
-    if (otp == null || otp.isBlank() || newPassword == null || newPassword.isBlank() || confirmPassword == null || confirmPassword.isBlank()) {
+    if (otp == null || otp.trim().isEmpty() || newPassword == null || newPassword.trim().isEmpty() || confirmPassword == null || confirmPassword.trim().isEmpty()) {
         safeRedirect(response, base + "/resetPassword.jsp?error=1");
         return;
     }
@@ -66,7 +66,7 @@
     String dbUrl = ConfigLoader.getDbUrl();
     String dbUser = ConfigLoader.getDbUser();
     String dbPassword = ConfigLoader.getDbPassword();
-    if (dbUrl == null || dbUrl.isBlank() || dbUser == null || dbUser.isBlank() || dbPassword == null || dbPassword.isBlank()) {
+    if (dbUrl == null || dbUrl.trim().isEmpty() || dbUser == null || dbUser.trim().isEmpty() || dbPassword == null || dbPassword.trim().isEmpty()) {
         safeRedirect(response, base + "/resetPassword.jsp?error=db");
         return;
     }

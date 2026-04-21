@@ -47,7 +47,7 @@
     String description = request.getParameter("description");
     String address = request.getParameter("address");
 
-    if (description == null || description.isBlank() || address == null || address.isBlank()) {
+    if (description == null || description.trim().isEmpty() || address == null || address.trim().isEmpty()) {
         response.setStatus(400);
         out.print("{\"ok\":false,\"error\":\"missing_fields\"}");
         return;
@@ -58,7 +58,7 @@
     String dbUrl = ConfigLoader.getDbUrl();
     String dbUser = ConfigLoader.getDbUser();
     String dbPassword = ConfigLoader.getDbPassword();
-    if (dbUrl == null || dbUrl.isBlank() || dbUser == null || dbUser.isBlank() || dbPassword == null || dbPassword.isBlank()) {
+    if (dbUrl == null || dbUrl.trim().isEmpty() || dbUser == null || dbUser.trim().isEmpty() || dbPassword == null || dbPassword.trim().isEmpty()) {
         response.setStatus(500);
         out.print("{\"ok\":false,\"error\":\"db_config\"}");
         return;

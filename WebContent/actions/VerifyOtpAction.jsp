@@ -25,7 +25,7 @@
         safeRedirect(response, "../userLogin.jsp?required=1");
         return;
     }
-    if (otp == null || otp.isBlank()) {
+    if (otp == null || otp.trim().isEmpty()) {
         safeRedirect(response, "../verifyOtp.jsp?error=1");
         return;
     }
@@ -33,7 +33,7 @@
     String dbUrl = ConfigLoader.getDbUrl();
     String dbUser = ConfigLoader.getDbUser();
     String dbPassword = ConfigLoader.getDbPassword();
-    if (dbUrl == null || dbUrl.isBlank() || dbUser == null || dbUser.isBlank() || dbPassword == null || dbPassword.isBlank()) {
+    if (dbUrl == null || dbUrl.trim().isEmpty() || dbUser == null || dbUser.trim().isEmpty() || dbPassword == null || dbPassword.trim().isEmpty()) {
         safeRedirect(response, "../verifyOtp.jsp?error=db");
         return;
     }

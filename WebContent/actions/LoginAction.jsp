@@ -26,7 +26,7 @@
     private static String getConfig(jakarta.servlet.ServletContext app, String key, String defaultValue) {
         String envKey = key.toUpperCase().replace('.', '_');
         String envVal = System.getenv(envKey);
-        if (envVal != null && !envVal.isBlank()) {
+        if (envVal != null && !envVal.trim().isEmpty()) {
             return envVal;
         }
 
@@ -37,7 +37,7 @@
             if (in != null) {
                 props.load(in);
                 String val = props.getProperty(key);
-                if (val != null && !val.isBlank()) {
+                if (val != null && !val.trim().isEmpty()) {
                     return val;
                 }
             }
@@ -119,7 +119,7 @@
     String dbUrl = getConfig(application, "db.url", "");
     String dbUser = getConfig(application, "db.user", "");
     String dbPassword = getConfig(application, "db.password", "");
-    if (dbUrl == null || dbUrl.isBlank() || dbUser == null || dbUser.isBlank() || dbPassword == null || dbPassword.isBlank()) {
+    if (dbUrl == null || dbUrl.trim().isEmpty() || dbUser == null || dbUser.trim().isEmpty() || dbPassword == null || dbPassword.trim().isEmpty()) {
         safeRedirect(response, base + "/login.jsp?error=config");
         return;
     }
@@ -143,7 +143,7 @@
             String storedSalt = rs.getString("password_salt");
 
             boolean passwordOk = false;
-            if (storedHash != null && !storedHash.isBlank() && storedSalt != null && !storedSalt.isBlank()) {
+            if (storedHash != null && !storedHash.trim().isEmpty() && storedSalt != null && !storedSalt.trim().isEmpty()) {
                 String inputHash = hashPassword(password, storedSalt);
                 passwordOk = inputHash.equals(storedHash);
             } else if (legacyPassword != null) {

@@ -25,7 +25,7 @@
             String officerNotes = request.getParameter("officerNotes");
             String officerName = request.getParameter("officerName");
 
-            if (complaintIdRaw == null || complaintIdRaw.isBlank() || officerNotes == null || officerNotes.isBlank() || officerName == null || officerName.isBlank()) {
+            if (complaintIdRaw == null || complaintIdRaw.trim().isEmpty() || officerNotes == null || officerNotes.trim().isEmpty() || officerName == null || officerName.trim().isEmpty()) {
                 safeRedirect(response, "../officerDashboard.jsp?error=" + URLEncoder.encode("All required fields must be filled.", "UTF-8"));
                 return;
             }
@@ -56,7 +56,7 @@
             String dbUrl = ConfigLoader.getDbUrl();
             String dbUser = ConfigLoader.getDbUser();
             String dbPassword = ConfigLoader.getDbPassword();
-            if (dbUrl == null || dbUrl.isBlank() || dbUser == null || dbUser.isBlank() || dbPassword == null || dbPassword.isBlank()) {
+            if (dbUrl == null || dbUrl.trim().isEmpty() || dbUser == null || dbUser.trim().isEmpty() || dbPassword == null || dbPassword.trim().isEmpty()) {
                 safeRedirect(response, "../officerDashboard.jsp?error=" + URLEncoder.encode("Database is not configured. Contact admin.", "UTF-8"));
                 return;
             }
@@ -94,8 +94,8 @@
                     String SYSTEM_PASSWORD = ConfigLoader.getSmtpPassword();
                     String SMTP_HOST = ConfigLoader.getSmtpHost();
                     String SMTP_PORT = ConfigLoader.getSmtpPort();
-                    if (SYSTEM_EMAIL == null || SYSTEM_EMAIL.isBlank() || SYSTEM_PASSWORD == null || SYSTEM_PASSWORD.isBlank()
-                            || SMTP_HOST == null || SMTP_HOST.isBlank() || SMTP_PORT == null || SMTP_PORT.isBlank()) {
+                    if (SYSTEM_EMAIL == null || SYSTEM_EMAIL.trim().isEmpty() || SYSTEM_PASSWORD == null || SYSTEM_PASSWORD.trim().isEmpty()
+                            || SMTP_HOST == null || SMTP_HOST.trim().isEmpty() || SMTP_PORT == null || SMTP_PORT.trim().isEmpty()) {
                         SYSTEM_EMAIL = null;
                     }
                     if (SYSTEM_EMAIL != null) {

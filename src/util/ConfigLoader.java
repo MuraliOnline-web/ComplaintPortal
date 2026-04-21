@@ -37,10 +37,25 @@ public class ConfigLoader {
     public static String get(String key, String defaultValue) {
         // Priority: Environment variables > properties file > default value
         String envValue = System.getenv(toEnvVarName(key));
-        if (envValue != null && !envValue.isEmpty()) {
-            return envValue;
+        if (envValue != null && !envValue.trim().isEmpty()) {
+            return envValue.trim();
         }
-        return properties.getProperty(key, defaultValue);
+
+        String sysValue = System.getProperty(key);
+        if (sysValue == null || sysValue.trim().isEmpty()) {
+            // Allow -DSMTP_USER style as well as -Dsmtp.user.
+            sysValue = System.getProperty(toEnvVarName(key));
+        }
+        if (sysValue != null && !sysValue.trim().isEmpty()) {
+            return sysValue.trim();
+        }
+
+        String propValue = properties.getProperty(key);
+        if (propValue != null && !propValue.trim().isEmpty()) {
+            return propValue.trim();
+        }
+
+        return defaultValue;
     }
 
     /**

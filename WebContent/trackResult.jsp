@@ -4,13 +4,19 @@
     String ctx = request.getContextPath();
     String base = request.getRequestURI().contains("/WebContent/") ? (ctx + "/WebContent") : ctx;
     String homeHref = base + "/index.jsp";
+    String userDashboardHref = base + "/userDashboard.jsp";
     String trackComplaintHref = base + "/trackComplaint.jsp";
+    String backHref = homeHref;
+    String backLabel = "Back to Home";
     String styleHref = base + "/assets/css/style.css";
     String scriptHref = base + "/assets/js/main.js";
     String roadImageHref = base + "/assets/images/road.jpg";
     try {
         if (application.getResource("/index.jsp") != null) {
             homeHref = ctx + "/index.jsp";
+        }
+        if (application.getResource("/userDashboard.jsp") != null) {
+            userDashboardHref = ctx + "/userDashboard.jsp";
         }
         if (application.getResource("/trackComplaint.jsp") != null) {
             trackComplaintHref = ctx + "/trackComplaint.jsp";
@@ -26,6 +32,12 @@
         }
     } catch (Exception ignore) {
         // Fall back to the computed base path.
+    }
+
+    String role = session.getAttribute("role") != null ? String.valueOf(session.getAttribute("role")) : "";
+    if ("user".equalsIgnoreCase(role) && session.getAttribute("userId") != null) {
+        backHref = userDashboardHref;
+        backLabel = "Back to Dashboard";
     }
 %>
 <!DOCTYPE html>
@@ -80,7 +92,7 @@
     <main class="container py-4 py-lg-5">
         <nav aria-label="breadcrumb" class="mb-4">
             <ol class="breadcrumb small">
-                <li class="breadcrumb-item"><a href="<%= homeHref %>">Home</a></li>
+                <li class="breadcrumb-item"><a href="<%= userDashboardHref %>">User Dashboard</a></li>
                 <li class="breadcrumb-item"><a href="<%= trackComplaintHref %>">Track Complaint</a></li>
                 <li class="breadcrumb-item active" aria-current="page">Result</li>
             </ol>
@@ -144,7 +156,7 @@
 
             <div class="d-flex flex-wrap gap-2 mt-4">
                 <a href="<%= trackComplaintHref %>" class="btn btn-primary">Track Another Complaint</a>
-                <a href="<%= homeHref %>" class="btn btn-outline-secondary">Back to Home</a>
+                <a href="<%= backHref %>" class="btn btn-outline-secondary"><%= backLabel %></a>
             </div>
         </div>
     </main>

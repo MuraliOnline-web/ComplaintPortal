@@ -27,7 +27,7 @@
     String email = request.getParameter("email");
     String password = request.getParameter("password");
     String role = request.getParameter("role");
-    if (email == null || email.isBlank() || password == null || password.isBlank() || role == null || role.isBlank()) {
+    if (email == null || email.trim().isEmpty() || password == null || password.trim().isEmpty() || role == null || role.trim().isEmpty()) {
         response.setStatus(400);
         out.print("{\"ok\":false,\"error\":\"missing_fields\"}");
         return;
@@ -43,7 +43,7 @@
     String dbUrl = ConfigLoader.getDbUrl();
     String dbUser = ConfigLoader.getDbUser();
     String dbPassword = ConfigLoader.getDbPassword();
-    if (dbUrl == null || dbUrl.isBlank() || dbUser == null || dbUser.isBlank() || dbPassword == null || dbPassword.isBlank()) {
+    if (dbUrl == null || dbUrl.trim().isEmpty() || dbUser == null || dbUser.trim().isEmpty() || dbPassword == null || dbPassword.trim().isEmpty()) {
         response.setStatus(500);
         out.print("{\"ok\":false,\"error\":\"db_config\"}");
         return;
@@ -72,7 +72,7 @@
         String storedSalt = rs.getString("password_salt");
 
         boolean passwordOk = false;
-        if (storedHash != null && !storedHash.isBlank() && storedSalt != null && !storedSalt.isBlank()) {
+        if (storedHash != null && !storedHash.trim().isEmpty() && storedSalt != null && !storedSalt.trim().isEmpty()) {
             String inputHash = hashPassword(password, storedSalt);
             passwordOk = inputHash.equals(storedHash);
         } else if (storedPlain != null) {

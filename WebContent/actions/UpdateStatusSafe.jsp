@@ -10,7 +10,7 @@
     private static String getConfig(jakarta.servlet.ServletContext app, String key, String defaultValue) {
         String envKey = key.toUpperCase().replace('.', '_');
         String envVal = System.getenv(envKey);
-        if (envVal != null && !envVal.isBlank()) {
+        if (envVal != null && !envVal.trim().isEmpty()) {
             return envVal;
         }
 
@@ -21,7 +21,7 @@
             if (in != null) {
                 props.load(in);
                 String val = props.getProperty(key);
-                if (val != null && !val.isBlank()) {
+                if (val != null && !val.trim().isEmpty()) {
                     return val;
                 }
             }
@@ -90,7 +90,7 @@
 
     String complaintIdRaw = request.getParameter("complaintId");
     String status = request.getParameter("status");
-    if (complaintIdRaw == null || complaintIdRaw.isBlank() || status == null || status.isBlank()) {
+    if (complaintIdRaw == null || complaintIdRaw.trim().isEmpty() || status == null || status.trim().isEmpty()) {
         safeRedirect(response, base + "/adminDashboard.jsp");
         return;
     }
@@ -119,7 +119,7 @@
     String dbUrl = getConfig(application, "db.url", "");
     String dbUser = getConfig(application, "db.user", "");
     String dbPassword = getConfig(application, "db.password", "");
-    if (dbUrl == null || dbUrl.isBlank() || dbUser == null || dbUser.isBlank() || dbPassword == null || dbPassword.isBlank()) {
+    if (dbUrl == null || dbUrl.trim().isEmpty() || dbUser == null || dbUser.trim().isEmpty() || dbPassword == null || dbPassword.trim().isEmpty()) {
         safeRedirect(response, base + "/adminDashboard.jsp");
         return;
     }

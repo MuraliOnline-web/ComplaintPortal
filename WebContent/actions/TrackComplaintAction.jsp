@@ -13,9 +13,9 @@
     String code = request.getParameter("code");
     String idStr = request.getParameter("complaintId");
     Integer complaintId = null;
-    try { if (idStr != null && !idStr.isBlank()) complaintId = Integer.parseInt(idStr.trim()); } catch(Exception ignore) {}
+    try { if (idStr != null && !idStr.trim().isEmpty()) complaintId = Integer.parseInt(idStr.trim()); } catch(Exception ignore) {}
 
-    if ((code == null || code.isBlank()) && complaintId == null) {
+    if ((code == null || code.trim().isEmpty()) && complaintId == null) {
         safeRedirect(response, "../trackComplaint.jsp?error=1");
         return;
     }
@@ -23,7 +23,7 @@
     String dbUrl = ConfigLoader.getDbUrl();
     String dbUser = ConfigLoader.getDbUser();
     String dbPassword = ConfigLoader.getDbPassword();
-    if (dbUrl == null || dbUrl.isBlank() || dbUser == null || dbUser.isBlank() || dbPassword == null || dbPassword.isBlank()) {
+    if (dbUrl == null || dbUrl.trim().isEmpty() || dbUser == null || dbUser.trim().isEmpty() || dbPassword == null || dbPassword.trim().isEmpty()) {
         safeRedirect(response, "../trackComplaint.jsp?error=db");
         return;
     }
@@ -37,12 +37,12 @@
         String sql = "SELECT c.complaint_id, c.complaint_code, c.category, c.description, c.address, c.photo_path, c.status, " +
                      "c.officer_notes, c.solved_photo_path, c.created_at, c.updated_at " +
                      "FROM complaints c JOIN users u ON c.user_id = u.user_id WHERE u.email=?" +
-                     ((code != null && !code.isBlank()) ? " AND c.complaint_code=?" : "") +
+                     ((code != null && !code.trim().isEmpty()) ? " AND c.complaint_code=?" : "") +
                      ((complaintId != null) ? " AND c.complaint_id=?" : "");
         PreparedStatement pst = con.prepareStatement(sql);
         int idx = 1;
         pst.setString(idx++, email);
-        if (code != null && !code.isBlank()) pst.setString(idx++, code.trim());
+        if (code != null && !code.trim().isEmpty()) pst.setString(idx++, code.trim());
         if (complaintId != null) pst.setInt(idx++, complaintId);
 
         ResultSet rs = pst.executeQuery();

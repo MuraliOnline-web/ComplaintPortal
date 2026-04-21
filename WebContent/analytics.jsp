@@ -16,7 +16,7 @@
     }
 
     String g = request.getParameter("g");
-    if (g == null || g.isBlank()) g = "day";
+    if (g == null || g.trim().isEmpty()) g = "day";
     if (!"day".equals(g) && !"month".equals(g) && !"year".equals(g)) {
         response.sendRedirect(base + "/analytics.jsp?error=invalidFilter");
         return;
@@ -41,13 +41,13 @@
         // Use computed fallbacks.
     }
     if ("day".equals(g)) {
-        if (selectedDate == null || selectedDate.isBlank()) selectedDate = today.toString();
+        if (selectedDate == null || selectedDate.trim().isEmpty()) selectedDate = today.toString();
         try { java.time.LocalDate.parse(selectedDate); } catch (Exception ex) { response.sendRedirect(base + "/analytics.jsp?error=invalidFilter"); return; }
     } else if ("month".equals(g)) {
-        if (selectedMonth == null || selectedMonth.isBlank()) selectedMonth = today.getYear() + "-" + String.format("%02d", today.getMonthValue());
+        if (selectedMonth == null || selectedMonth.trim().isEmpty()) selectedMonth = today.getYear() + "-" + String.format("%02d", today.getMonthValue());
         if (!selectedMonth.matches("^\\d{4}-\\d{2}$")) { response.sendRedirect(base + "/analytics.jsp?error=invalidFilter"); return; }
     } else {
-        if (selectedYear == null || selectedYear.isBlank()) selectedYear = String.valueOf(today.getYear());
+        if (selectedYear == null || selectedYear.trim().isEmpty()) selectedYear = String.valueOf(today.getYear());
         if (!selectedYear.matches("^\\d{4}$")) { response.sendRedirect(base + "/analytics.jsp?error=invalidFilter"); return; }
     }
     String selectedCategory = request.getParameter("cat");
@@ -126,7 +126,7 @@
                 <div class="col-md-3">
                     <label for="cat" class="form-label fw-semibold">Category</label>
                     <select id="cat" name="cat" class="form-select">
-                        <option value="" <%= (selectedCategory==null||selectedCategory.isBlank())?"selected":"" %>>All</option>
+                        <option value="" <%= (selectedCategory==null||selectedCategory.trim().isEmpty())?"selected":"" %>>All</option>
                         <option value="WaterTap" <%= "WaterTap".equals(selectedCategory)?"selected":"" %>>WaterTap</option>
                         <option value="Electricity" <%= "Electricity".equals(selectedCategory)?"selected":"" %>>Electricity</option>
                         <option value="Road" <%= "Road".equals(selectedCategory)?"selected":"" %>>Road</option>
@@ -159,7 +159,7 @@
             int catPending = 0, catSolved = 0;
             String dashboardError = null;
 
-            if (dbUrl == null || dbUrl.isBlank() || dbUser == null || dbUser.isBlank() || dbPassword == null || dbPassword.isBlank()) {
+            if (dbUrl == null || dbUrl.trim().isEmpty() || dbUser == null || dbUser.trim().isEmpty() || dbPassword == null || dbPassword.trim().isEmpty()) {
                 dashboardError = "Database is not configured. Analytics data is unavailable.";
             } else {
                 Connection con = null;
@@ -222,7 +222,7 @@
                         }
                     }
 
-                    if (selectedCategory != null && !selectedCategory.isBlank()) {
+                    if (selectedCategory != null && !selectedCategory.trim().isEmpty()) {
                         if ("day".equals(g)) {
                             pstCat = con.prepareStatement("SELECT status, COUNT(*) cnt FROM complaints WHERE DATE(created_at)=? AND category=? GROUP BY status");
                             pstCat.setString(1, selectedDate);
@@ -325,7 +325,7 @@
                 <div class="col-12 col-sm-6 col-lg-2">
                     <a class="btn btn-outline-success w-100 h-100 d-flex align-items-center justify-content-center" href="<%= base %>/actions/SearchComplaints.jsp?date=<%= selectedDate %>&status=Solved">Solved: <%= solved %></a>
                 </div>
-                <% if (selectedCategory != null && !selectedCategory.isBlank()) { %>
+                <% if (selectedCategory != null && !selectedCategory.trim().isEmpty()) { %>
                     <div class="col-12">
                         <div class="card p-3" style="border-left: 4px solid #3b82f6;">
                             <b>Category:</b> <%= selectedCategory %><br>

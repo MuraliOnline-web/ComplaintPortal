@@ -6,7 +6,7 @@
 <%!
     private static String mask(String value) {
         if (value == null) return "(missing)";
-        if (value.isBlank()) return "(blank)";
+        if (value.trim().isEmpty()) return "(blank)";
         if (value.length() <= 4) return "****";
         return value.substring(0, 2) + "****" + value.substring(value.length() - 2);
     }
@@ -43,8 +43,8 @@
     String smtpPort = ConfigLoader.getSmtpPort();
     String smtpUser = ConfigLoader.getSmtpUser();
     String smtpPassword = ConfigLoader.getSmtpPassword();
-    boolean dbConfigured = dbUrl != null && !dbUrl.isBlank() && dbUser != null && !dbUser.isBlank() && dbPassword != null && !dbPassword.isBlank();
-    boolean smtpConfigured = smtpHost != null && !smtpHost.isBlank() && smtpPort != null && !smtpPort.isBlank() && smtpUser != null && !smtpUser.isBlank() && smtpPassword != null && !smtpPassword.isBlank();
+    boolean dbConfigured = dbUrl != null && !dbUrl.trim().isEmpty() && dbUser != null && !dbUser.trim().isEmpty() && dbPassword != null && !dbPassword.trim().isEmpty();
+    boolean smtpConfigured = smtpHost != null && !smtpHost.trim().isEmpty() && smtpPort != null && !smtpPort.trim().isEmpty() && smtpUser != null && !smtpUser.trim().isEmpty() && smtpPassword != null && !smtpPassword.trim().isEmpty();
 
     String runDb = request.getParameter("dbtest");
     String runSmtp = request.getParameter("smtptest");
@@ -111,8 +111,8 @@
         </div>
 
         <div class="row g-4">
-            <div class="col-lg-6"><div class="dashboard-card p-4 h-100"><h2 class="h4 fw-bold mb-3">Database Config</h2><p><b>Configured:</b> <%= dbConfigured ? "Yes" : "No" %></p><p><b>DB_URL:</b> <%= mask(dbUrl) %></p><p><b>DB_USER:</b> <%= mask(dbUser) %></p><p><b>DB_PASSWORD:</b> <%= mask(dbPassword) %></p><p><b>DB Test:</b> <%= dbTestStatus %></p><% if (!dbTestDetail.isBlank()) { %><p><b>DB Detail:</b> <%= dbTestDetail %></p><% } %><button type="button" class="btn btn-primary" onclick="window.location.href='<%= base %>/adminConfigHealth.jsp?dbtest=1';">Run DB Connectivity Test</button></div></div>
-            <div class="col-lg-6"><div class="dashboard-card p-4 h-100"><h2 class="h4 fw-bold mb-3">SMTP Config</h2><p><b>Configured:</b> <%= smtpConfigured ? "Yes" : "No" %></p><p><b>SMTP_HOST:</b> <%= mask(smtpHost) %></p><p><b>SMTP_PORT:</b> <%= mask(smtpPort) %></p><p><b>SMTP_USER:</b> <%= mask(smtpUser) %></p><p><b>SMTP_PASSWORD:</b> <%= mask(smtpPassword) %></p><p><b>SMTP Test:</b> <%= smtpTestStatus %></p><% if (!smtpTestDetail.isBlank()) { %><p><b>SMTP Detail:</b> <%= smtpTestDetail %></p><% } %><button type="button" class="btn btn-primary" onclick="window.location.href='<%= base %>/adminConfigHealth.jsp?smtptest=1';">Run SMTP Connectivity Test</button></div></div>
+            <div class="col-lg-6"><div class="dashboard-card p-4 h-100"><h2 class="h4 fw-bold mb-3">Database Config</h2><p><b>Configured:</b> <%= dbConfigured ? "Yes" : "No" %></p><p><b>DB_URL:</b> <%= mask(dbUrl) %></p><p><b>DB_USER:</b> <%= mask(dbUser) %></p><p><b>DB_PASSWORD:</b> <%= mask(dbPassword) %></p><p><b>DB Test:</b> <%= dbTestStatus %></p><% if (!dbTestDetail.trim().isEmpty()) { %><p><b>DB Detail:</b> <%= dbTestDetail %></p><% } %><button type="button" class="btn btn-primary" onclick="window.location.href='<%= base %>/adminConfigHealth.jsp?dbtest=1';">Run DB Connectivity Test</button></div></div>
+            <div class="col-lg-6"><div class="dashboard-card p-4 h-100"><h2 class="h4 fw-bold mb-3">SMTP Config</h2><p><b>Configured:</b> <%= smtpConfigured ? "Yes" : "No" %></p><p><b>SMTP_HOST:</b> <%= mask(smtpHost) %></p><p><b>SMTP_PORT:</b> <%= mask(smtpPort) %></p><p><b>SMTP_USER:</b> <%= mask(smtpUser) %></p><p><b>SMTP_PASSWORD:</b> <%= mask(smtpPassword) %></p><p><b>SMTP Test:</b> <%= smtpTestStatus %></p><% if (!smtpTestDetail.trim().isEmpty()) { %><p><b>SMTP Detail:</b> <%= smtpTestDetail %></p><% } %><button type="button" class="btn btn-primary" onclick="window.location.href='<%= base %>/adminConfigHealth.jsp?smtptest=1';">Run SMTP Connectivity Test</button></div></div>
         </div>
 
         <div class="d-flex flex-wrap gap-2 mt-4"><button type="button" class="btn btn-secondary" onclick="window.location.href='<%= dashboardHref %>';">Back to Admin Dashboard</button><button type="button" class="btn btn-primary" onclick="window.location.href='<%= homeHref %>';">Back to Home</button></div>
