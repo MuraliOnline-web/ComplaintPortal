@@ -11,6 +11,8 @@
     if (flashMessage != null) session.removeAttribute("flashMessage");
     if (flashType != null) session.removeAttribute("flashType");
     
+    String ctx = request.getContextPath();
+    String base = request.getRequestURI().contains("/WebContent/") ? (ctx + "/WebContent") : ctx;
     String role = (String) session.getAttribute("role");
     if (role == null || (!"officer".equals(role) && !"admin".equals(role))) {
         response.sendRedirect(base + "/login.jsp?denied=1");
@@ -18,8 +20,6 @@
     }
 
     String officerName = session.getAttribute("userName") != null ? String.valueOf(session.getAttribute("userName")) : "Officer";
-    String ctx = request.getContextPath();
-    String base = request.getRequestURI().contains("/WebContent/") ? (ctx + "/WebContent") : ctx;
     String homeHref = base + "/index.jsp";
     String analyticsHref = base + "/analytics.jsp";
     String logoutHref = base + "/actions/LogoutAction.jsp";

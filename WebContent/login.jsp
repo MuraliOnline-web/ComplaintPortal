@@ -1,5 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%
+    String errorMsg = request.getParameter("error");
+    String reason = request.getParameter("reason");
+
     String ctx = request.getContextPath();
     String base = request.getRequestURI().contains("/WebContent/") ? (ctx + "/WebContent") : ctx;
     String homeHref = base + "/index.jsp";
@@ -145,9 +148,15 @@
     
     <!-- Hidden message divs -->
     <% 
-        String errorMsg = request.getParameter("error");
-        if ("1".equals(errorMsg)) { %>
-            <div id="errorMessage" style="display:none;">Invalid email, password, or role</div>
+        if ("1".equals(errorMsg)) {
+            String hiddenErrorText = "Invalid email, role, or login credentials";
+            if ("email_not_found".equals(reason)) {
+                hiddenErrorText = "Email not found for Admin/Officer account";
+            } else if ("role_mismatch".equals(reason)) {
+                hiddenErrorText = "Role mismatch for the provided email";
+            }
+    %>
+            <div id="errorMessage" style="display:none;"><%= hiddenErrorText %></div>
         <% } else if ("config".equals(errorMsg)) { %>
             <div id="errorMessage" style="display:none;">Database configuration error</div>
         <% } else if ("denied".equals(request.getParameter("denied"))) { %>
@@ -201,10 +210,17 @@
                             <a class="role-tab active text-center text-decoration-none" href="<%= base %>/login.jsp">Admin / Officer Login</a>
                         </div>
 
-                        <% if ("1".equals(request.getParameter("error"))) { %>
-                            <div class="alert alert-danger">Invalid email, password, or role. Please try again.</div>
+                        <% if ("1".equals(errorMsg)) {
+                            String detailedError = "Invalid email, role, or login credentials. Please try again.";
+                            if ("email_not_found".equals(reason)) {
+                                detailedError = "Email not found. Use the registered Admin/Officer email.";
+                            } else if ("role_mismatch".equals(reason)) {
+                                detailedError = "Role mismatch. Select the role that matches this email account.";
+                            }
+                        %>
+                            <div class="alert alert-danger"><%= detailedError %></div>
                         <% } %>
-                        <% if ("config".equals(request.getParameter("error"))) { %>
+                        <% if ("config".equals(errorMsg)) { %>
                             <div class="alert alert-danger">Database is not configured. Contact administrator.</div>
                         <% } %>
                         <% if ("1".equals(request.getParameter("denied"))) { %>

@@ -6,6 +6,13 @@
     private static void safeRedirect(jakarta.servlet.http.HttpServletResponse response, String location) throws java.io.IOException {
         response.setStatus(302);
         response.setHeader("Location", location);
+    }
+%>
+<%
+    // Role guard: only admin/officer
+    String _role = (String) session.getAttribute("role");
+    String ctx = request.getContextPath();
+    String base = request.getRequestURI().contains("/WebContent/") ? (ctx + "/WebContent") : ctx;
     String assetsBase = base;
     try {
         if (application.getResource("/assets/css/style.css") == null && application.getResource("/WebContent/assets/css/style.css") != null) {
@@ -14,13 +21,6 @@
     } catch (Exception ignore) {
         // Keep computed base.
     }
-    }
-%>
-<%
-    // Role guard: only admin/officer
-    String _role = (String) session.getAttribute("role");
-    String ctx = request.getContextPath();
-    String base = request.getRequestURI().contains("/WebContent/") ? (ctx + "/WebContent") : ctx;
     String dash = "officer".equals(_role) ? "/officerDashboard.jsp" : "/adminDashboard.jsp";
     if(_role == null || (!"admin".equals(_role) && !"officer".equals(_role))) {
         safeRedirect(response, base + "/login.jsp");

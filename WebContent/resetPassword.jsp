@@ -18,6 +18,7 @@
     } catch (Exception ignore) {
         // Use computed fallbacks.
     }
+
     String waitValue = request.getParameter("wait");
     String expValue = request.getParameter("exp");
     int waitSeconds = 0;
@@ -41,13 +42,10 @@
     <title>Reset Password</title>
     <link rel="stylesheet" href="<%= styleHref %>">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" crossorigin="anonymous">
-    </style>
-</head>
-<body class="auth-page">
-    <!-- Toast container for notifications -->
-    <div id="toastContainer"></div>
-    
-    <nav class="navbar navbar-expand-lg bg-white bg-opacity-75 backdrop-blur-sm sticky-top border-bottom border-light-subtle">
+    <style>
+        body.auth-page {
+            min-height: 100vh;
+            background:
                 radial-gradient(circle at top left, rgba(79, 70, 229, 0.14), transparent 30%),
                 radial-gradient(circle at bottom right, rgba(14, 165, 233, 0.1), transparent 32%),
                 linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
@@ -91,7 +89,7 @@
             z-index: 2;
         }
 
-        .eye-toggle.active::after {
+        .password-wrap.active::after {
             content: '/';
             position: absolute;
             left: 6px;
@@ -102,7 +100,20 @@
     </style>
 </head>
 <body class="auth-page">
+    <%@ include file="includes/ui-enhancements.jspf" %>
+    <div id="toastContainer"></div>
+
     <div class="container-fluid px-0">
+        <div class="container py-3">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb small">
+                    <li class="breadcrumb-item"><a href="<%= homeHref %>">Home</a></li>
+                    <li class="breadcrumb-item"><a href="<%= loginHref %>">Login</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Reset Password</li>
+                </ol>
+            </nav>
+        </div>
+
         <div class="row g-0 min-vh-100">
             <div class="col-lg-5 d-none d-lg-block">
                 <div class="auth-visual">
@@ -118,10 +129,6 @@
                         </div>
                         <h1 class="display-5 fw-bold" style="line-height:1.05;">Set a new password and keep your account secure.</h1>
                         <p class="mt-3 mb-0 text-white-75" style="max-width: 26rem;">Use the OTP sent to your email to confirm the reset and choose a new password.</p>
-                    </div>
-                    <div class="row g-3 mt-4">
-                        <div class="col-6"><div class="bg-white bg-opacity-10 border border-white border-opacity-10 rounded-4 p-3"><div class="small text-white-50">Code</div><div class="fw-semibold">OTP verification</div></div></div>
-                        <div class="col-6"><div class="bg-white bg-opacity-10 border border-white border-opacity-10 rounded-4 p-3"><div class="small text-white-50">Password</div><div class="fw-semibold">At least 6 chars</div></div></div>
                     </div>
                 </div>
             </div>
@@ -159,6 +166,7 @@
                             <div class="alert alert-danger">Unable to send OTP email. Verify SMTP credentials.</div>
                         <% } %>
 
+                        <input type="hidden" id="otpExpiryMinutes" value="<%= expMinutes %>">
                         <form action="<%= base %>/actions/ResetPasswordAction.jsp" method="post" class="row g-3">
                             <div class="col-md-4">
                                 <label class="form-label fw-semibold">OTP</label>
@@ -183,7 +191,7 @@
                                 <button type="submit" class="btn btn-primary btn-lg">Update Password</button>
                                 <div class="d-flex gap-2 flex-wrap">
                                     <a id="resendOtpLink" href="<%= base %>/actions/ResendResetOtpAction.jsp" class="btn btn-outline-primary" data-wait="<%= waitSeconds %>">Resend OTP</a>
-                                    <a href="<%= base %>/userLogin.jsp" class="btn btn-outline-secondary">Back to Login</a>
+                                    <a href="<%= loginHref %>" class="btn btn-outline-secondary">Back to Login</a>
                                 </div>
                             </div>
                         </form>
@@ -222,12 +230,10 @@
 
             const timer = setInterval(function () {
                 wait -= 1;
-
                 if (wait > 0) {
                     resendLink.textContent = 'Resend OTP (' + wait + 's)';
                     return;
                 }
-
                 clearInterval(timer);
                 resendLink.style.pointerEvents = 'auto';
                 resendLink.style.opacity = '1';
@@ -239,7 +245,9 @@
             const counter = document.getElementById('otpExpiryCounter');
             if (!counter) return;
 
-            let remaining = <%= expMinutes %> * 60;
+            const expInput = document.getElementById('otpExpiryMinutes');
+            const expFromPage = expInput ? parseInt(expInput.value || '14', 10) : 14;
+            let remaining = (Number.isFinite(expFromPage) ? expFromPage : 14) * 60;
             const render = function () {
                 const m = Math.floor(remaining / 60);
                 const s = remaining % 60;
@@ -259,7 +267,7 @@
             }, 1000);
         })();
     </script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
     <script src="<%= scriptHref %>"></script>
 </body>
 </html>

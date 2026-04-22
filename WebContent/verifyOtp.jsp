@@ -1,7 +1,12 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%
+    String otpError = request.getParameter("error");
+    String otpReason = request.getParameter("reason");
+    String flowRole = request.getParameter("role");
+
     String ctx = request.getContextPath();
     String base = request.getRequestURI().contains("/WebContent/") ? (ctx + "/WebContent") : ctx;
+    String loginBackHref = base + "/userLogin.jsp";
     String homeHref = base + "/index.jsp";
     String styleHref = base + "/assets/css/style.css";
     String scriptHref = base + "/assets/js/main.js";
@@ -22,6 +27,10 @@
         if (expValue != null) expMinutes = Integer.parseInt(expValue);
     } catch (Exception ignore) {
         expMinutes = 14;
+    }
+
+    if (flowRole != null && ("admin".equalsIgnoreCase(flowRole) || "officer".equalsIgnoreCase(flowRole))) {
+        loginBackHref = base + "/login.jsp";
     }
 %>
 <!DOCTYPE html>
@@ -69,7 +78,7 @@
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb small">
                     <li class="breadcrumb-item"><a href="<%= homeHref %>">Home</a></li>
-                    <li class="breadcrumb-item"><a href="<%= base %>/userLogin.jsp">Login</a></li>
+                    <li class="breadcrumb-item"><a href="<%= loginBackHref %>">Login</a></li>
                     <li class="breadcrumb-item active" aria-current="page">Verify OTP</li>
                 </ol>
             </nav>
@@ -106,10 +115,17 @@
                         <% if ("0".equals(request.getParameter("mail"))) { %>
                             <div class="alert alert-danger">Unable to send OTP email using the current SMTP settings.</div>
                         <% } %>
-                        <% if ("1".equals(request.getParameter("error"))) { %>
-                            <div class="alert alert-danger">Invalid or expired OTP.</div>
+                        <% if ("1".equals(otpError)) {
+                            String otpErrorText = "Invalid OTP. Please try again.";
+                            if ("expired".equals(otpReason)) {
+                                otpErrorText = "Expired OTP. Please request a new OTP and try again.";
+                            } else if ("invalid".equals(otpReason)) {
+                                otpErrorText = "Invalid OTP. Please enter the latest OTP sent to your email.";
+                            }
+                        %>
+                            <div class="alert alert-danger"><%= otpErrorText %></div>
                         <% } %>
-                        <% if ("db".equals(request.getParameter("error"))) { %>
+                        <% if ("db".equals(otpError)) { %>
                             <div class="alert alert-danger">Database is not configured. Contact administrator.</div>
                         <% } %>
 
@@ -117,10 +133,13 @@
                             <div class="col-12">
                                 <label class="form-label fw-semibold">Enter OTP</label>
                                 <input type="text" name="otp" class="form-control form-control-lg" maxlength="6" placeholder="6 digits" required>
+                                <% if (flowRole != null && !flowRole.trim().isEmpty()) { %>
+                                    <input type="hidden" name="role" value="<%= flowRole %>">
+                                <% } %>
                             </div>
                             <div class="col-12 d-flex flex-wrap gap-2 justify-content-between align-items-center mt-2">
                                 <button type="submit" class="btn btn-primary btn-lg">Verify & Login</button>
-                                <a href="<%= base %>/userLogin.jsp" class="btn btn-outline-secondary">Back</a>
+                                <a href="<%= loginBackHref %>" class="btn btn-outline-secondary">Back</a>
                             </div>
                         </form>
                     </div>
