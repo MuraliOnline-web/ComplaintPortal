@@ -1,4 +1,10 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%!
+    private static void safeRedirect(jakarta.servlet.http.HttpServletResponse response, String location) throws java.io.IOException {
+        response.setStatus(302);
+        response.setHeader("Location", location);
+    }
+%>
 <%
     String role = (String) session.getAttribute("role");
     String ctx = request.getContextPath();
@@ -22,7 +28,7 @@
         // Use computed fallbacks.
     }
     if (role == null || !"user".equals(role)) {
-        response.sendRedirect(base + "/userLogin.jsp?required=1");
+        safeRedirect(response, base + "/userLogin.jsp?required=1");
         return;
     }
 

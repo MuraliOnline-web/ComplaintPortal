@@ -1,6 +1,12 @@
 <%@ page import="java.sql.*" %>
 <%@ page import="util.ConfigLoader" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%!
+    private static void safeRedirect(jakarta.servlet.http.HttpServletResponse response, String location) throws java.io.IOException {
+        response.setStatus(302);
+        response.setHeader("Location", location);
+    }
+%>
 <%
     String role = (String) session.getAttribute("role");
     String ctx = request.getContextPath();
@@ -11,14 +17,14 @@
     String styleHref = base + "/assets/css/style.css";
     String logoHref = base + "/assets/images/logo.svg";
     if (role == null || (!"admin".equals(role) && !"officer".equals(role))) {
-        response.sendRedirect(base + "/login.jsp");
+        safeRedirect(response, base + "/login.jsp");
         return;
     }
 
     String g = request.getParameter("g");
     if (g == null || g.trim().isEmpty()) g = "day";
     if (!"day".equals(g) && !"month".equals(g) && !"year".equals(g)) {
-        response.sendRedirect(base + "/analytics.jsp?error=invalidFilter");
+        safeRedirect(response, base + "/analytics.jsp?error=invalidFilter");
         return;
     }
 
@@ -42,13 +48,13 @@
     }
     if ("day".equals(g)) {
         if (selectedDate == null || selectedDate.trim().isEmpty()) selectedDate = today.toString();
-        try { java.time.LocalDate.parse(selectedDate); } catch (Exception ex) { response.sendRedirect(base + "/analytics.jsp?error=invalidFilter"); return; }
+        try { java.time.LocalDate.parse(selectedDate); } catch (Exception ex) { safeRedirect(response, base + "/analytics.jsp?error=invalidFilter"); return; }
     } else if ("month".equals(g)) {
         if (selectedMonth == null || selectedMonth.trim().isEmpty()) selectedMonth = today.getYear() + "-" + String.format("%02d", today.getMonthValue());
-        if (!selectedMonth.matches("^\\d{4}-\\d{2}$")) { response.sendRedirect(base + "/analytics.jsp?error=invalidFilter"); return; }
+        if (!selectedMonth.matches("^\\d{4}-\\d{2}$")) { safeRedirect(response, base + "/analytics.jsp?error=invalidFilter"); return; }
     } else {
         if (selectedYear == null || selectedYear.trim().isEmpty()) selectedYear = String.valueOf(today.getYear());
-        if (!selectedYear.matches("^\\d{4}$")) { response.sendRedirect(base + "/analytics.jsp?error=invalidFilter"); return; }
+        if (!selectedYear.matches("^\\d{4}$")) { safeRedirect(response, base + "/analytics.jsp?error=invalidFilter"); return; }
     }
     String selectedCategory = request.getParameter("cat");
 %>

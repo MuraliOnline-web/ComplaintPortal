@@ -151,9 +151,9 @@
         if ("1".equals(errorMsg)) {
             String hiddenErrorText = "Invalid email, role, or login credentials";
             if ("email_not_found".equals(reason)) {
-                hiddenErrorText = "Email not found for Admin/Officer account";
+                hiddenErrorText = "No account found for this email";
             } else if ("role_mismatch".equals(reason)) {
-                hiddenErrorText = "Role mismatch for the provided email";
+                hiddenErrorText = "This email is not registered as admin or officer";
             }
     %>
             <div id="errorMessage" style="display:none;"><%= hiddenErrorText %></div>
@@ -213,9 +213,9 @@
                         <% if ("1".equals(errorMsg)) {
                             String detailedError = "Invalid email, role, or login credentials. Please try again.";
                             if ("email_not_found".equals(reason)) {
-                                detailedError = "Email not found. Use the registered Admin/Officer email.";
+                                detailedError = "No account found for this email. Use the registered Admin/Officer email.";
                             } else if ("role_mismatch".equals(reason)) {
-                                detailedError = "Role mismatch. Select the role that matches this email account.";
+                                detailedError = "This email is not registered as admin or officer. Select the correct role for another account.";
                             }
                         %>
                             <div class="alert alert-danger"><%= detailedError %></div>

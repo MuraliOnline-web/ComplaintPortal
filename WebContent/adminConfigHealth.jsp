@@ -4,6 +4,11 @@
 <%@ page import="util.ConfigLoader" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%!
+    private static void safeRedirect(jakarta.servlet.http.HttpServletResponse response, String location) throws java.io.IOException {
+        response.setStatus(302);
+        response.setHeader("Location", location);
+    }
+
     private static String mask(String value) {
         if (value == null) return "(missing)";
         if (value.trim().isEmpty()) return "(blank)";
@@ -34,7 +39,7 @@
         // Use computed fallbacks.
     }
     String role = (String) session.getAttribute("role");
-    if (role == null || !"admin".equals(role)) { response.sendRedirect(base + "/login.jsp?denied=1"); return; }
+    if (role == null || !"admin".equals(role)) { safeRedirect(response, base + "/login.jsp?denied=1"); return; }
 
     String dbUrl = ConfigLoader.getDbUrl();
     String dbUser = ConfigLoader.getDbUser();

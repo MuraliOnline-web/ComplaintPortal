@@ -3,6 +3,12 @@
 <%@ page import="java.io.*" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="/WEB-INF/tld/c.tld" prefix="c" %>
+<%!
+    private static void safeRedirect(jakarta.servlet.http.HttpServletResponse response, String location) throws java.io.IOException {
+        response.setStatus(302);
+        response.setHeader("Location", location);
+    }
+%>
 <%
     // Handle flash messages from previous actions
     String flashMessage = (String) session.getAttribute("flashMessage");
@@ -12,7 +18,7 @@
     
     String role = (String) session.getAttribute("role");
     if (role == null || !"user".equals(role)) {
-        response.sendRedirect(request.getContextPath() + (request.getRequestURI().contains("/WebContent/") ? "/WebContent" : "") + "/userLogin.jsp?required=1");
+        safeRedirect(response, request.getContextPath() + (request.getRequestURI().contains("/WebContent/") ? "/WebContent" : "") + "/userLogin.jsp?required=1");
         return;
     }
 

@@ -1,3 +1,6 @@
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%
-    request.getRequestDispatcher("/WebContent/index.jsp").forward(request, response);
+    String ctx = request.getContextPath();
+    response.setStatus(302);
+    response.setHeader("Location", ctx + "/WebContent/index.jsp");
 %>

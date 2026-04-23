@@ -4,6 +4,12 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="/WEB-INF/tld/c.tld" prefix="c" %>
 <%@ taglib uri="/WEB-INF/tld/fn.tld" prefix="fn" %>
+<%!
+    private static void safeRedirect(jakarta.servlet.http.HttpServletResponse response, String location) throws java.io.IOException {
+        response.setStatus(302);
+        response.setHeader("Location", location);
+    }
+%>
 <%
     // Handle flash messages from previous actions
     String flashMessage = (String) session.getAttribute("flashMessage");
@@ -19,6 +25,7 @@
     String searchHref = base + "/actions/SearchComplaints.jsp";
     String logoutHref = base + "/actions/LogoutAction.jsp";
     String styleHref = base + "/assets/css/style.css";
+    String scriptHref = base + "/assets/js/main.js";
     String logoHref = base + "/assets/images/logo.svg";
     try {
         if (application.getResource("/index.jsp") != null) homeHref = ctx + "/index.jsp";
@@ -26,12 +33,13 @@
         if (application.getResource("/actions/SearchComplaints.jsp") != null) searchHref = ctx + "/actions/SearchComplaints.jsp";
         if (application.getResource("/actions/LogoutAction.jsp") != null) logoutHref = ctx + "/actions/LogoutAction.jsp";
         if (application.getResource("/assets/css/style.css") != null) styleHref = ctx + "/assets/css/style.css";
+        if (application.getResource("/assets/js/main.js") != null) scriptHref = ctx + "/assets/js/main.js";
         if (application.getResource("/assets/images/logo.svg") != null) logoHref = ctx + "/assets/images/logo.svg";
     } catch (Exception ignore) {
         // Use computed fallbacks.
     }
     if (role == null || !"admin".equals(role)) {
-        response.sendRedirect(base + "/login.jsp?denied=1");
+        safeRedirect(response, base + "/login.jsp?denied=1");
         return;
     }
 

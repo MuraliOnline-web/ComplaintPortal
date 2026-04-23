@@ -4,6 +4,12 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="/WEB-INF/tld/c.tld" prefix="c" %>
 <%@ taglib uri="/WEB-INF/tld/fn.tld" prefix="fn" %>
+<%!
+    private static void safeRedirect(jakarta.servlet.http.HttpServletResponse response, String location) throws java.io.IOException {
+        response.setStatus(302);
+        response.setHeader("Location", location);
+    }
+%>
 <%
     // Handle flash messages from previous actions
     String flashMessage = (String) session.getAttribute("flashMessage");
@@ -15,7 +21,7 @@
     String base = request.getRequestURI().contains("/WebContent/") ? (ctx + "/WebContent") : ctx;
     String role = (String) session.getAttribute("role");
     if (role == null || (!"officer".equals(role) && !"admin".equals(role))) {
-        response.sendRedirect(base + "/login.jsp?denied=1");
+        safeRedirect(response, base + "/login.jsp?denied=1");
         return;
     }
 
