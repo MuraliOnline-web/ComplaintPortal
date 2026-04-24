@@ -78,12 +78,13 @@ public class ConfigLoader {
         return get("db.password", "");
     }
 
+    // SMTP configuration methods
     public static String getSmtpHost() {
-        return get("smtp.host", "smtp.gmail.com");
+        return get("smtp.host", "");
     }
 
     public static String getSmtpPort() {
-        return get("smtp.port", "587");
+        return get("smtp.port", "");
     }
 
     public static String getSmtpUser() {

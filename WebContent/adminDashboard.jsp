@@ -22,6 +22,7 @@
     String base = request.getRequestURI().contains("/WebContent/") ? (ctx + "/WebContent") : ctx;
     String homeHref = base + "/index.jsp";
     String analyticsHref = base + "/analytics.jsp";
+    String configHealthHref = base + "/adminConfigHealth.jsp";
     String searchHref = base + "/actions/SearchComplaints.jsp";
     String logoutHref = base + "/actions/LogoutAction.jsp";
     String styleHref = base + "/assets/css/style.css";
@@ -30,6 +31,7 @@
     try {
         if (application.getResource("/index.jsp") != null) homeHref = ctx + "/index.jsp";
         if (application.getResource("/analytics.jsp") != null) analyticsHref = ctx + "/analytics.jsp";
+        if (application.getResource("/adminConfigHealth.jsp") != null) configHealthHref = ctx + "/adminConfigHealth.jsp";
         if (application.getResource("/actions/SearchComplaints.jsp") != null) searchHref = ctx + "/actions/SearchComplaints.jsp";
         if (application.getResource("/actions/LogoutAction.jsp") != null) logoutHref = ctx + "/actions/LogoutAction.jsp";
         if (application.getResource("/assets/css/style.css") != null) styleHref = ctx + "/assets/css/style.css";
@@ -257,6 +259,7 @@
                 </div>
                 <div class="d-flex flex-wrap gap-2">
                     <a href="<%= analyticsHref %>" class="btn btn-outline-primary">Analytics</a>
+                    <a href="<%= configHealthHref %>" class="btn btn-outline-secondary">Config Health</a>
                     <a href="<%= searchHref %>" class="btn btn-primary">Search Complaints</a>
                 </div>
             </div>
