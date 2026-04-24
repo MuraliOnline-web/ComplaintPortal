@@ -120,7 +120,7 @@
             <div class="col-lg-6"><div class="dashboard-card p-4 h-100"><h2 class="h4 fw-bold mb-3">SMTP Config</h2><p><b>Configured:</b> <%= smtpConfigured ? "Yes" : "No" %></p><p><b>SMTP_HOST:</b> <%= mask(smtpHost) %></p><p><b>SMTP_PORT:</b> <%= mask(smtpPort) %></p><p><b>SMTP_USER:</b> <%= mask(smtpUser) %></p><p><b>SMTP_PASSWORD:</b> <%= mask(smtpPassword) %></p><p><b>SMTP Test:</b> <%= smtpTestStatus %></p><% if (!smtpTestDetail.trim().isEmpty()) { %><p><b>SMTP Detail:</b> <%= smtpTestDetail %></p><% } %><button type="button" class="btn btn-primary" onclick="window.location.href='<%= base %>/adminConfigHealth.jsp?smtptest=1';">Run SMTP Connectivity Test</button></div></div>
         </div>
 
-        <div class="d-flex flex-wrap gap-2 mt-4"><button type="button" class="btn btn-secondary" onclick="window.location.href='<%= dashboardHref %>';">Back to Admin Dashboard</button><button type="button" class="btn btn-primary" onclick="window.location.href='<%= homeHref %>';">Back to Home</button></div>
+        <div class="d-flex flex-wrap gap-2 mt-4"><button type="button" class="btn btn-secondary" onclick="window.location.href='<%= dashboardHref %>';">Back to Admin Dashboard</button></div>
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
