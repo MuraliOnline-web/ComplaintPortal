@@ -1,38 +1,16 @@
-<!-- Track Complaint Result JSP (WebContent) -->
+<!-- Track Complaint Result JSP -->
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%
     String ctx = request.getContextPath();
-    String base = request.getRequestURI().contains("/WebContent/") ? (ctx + "/WebContent") : ctx;
-    String homeHref = base + "/index.jsp";
-    String userDashboardHref = base + "/userDashboard.jsp";
-    String trackComplaintHref = base + "/trackComplaint.jsp";
+    String base = ctx;
+    String homeHref = ctx + "/index.jsp";
+    String userDashboardHref = ctx + "/userDashboard.jsp";
+    String trackComplaintHref = ctx + "/trackComplaint.jsp";
     String backHref = homeHref;
     String backLabel = "Back to Home";
-    String styleHref = base + "/assets/css/style.css";
-    String scriptHref = base + "/assets/js/main.js";
-    String roadImageHref = base + "/assets/images/road.jpg";
-    try {
-        if (application.getResource("/index.jsp") != null) {
-            homeHref = ctx + "/index.jsp";
-        }
-        if (application.getResource("/userDashboard.jsp") != null) {
-            userDashboardHref = ctx + "/userDashboard.jsp";
-        }
-        if (application.getResource("/trackComplaint.jsp") != null) {
-            trackComplaintHref = ctx + "/trackComplaint.jsp";
-        }
-        if (application.getResource("/assets/css/style.css") != null) {
-            styleHref = ctx + "/assets/css/style.css";
-        }
-        if (application.getResource("/assets/js/main.js") != null) {
-            scriptHref = ctx + "/assets/js/main.js";
-        }
-        if (application.getResource("/assets/images/road.jpg") != null) {
-            roadImageHref = ctx + "/assets/images/road.jpg";
-        }
-    } catch (Exception ignore) {
-        // Fall back to the computed base path.
-    }
+    String styleHref = ctx + "/assets/css/style.css";
+    String scriptHref = ctx + "/assets/js/main.js";
+    String roadImageHref = ctx + "/assets/images/road.jpg";
 
     String role = session.getAttribute("role") != null ? String.valueOf(session.getAttribute("role")) : "";
     if ("user".equalsIgnoreCase(role) && session.getAttribute("userId") != null) {

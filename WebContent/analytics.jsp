@@ -10,12 +10,12 @@
 <%
     String role = (String) session.getAttribute("role");
     String ctx = request.getContextPath();
-    String base = request.getRequestURI().contains("/WebContent/") ? (ctx + "/WebContent") : ctx;
-    String homeHref = base + "/index.jsp";
-    String dashboardHref = base + "/" + ("officer".equals(role) ? "officerDashboard.jsp" : "adminDashboard.jsp");
-    String logoutHref = base + "/actions/LogoutAction.jsp";
-    String styleHref = base + "/assets/css/style.css";
-    String logoHref = base + "/assets/images/logo.svg";
+    String base = ctx;
+    String homeHref = ctx + "/index.jsp";
+    String dashboardHref = ctx + "/" + ("officer".equals(role) ? "officerDashboard.jsp" : "adminDashboard.jsp");
+    String logoutHref = ctx + "/actions/LogoutAction.jsp";
+    String styleHref = ctx + "/assets/css/style.css";
+    String logoHref = ctx + "/assets/images/logo.svg";
     if (role == null || (!"admin".equals(role) && !"officer".equals(role))) {
         safeRedirect(response, base + "/login.jsp");
         return;
@@ -32,20 +32,6 @@
     String selectedMonth = request.getParameter("month");
     String selectedYear = request.getParameter("year");
     java.time.LocalDate today = java.time.LocalDate.now();
-    try {
-        if (application.getResource("/index.jsp") != null) homeHref = ctx + "/index.jsp";
-        if (application.getResource("/actions/LogoutAction.jsp") != null) logoutHref = ctx + "/actions/LogoutAction.jsp";
-        if (application.getResource("/assets/css/style.css") != null) styleHref = ctx + "/assets/css/style.css";
-        if (application.getResource("/assets/images/logo.svg") != null) logoHref = ctx + "/assets/images/logo.svg";
-        if (application.getResource("/adminDashboard.jsp") != null) {
-            dashboardHref = ctx + "/adminDashboard.jsp";
-        }
-        if ("officer".equals(role) && application.getResource("/officerDashboard.jsp") != null) {
-            dashboardHref = ctx + "/officerDashboard.jsp";
-        }
-    } catch (Exception ignore) {
-        // Use computed fallbacks.
-    }
     if ("day".equals(g)) {
         if (selectedDate == null || selectedDate.trim().isEmpty()) selectedDate = today.toString();
         try { java.time.LocalDate.parse(selectedDate); } catch (Exception ex) { safeRedirect(response, base + "/analytics.jsp?error=invalidFilter"); return; }

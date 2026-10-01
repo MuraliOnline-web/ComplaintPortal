@@ -5,22 +5,13 @@
     String flowRole = request.getParameter("role");
 
     String ctx = request.getContextPath();
-    String base = request.getRequestURI().contains("/WebContent/") ? (ctx + "/WebContent") : ctx;
-    String loginBackHref = base + "/userLogin.jsp";
-    String homeHref = base + "/index.jsp";
-    String styleHref = base + "/assets/css/style.css";
-    String scriptHref = base + "/assets/js/main.js";
-    String logoHref = base + "/assets/images/logo.svg";
-    String visualHref = base + "/assets/images/ElectricWires.jpeg";
-    try {
-        if (application.getResource("/index.jsp") != null) homeHref = ctx + "/index.jsp";
-        if (application.getResource("/assets/css/style.css") != null) styleHref = ctx + "/assets/css/style.css";
-        if (application.getResource("/assets/js/main.js") != null) scriptHref = ctx + "/assets/js/main.js";
-        if (application.getResource("/assets/images/logo.svg") != null) logoHref = ctx + "/assets/images/logo.svg";
-        if (application.getResource("/assets/images/ElectricWires.jpeg") != null) visualHref = ctx + "/assets/images/ElectricWires.jpeg";
-    } catch (Exception ignore) {
-        // Use computed fallbacks.
-    }
+    String base = ctx;
+    String loginBackHref = ctx + "/userLogin.jsp";
+    String homeHref = ctx + "/index.jsp";
+    String styleHref = ctx + "/assets/css/style.css";
+    String scriptHref = ctx + "/assets/js/main.js";
+    String logoHref = ctx + "/assets/images/logo.svg";
+    String visualHref = ctx + "/assets/images/ElectricWires.jpeg";
     String expValue = request.getParameter("exp");
     int expMinutes = 14;
     try {
@@ -110,7 +101,7 @@
 
                         <% if ("1".equals(request.getParameter("sent"))) { %>
                             <div class="alert alert-success">OTP sent to your registered email. It is valid for <b><%= expMinutes %> minutes</b>.</div>
-                            <div class="alert alert-info">Expires in: <b id="otpExpiryCounter"></b></div>
+                            <div class="alert alert-info">Expires in: <b id="otpExpiryCounter" data-minutes="<%= expMinutes %>"></b></div>
                         <% } %>
                         <% if ("0".equals(request.getParameter("mail"))) { %>
                             <div class="alert alert-danger">Unable to send OTP email using the current SMTP settings.</div>
@@ -152,7 +143,8 @@
             const counter = document.getElementById('otpExpiryCounter');
             if (!counter) return;
 
-            let remaining = <%= expMinutes %> * 60;
+            const expMinutes = parseInt(counter.dataset.minutes || '14', 10);
+            let remaining = (Number.isFinite(expMinutes) ? expMinutes : 14) * 60;
             const render = function () {
                 const m = Math.floor(remaining / 60);
                 const s = remaining % 60;

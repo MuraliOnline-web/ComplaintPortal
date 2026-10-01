@@ -4,23 +4,14 @@
     String reason = request.getParameter("reason");
 
     String ctx = request.getContextPath();
-    String base = request.getRequestURI().contains("/WebContent/") ? (ctx + "/WebContent") : ctx;
-    String homeHref = base + "/index.jsp";
-    String userLoginHref = base + "/userLogin.jsp";
-    String forgotPasswordHref = base + "/forgotPassword.jsp";
-    String styleHref = base + "/assets/css/style.css";
-    String scriptHref = base + "/assets/js/main.js";
-    String logoHref = base + "/assets/images/logo.svg";
-    String visualHref = base + "/assets/images/watertaps.jpg";
-    try {
-        if (application.getResource("/index.jsp") != null) homeHref = ctx + "/index.jsp";
-        if (application.getResource("/assets/css/style.css") != null) styleHref = ctx + "/assets/css/style.css";
-        if (application.getResource("/assets/js/main.js") != null) scriptHref = ctx + "/assets/js/main.js";
-        if (application.getResource("/assets/images/logo.svg") != null) logoHref = ctx + "/assets/images/logo.svg";
-        if (application.getResource("/assets/images/watertaps.jpg") != null) visualHref = ctx + "/assets/images/watertaps.jpg";
-    } catch (Exception ignore) {
-        // Use computed fallbacks.
-    }
+    String base = ctx;
+    String homeHref = ctx + "/index.jsp";
+    String userLoginHref = ctx + "/userLogin.jsp";
+    String forgotPasswordHref = ctx + "/forgotPassword.jsp";
+    String styleHref = ctx + "/assets/css/style.css";
+    String scriptHref = ctx + "/assets/js/main.js";
+    String logoHref = ctx + "/assets/images/logo.svg";
+    String visualHref = ctx + "/assets/images/watertaps.jpg";
 %>
 <!DOCTYPE html>
 <html lang="en">

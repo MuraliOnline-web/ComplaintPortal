@@ -1,26 +1,15 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%
     String ctx = request.getContextPath();
-    String base = request.getRequestURI().contains("/WebContent/") ? (ctx + "/WebContent") : ctx;
-    String homeHref = base + "/index.jsp";
-    String dashboardHref = base + "/userDashboard.jsp";
+    String base = ctx;
+    String homeHref = ctx + "/index.jsp";
+    String dashboardHref = ctx + "/userDashboard.jsp";
     String userDashboardLabel = "User Dashboard";
-    String logoutHref = base + "/actions/LogoutAction.jsp";
-    String styleHref = base + "/assets/css/style.css";
-    String scriptHref = base + "/assets/js/main.js";
-    String logoHref = base + "/assets/images/logo.svg";
-    String roadImageHref = base + "/assets/images/road.jpg";
-    try {
-        if (application.getResource("/index.jsp") != null) homeHref = ctx + "/index.jsp";
-        if (application.getResource("/userDashboard.jsp") != null) dashboardHref = ctx + "/userDashboard.jsp";
-        if (application.getResource("/actions/LogoutAction.jsp") != null) logoutHref = ctx + "/actions/LogoutAction.jsp";
-        if (application.getResource("/assets/css/style.css") != null) styleHref = ctx + "/assets/css/style.css";
-        if (application.getResource("/assets/js/main.js") != null) scriptHref = ctx + "/assets/js/main.js";
-        if (application.getResource("/assets/images/logo.svg") != null) logoHref = ctx + "/assets/images/logo.svg";
-        if (application.getResource("/assets/images/road.jpg") != null) roadImageHref = ctx + "/assets/images/road.jpg";
-    } catch (Exception ignore) {
-        // Use computed fallbacks.
-    }
+    String logoutHref = ctx + "/actions/LogoutAction.jsp";
+    String styleHref = ctx + "/assets/css/style.css";
+    String scriptHref = ctx + "/assets/js/main.js";
+    String logoHref = ctx + "/assets/images/logo.svg";
+    String roadImageHref = ctx + "/assets/images/road.jpg";
 %>
 <!DOCTYPE html>
 <html lang="en">

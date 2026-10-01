@@ -2,19 +2,11 @@
 <%@ page import="org.apache.taglibs.standard.tag.rt.core.*" %>
 <%
     String ctx = request.getContextPath();
-    String base = request.getRequestURI().contains("/WebContent/") ? (ctx + "/WebContent") : ctx;
-    String dashboardHref = base + "/userDashboard.jsp";
-    String registerComplaintHref = base + "/registerComplaint.jsp";
-    String styleHref = base + "/assets/css/style.css";
-    String scriptHref = base + "/assets/js/main.js";
-    try {
-        if (application.getResource("/userDashboard.jsp") != null) dashboardHref = ctx + "/userDashboard.jsp";
-        if (application.getResource("/registerComplaint.jsp") != null) registerComplaintHref = ctx + "/registerComplaint.jsp";
-        if (application.getResource("/assets/css/style.css") != null) styleHref = ctx + "/assets/css/style.css";
-        if (application.getResource("/assets/js/main.js") != null) scriptHref = ctx + "/assets/js/main.js";
-    } catch (Exception ignore) {
-        // Keep default path
-    }
+    String base = ctx;
+    String dashboardHref = ctx + "/userDashboard.jsp";
+    String registerComplaintHref = ctx + "/registerComplaint.jsp";
+    String styleHref = ctx + "/assets/css/style.css";
+    String scriptHref = ctx + "/assets/js/main.js";
 %>
 <!DOCTYPE html>
 <html lang="en">

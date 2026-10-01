@@ -11,7 +11,7 @@
 %>
 <%
     String ctx = request.getContextPath();
-    String base = request.getRequestURI().contains("/WebContent/") ? (ctx + "/WebContent") : ctx;
+    String base = ctx;
     String role = (String) session.getAttribute("role");
     if (role == null || !"admin".equals(role)) {
         safeRedirect(response, base + "/login.jsp?denied=1");

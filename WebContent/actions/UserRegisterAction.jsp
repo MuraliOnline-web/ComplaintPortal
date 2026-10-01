@@ -27,7 +27,7 @@
 %>
 <%
     String ctx = request.getContextPath();
-    String base = request.getRequestURI().contains("/WebContent/") ? (ctx + "/WebContent") : ctx;
+    String base = ctx;
 
     String name = request.getParameter("name");
     String email = request.getParameter("email");

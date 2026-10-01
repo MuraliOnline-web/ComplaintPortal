@@ -24,7 +24,7 @@
     final int OTP_VALIDITY_MINUTES = 14;
     final int RESEND_COOLDOWN_SECONDS = 30;
     String ctx = request.getContextPath();
-    String base = request.getRequestURI().contains("/WebContent/") ? (ctx + "/WebContent") : ctx;
+    String base = ctx;
 
     String email = request.getParameter("email");
     if (email == null || email.trim().isEmpty()) {

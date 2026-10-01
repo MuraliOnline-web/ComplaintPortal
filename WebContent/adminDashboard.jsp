@@ -19,27 +19,15 @@
     
     String role = (String) session.getAttribute("role");
     String ctx = request.getContextPath();
-    String base = request.getRequestURI().contains("/WebContent/") ? (ctx + "/WebContent") : ctx;
-    String homeHref = base + "/index.jsp";
-    String analyticsHref = base + "/analytics.jsp";
-    String configHealthHref = base + "/adminConfigHealth.jsp";
-    String searchHref = base + "/actions/SearchComplaints.jsp";
-    String logoutHref = base + "/actions/LogoutAction.jsp";
-    String styleHref = base + "/assets/css/style.css";
-    String scriptHref = base + "/assets/js/main.js";
-    String logoHref = base + "/assets/images/logo.svg";
-    try {
-        if (application.getResource("/index.jsp") != null) homeHref = ctx + "/index.jsp";
-        if (application.getResource("/analytics.jsp") != null) analyticsHref = ctx + "/analytics.jsp";
-        if (application.getResource("/adminConfigHealth.jsp") != null) configHealthHref = ctx + "/adminConfigHealth.jsp";
-        if (application.getResource("/actions/SearchComplaints.jsp") != null) searchHref = ctx + "/actions/SearchComplaints.jsp";
-        if (application.getResource("/actions/LogoutAction.jsp") != null) logoutHref = ctx + "/actions/LogoutAction.jsp";
-        if (application.getResource("/assets/css/style.css") != null) styleHref = ctx + "/assets/css/style.css";
-        if (application.getResource("/assets/js/main.js") != null) scriptHref = ctx + "/assets/js/main.js";
-        if (application.getResource("/assets/images/logo.svg") != null) logoHref = ctx + "/assets/images/logo.svg";
-    } catch (Exception ignore) {
-        // Use computed fallbacks.
-    }
+    String base = ctx;
+    String homeHref = ctx + "/index.jsp";
+    String analyticsHref = ctx + "/analytics.jsp";
+    String configHealthHref = ctx + "/adminConfigHealth.jsp";
+    String searchHref = ctx + "/actions/SearchComplaints.jsp";
+    String logoutHref = ctx + "/actions/LogoutAction.jsp";
+    String styleHref = ctx + "/assets/css/style.css";
+    String scriptHref = ctx + "/assets/js/main.js";
+    String logoHref = ctx + "/assets/images/logo.svg";
     if (role == null || !"admin".equals(role)) {
         safeRedirect(response, base + "/login.jsp?denied=1");
         return;

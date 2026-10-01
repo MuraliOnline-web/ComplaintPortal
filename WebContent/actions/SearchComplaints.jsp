@@ -12,15 +12,8 @@
     // Role guard: only admin/officer
     String _role = (String) session.getAttribute("role");
     String ctx = request.getContextPath();
-    String base = request.getRequestURI().contains("/WebContent/") ? (ctx + "/WebContent") : ctx;
+    String base = ctx;
     String assetsBase = base;
-    try {
-        if (application.getResource("/assets/css/style.css") == null && application.getResource("/WebContent/assets/css/style.css") != null) {
-            assetsBase = ctx + "/WebContent";
-        }
-    } catch (Exception ignore) {
-        // Keep computed base.
-    }
     String dash = "officer".equals(_role) ? "/officerDashboard.jsp" : "/adminDashboard.jsp";
     if(_role == null || (!"admin".equals(_role) && !"officer".equals(_role))) {
         safeRedirect(response, base + "/login.jsp");

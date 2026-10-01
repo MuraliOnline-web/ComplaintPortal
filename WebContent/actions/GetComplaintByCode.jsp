@@ -19,9 +19,7 @@
         }
 
         Properties props = new Properties();
-        try (InputStream in = app.getResourceAsStream("/WEB-INF/classes/config.properties") != null
-                ? app.getResourceAsStream("/WEB-INF/classes/config.properties")
-                : app.getResourceAsStream("/WebContent/WEB-INF/classes/config.properties")) {
+        try (InputStream in = app.getResourceAsStream("/WEB-INF/classes/config.properties")) {
             if (in != null) {
                 props.load(in);
                 String val = props.getProperty(key);
@@ -41,9 +39,7 @@
         } catch (SQLException first) {
             String[] jarCandidates = new String[] {
                 "/WEB-INF/lib/mysql-connector-java-8.0.26.jar",
-                "/WEB-INF/lib/mysql-connector-j-8.3.0.jar",
-                "/WebContent/WEB-INF/lib/mysql-connector-java-8.0.26.jar",
-                "/WebContent/WEB-INF/lib/mysql-connector-j-8.3.0.jar"
+                "/WEB-INF/lib/mysql-connector-j-8.3.0.jar"
             };
 
             URL jarUrl = null;
@@ -87,15 +83,8 @@
     // Only admin/officer can access
     String role = (String) session.getAttribute("role");
     String ctx = request.getContextPath();
-    String base = request.getRequestURI().contains("/WebContent/") ? (ctx + "/WebContent") : ctx;
+    String base = ctx;
     String assetsBase = base;
-    try {
-        if (application.getResource("/assets/css/style.css") == null && application.getResource("/WebContent/assets/css/style.css") != null) {
-            assetsBase = ctx + "/WebContent";
-        }
-    } catch (Exception ignore) {
-        // Keep computed base.
-    }
     if(role == null || (!role.equals("admin") && !role.equals("officer"))) {
         safeRedirect(response, base + "/login.jsp");
         return;

@@ -21,23 +21,13 @@
     response.setHeader("Pragma", "no-cache");
     response.setDateHeader("Expires", 0);
     String ctx = request.getContextPath();
-    String base = request.getRequestURI().contains("/WebContent/") ? (ctx + "/WebContent") : ctx;
-    String homeHref = base + "/index.jsp";
-    String dashboardHref = base + "/adminDashboard.jsp";
-    String logoutHref = base + "/actions/LogoutAction.jsp";
-    String styleHref = base + "/assets/css/style.css";
-    String scriptHref = base + "/assets/js/main.js";
-    String logoHref = base + "/assets/images/logo.svg";
-    try {
-        if (application.getResource("/index.jsp") != null) homeHref = ctx + "/index.jsp";
-        if (application.getResource("/adminDashboard.jsp") != null) dashboardHref = ctx + "/adminDashboard.jsp";
-        if (application.getResource("/actions/LogoutAction.jsp") != null) logoutHref = ctx + "/actions/LogoutAction.jsp";
-        if (application.getResource("/assets/css/style.css") != null) styleHref = ctx + "/assets/css/style.css";
-        if (application.getResource("/assets/js/main.js") != null) scriptHref = ctx + "/assets/js/main.js";
-        if (application.getResource("/assets/images/logo.svg") != null) logoHref = ctx + "/assets/images/logo.svg";
-    } catch (Exception ignore) {
-        // Use computed fallbacks.
-    }
+    String base = ctx;
+    String homeHref = ctx + "/index.jsp";
+    String dashboardHref = ctx + "/adminDashboard.jsp";
+    String logoutHref = ctx + "/actions/LogoutAction.jsp";
+    String styleHref = ctx + "/assets/css/style.css";
+    String scriptHref = ctx + "/assets/js/main.js";
+    String logoHref = ctx + "/assets/images/logo.svg";
     String role = (String) session.getAttribute("role");
     if (role == null || !"admin".equals(role)) { safeRedirect(response, base + "/login.jsp?denied=1"); return; }
 

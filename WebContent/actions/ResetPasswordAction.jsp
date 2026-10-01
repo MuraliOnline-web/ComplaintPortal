@@ -36,7 +36,7 @@
 %>
 <%
     String ctx = request.getContextPath();
-    String base = request.getRequestURI().contains("/WebContent/") ? (ctx + "/WebContent") : ctx;
+    String base = ctx;
 
     Integer pendingResetUserId = (Integer) session.getAttribute("pendingResetUserId");
     String otp = request.getParameter("otp");

@@ -15,19 +15,9 @@
     String role = (String) session.getAttribute("role");
     Integer sessionUserId = (Integer) session.getAttribute("userId");
     String ctx = request.getContextPath();
-    String base = request.getRequestURI().contains("/WebContent/") ? (ctx + "/WebContent") : ctx;
+    String base = ctx;
     String registerComplaintPath = base + "/registerComplaint.jsp";
     String complaintSuccessPath = base + "/complaintSuccess.jsp";
-    try {
-        if (application.getResource("/registerComplaint.jsp") == null && application.getResource("/WebContent/registerComplaint.jsp") != null) {
-            registerComplaintPath = ctx + "/WebContent/registerComplaint.jsp";
-        }
-        if (application.getResource("/complaintSuccess.jsp") == null && application.getResource("/WebContent/complaintSuccess.jsp") != null) {
-            complaintSuccessPath = ctx + "/WebContent/complaintSuccess.jsp";
-        }
-    } catch (Exception ignore) {
-        // Fall back to base-derived paths
-    }
     if (role == null || !"user".equals(role) || sessionUserId == null) {
         safeRedirect(response, base + "/userLogin.jsp?required=1");
         return;

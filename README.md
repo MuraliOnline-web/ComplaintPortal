@@ -2,129 +2,79 @@
 
 This project is a Java web application for complaint registration, tracking, and complaint handling by admins and field officers. It uses JSP pages for the UI, JSP action handlers for server-side logic, MySQL for persistence, and SMTP for OTP and notification emails. Complaint registration acknowledgements include both complaint ID and complaint code.
 
-The current runtime workflow is root-deployed under Tomcat, with compatibility shims at the project root forwarding to the editable JSP sources in WebContent. That means users open root URLs such as /index.jsp, while the maintained application pages remain under WebContent/. The root deployment is intentional and required for the current workflow.
+The application uses a clean, direct JSP architecture. `WebContent/` contains the web application source and defines the canonical deployed web application root under Tomcat. Browser requests navigate directly to application JSP pages and action handlers without mediator or forwarder layers.
 
 Current workflow highlights:
 
-- Root URLs are the supported entry points for browser navigation.
-- Root JSP/action shims forward into the maintained pages under WebContent/.
-- Admin dashboard now exposes a direct Config Health shortcut to the admin configuration page.
-- The smoke-test checklist focuses on startup, login, complaint submission, tracking, logout, and runtime library verification.
+- **Direct navigation**: Browser → Actual JSP page → Action handler / logic.
+- **Single deployment root**: The contents of `WebContent/` form the deployed web application under Tomcat.
+- **No mediator/forwarder layer**: Redundant root-level shims have been completely eliminated.
+- **Admin dashboard**: Exposes a direct Config Health shortcut to the admin configuration page.
+- **Smoke-test checklist**: Focuses on startup, login, complaint submission, tracking, logout, and runtime library verification.
 
 ## Project Overview
 
-- Citizens can register, log in with email OTP, file complaints, and track complaint status.
-- Field officers can review pending complaints, submit visit reports, and view analytics.
-- Admins can search complaints, update complaint status, archive solved records, and run configuration health checks.
+- **Citizens**: Register, log in with email OTP, file complaints with optional photo uploads, and track complaint status.
+- **Field Officers**: Review pending complaints, submit field visit inspection reports with photos, and view analytics.
+- **Admins**: Search complaints, update complaint status, upload resolution photos, archive solved records, run report analytics, and check configuration health.
 
 ## Folder Structure
 
 ```text
-.
-├── config.properties.template
-├── INTEGRATION_VERIFICATION_REPORT.md
-├── README.md
-├── SECURITY_SETUP.md
-├── SMOKE_TEST_CHECKLIST.md
-├── STABLE_BUILD_SUMMARY.md
-├── actions/
-│   ├── ArchiveSolved.jsp
-│   ├── FieldOfficerUpdate.jsp
-│   ├── ForgotPasswordAction.jsp
-│   ├── GenerateReports.jsp
-│   ├── GetComplaintByCode.jsp
-│   ├── LoginAction.jsp
-│   ├── LogoutAction.jsp
-│   ├── RegisterComplaintAction.jsp
-│   ├── ResetPasswordAction.jsp
-│   ├── SearchComplaints.jsp
-│   ├── SendPendingReminders.jsp
-│   ├── TrackComplaintAction.jsp
-│   ├── UpdateStatus.jsp
-│   ├── UpdateStatusSafe.jsp
-│   ├── UserLoginAction.jsp
-│   ├── UserRegisterAction.jsp
-│   └── VerifyOtpAction.jsp
-├── index.jsp
-├── login.jsp
-├── userLogin.jsp
-├── userRegister.jsp
-├── verifyOtp.jsp
-├── registerComplaint.jsp
-├── complaintSuccess.jsp
-├── trackComplaint.jsp
-├── trackResult.jsp
-├── userDashboard.jsp
-├── adminDashboard.jsp
-├── officerDashboard.jsp
-├── analytics.jsp
-├── forgotPassword.jsp
-├── resetPassword.jsp
-├── db/
-│   ├── archive.sql
-│   ├── migration_auth_zero_cost.sql
-│   ├── migration_option_b.sql
-│   ├── schema.sql
-│   └── schema2.sql
+advjavaproject/
+├── WebContent/                    # Canonical Tomcat web application root
+│   ├── index.jsp
+│   ├── index.html
+│   ├── login.jsp
+│   ├── userLogin.jsp
+│   ├── userRegister.jsp
+│   ├── verifyOtp.jsp
+│   ├── forgotPassword.jsp
+│   ├── resetPassword.jsp
+│   ├── registerComplaint.jsp
+│   ├── complaintSuccess.jsp
+│   ├── trackComplaint.jsp
+│   ├── trackResult.jsp
+│   ├── userDashboard.jsp
+│   ├── adminDashboard.jsp
+│   ├── officerDashboard.jsp
+│   ├── analytics.jsp
+│   ├── adminConfigHealth.jsp
+│   │
+│   ├── actions/
+│   │   ├── JSP action handlers
+│   │   └── api/
+│   │       └── REST/JSON endpoints
+│   │
+│   ├── assets/
+│   │   ├── css/
+│   │   ├── js/
+│   │   └── images/
+│   │       └── uploads/
+│   │
+│   ├── includes/
+│   │
+│   └── WEB-INF/
+│       ├── web.xml
+│       ├── classes/
+│       ├── lib/
+│       └── tld/
+│
 ├── src/
 │   └── util/
 │       └── ConfigLoader.java
-└── WebContent/
-    ├── index.html
-    ├── index.jsp
-    ├── login.jsp
-    ├── userLogin.jsp
-    ├── userRegister.jsp
-    ├── forgotPassword.jsp
-    ├── resetPassword.jsp
-    ├── verifyOtp.jsp
-    ├── registerComplaint.jsp
-    ├── complaintSuccess.jsp
-    ├── trackComplaint.jsp
-    ├── trackResult.jsp
-    ├── adminDashboard.jsp
-    ├── officerDashboard.jsp
-    ├── userDashboard.jsp
-    ├── analytics.jsp
-    ├── adminConfigHealth.jsp
-    ├── actions/
-    │   ├── ArchiveSolved.jsp
-    │   ├── FieldOfficerUpdate.jsp
-    │   ├── ForgotPasswordAction.jsp
-    │   ├── GenerateReports.jsp
-    │   ├── GetComplaintByCode.jsp
-    │   ├── LoginAction.jsp
-    │   ├── LogoutAction.jsp
-    │   ├── RegisterComplaintAction.jsp
-    │   ├── ResendResetOtpAction.jsp
-    │   ├── ResetPasswordAction.jsp
-    │   ├── SearchComplaints.jsp
-    │   ├── SendPendingReminders.jsp
-    │   ├── TrackComplaintAction.jsp
-    │   ├── UpdateStatus.jsp
-    │   ├── UpdateStatusSafe.jsp
-    │   ├── UserLoginAction.jsp
-    │   ├── UserRegisterAction.jsp
-    │   └── VerifyOtpAction.jsp
-    ├── assets/
-    │   ├── css/
-    │   │   └── style.css
-    │   ├── images/
-    │   └── js/
-    │       ├── chart.js
-    │       └── main.js
-    └── WEB-INF/
-        ├── web.xml
-        ├── classes/
-        │   └── util/
-        └── lib/
+│
+├── db/
+├── config.properties.template
+├── README.md
+└── .gitignore
 ```
 
-The root-level JSP files and actions are compatibility shims for Tomcat root deployment. The editable application sources remain under WebContent/, and the root copies forward requests so the app works after redeploy and refresh. Do not delete the root shims unless the deployment model is changed everywhere at once.
+The application uses direct navigation to `WebContent/` as the effective deployment root. All pages and actions are accessed directly at the application context root (e.g., `/index.jsp`, `/actions/...`) without mediator layers.
 
 ## Root Documentation
 
-The repository keeps its markdown docs at the top level so they are easy to find from the workspace root.
+The repository keeps its markdown docs at the top level so they are easy to find from the workspace root:
 
 - [README.md](README.md) - main project guide
 - [SECURITY_SETUP.md](SECURITY_SETUP.md) - credential cleanup and secure configuration notes
@@ -134,208 +84,208 @@ The repository keeps its markdown docs at the top level so they are easy to find
 
 ## Application Workflow
 
-1. Open the app at the root URL, which lands on the root `index.jsp` shim and then routes into the maintained page under `WebContent/index.jsp`.
-2. The landing page exposes the primary user, admin, and officer entry points.
-3. New users register through the root `userRegister.jsp` entry page and `actions/UserRegisterAction.jsp`.
-4. User login uses the root `userLogin.jsp`, then `actions/UserLoginAction.jsp` sends an OTP to the registered email.
-5. OTP verification happens in `verifyOtp.jsp` and `actions/VerifyOtpAction.jsp`, which routes the user to the correct dashboard by role.
-6. After verification, users reach `userDashboard.jsp` where they can create complaints, view recent complaints, and move into tracking.
-7. Complaint submission goes through `registerComplaint.jsp` and `actions/RegisterComplaintAction.jsp`.
-8. Complaint tracking goes through `trackComplaint.jsp` and `actions/TrackComplaintAction.jsp`, which forwards to `trackResult.jsp` when a match is found.
-9. Admins and officers authenticate through `login.jsp` and `actions/LoginAction.jsp`.
-10. Admins use `adminDashboard.jsp` for complaint review and status updates, `analytics.jsp` for reporting, and `adminConfigHealth.jsp` for database and SMTP health checks.
-11. Officers use `officerDashboard.jsp` to review pending complaints and submit reports.
-12. Logout is handled by `actions/LogoutAction.jsp`, which clears the session and returns to the home page.
+1. Open the app at the context URL (e.g. `http://localhost:8081/advjavaproject/`), which lands directly on `/index.jsp`.
+2. The landing page exposes the primary citizen, admin, and officer entry points.
+3. New citizens register through `/userRegister.jsp` and submit to `/actions/UserRegisterAction.jsp`.
+4. Citizen login uses `/userLogin.jsp`, then `/actions/UserLoginAction.jsp` generates and sends an email OTP.
+5. OTP verification happens in `/verifyOtp.jsp` and `/actions/VerifyOtpAction.jsp`, routing the user to `/userDashboard.jsp` upon success.
+6. Citizens create complaints in `/registerComplaint.jsp`, which submits multipart data to `/actions/RegisterComplaintAction.jsp` and redirects to `/complaintSuccess.jsp`.
+7. Complaint tracking is initiated from `/trackComplaint.jsp` and `/actions/TrackComplaintAction.jsp`, forwarding to `/trackResult.jsp`.
+8. Admins and officers authenticate through `/login.jsp` and `/actions/LoginAction.jsp`.
+9. Admins manage complaints via `/adminDashboard.jsp`, update statuses via `/actions/UpdateStatus.jsp`, search complaints with `/actions/SearchComplaints.jsp`, run analytics in `/analytics.jsp`, and verify setup in `/adminConfigHealth.jsp`.
+10. Officers review assigned complaints and submit inspection reports via `/officerDashboard.jsp` and `/actions/FieldOfficerUpdate.jsp`.
+11. Logout is handled cleanly by `/actions/LogoutAction.jsp`, which invalidates the session and redirects to `/index.jsp`.
 
-## Current Workflow And Recent Changes
+## Current Workflow And Architecture
 
-The current project state reflects the following workflow and fixes:
+The project architecture features:
 
-- Root JSP and action shims are the supported navigation layer for Tomcat root deployment.
-- `WEB-INF/web.xml` exists at the deployment root and defines welcome-file handling for `index.html` and `index.jsp`.
-- Admin dashboard routing now includes a direct link to `adminConfigHealth.jsp` so the config-health page is reachable from the normal admin workflow.
-- Safe header-based redirects are used in workflow-critical JSP action handlers to avoid redirect compile/runtime issues.
-- Complaint tracking now resolves to `trackResult.jsp` after a successful lookup.
-- Logout returns users to the home page after clearing the session.
-- The top-level smoke checklist documents the current redeploy verification path for startup, login, complaint creation, tracking, admin/officer access, redirect checks, and runtime libraries.
-- The project keeps the maintained UI and action implementations under `WebContent/` while retaining root compatibility shims for runtime entry.
-
-Recent additions and fixes:
-
-- Added or preserved root compatibility routing for the main JSP pages.
-- Added or preserved root compatibility routing for `/actions/...` handlers.
-- Added the admin Config Health shortcut from the admin dashboard.
-- Kept complaint tracking, OTP verification, dashboard navigation, and logout paths aligned with the current root deployment model.
-- Kept runtime libraries in `WEB-INF/lib/` for MySQL, Jakarta Mail, activation, and JSTL.
+- **Direct JSP navigation**: Clean URLs without intermediate forwarders or shims.
+- **Single deployment descriptor**: Located at `WebContent/WEB-INF/web.xml`, defining welcome files (`index.jsp`, `index.html`) and session timeout.
+- **Tag Library Definitions**: Jakarta JSTL tag library definitions (`c.tld`, `fn.tld`) are integrated in `WebContent/WEB-INF/tld/`.
+- **Runtime libraries**: All JAR dependencies reside in `WebContent/WEB-INF/lib/`.
+- **Compiled classes**: Servlets and utility classes reside in `WebContent/WEB-INF/classes/`.
 
 ## Included Operations
 
 ### Public and User Operations
 
-- User registration
-- User login with email OTP
+- Citizen registration
+- Citizen login with email OTP
 - Forgot password flow with reset OTP
 - Password reset
-- Complaint registration
-- Complaint registration acknowledgement email with complaint ID and complaint code
+- Complaint registration with optional image upload
+- Complaint registration acknowledgement email with complaint ID and code
 - Complaint tracking by complaint code or complaint ID
 - Logout
 
 ### Admin Operations
 
-- View all complaints
+- View all registered complaints
 - Search complaints by code or ID
-- Update complaint status
-- Upload solved complaint photos
-- Run analytics by day, month, or year
+- Update complaint status (Pending, In Progress, Solved, Rejected)
+- Upload resolution/solved photos
+- Filter and review analytics by day, month, or year
 - Archive solved complaints for a selected period
-- Send pending reminder notifications
-- Check database and SMTP configuration health from the admin dashboard
-- Return to analytics or home from the config-health page
+- Send reminder notifications for pending complaints
+- Check database and SMTP configuration health from `/adminConfigHealth.jsp`
 
 ### Field Officer Operations
 
 - View pending complaints
 - Search complaints by code or ID
-- Submit field visit reports
-- Add officer notes and optional report photos
-- View analytics
+- Submit field visit reports with findings and optional inspection photos
+- View performance analytics
 
 ## JSP To Operation Map
 
 | JSP / Action | Operation |
 | --- | --- |
-| `index.jsp` | Public home page and role-based navigation |
-| `userRegister.jsp` + `actions/UserRegisterAction.jsp` | Create user account |
-| `userLogin.jsp` + `actions/UserLoginAction.jsp` | User login with OTP delivery |
-| `verifyOtp.jsp` + `actions/VerifyOtpAction.jsp` | Verify OTP and start user session |
-| `forgotPassword.jsp` + `actions/ForgotPasswordAction.jsp` | Send password reset OTP |
-| `resetPassword.jsp` + `actions/ResetPasswordAction.jsp` | Reset password after OTP verification |
-| `login.jsp` + `actions/LoginAction.jsp` | Admin/officer login |
-| `registerComplaint.jsp` + `actions/RegisterComplaintAction.jsp` | Submit a new complaint |
-| `trackComplaint.jsp` + `actions/TrackComplaintAction.jsp` | Track complaint status as a user |
-| `trackResult.jsp` | Display complaint tracking result |
-| `userDashboard.jsp` | User complaint summary and quick actions |
-| `adminDashboard.jsp` + `actions/GetComplaintByCode.jsp` | Admin complaint search and management |
-| `officerDashboard.jsp` + `actions/FieldOfficerUpdate.jsp` | Officer complaint review and report submission |
-| `analytics.jsp` + `actions/SendPendingReminders.jsp` + `actions/ArchiveSolved.jsp` | Complaint analytics, reminders, and archiving |
-| `adminConfigHealth.jsp` | Database and SMTP configuration checks and quick health verification |
-| `actions/LogoutAction.jsp` | Logout and session cleanup |
+| `/index.jsp` | Public home page and role-based navigation |
+| `/userRegister.jsp` + `/actions/UserRegisterAction.jsp` | Create user account |
+| `/userLogin.jsp` + `/actions/UserLoginAction.jsp` | User login with OTP delivery |
+| `/verifyOtp.jsp` + `/actions/VerifyOtpAction.jsp` | Verify OTP and start user session |
+| `/forgotPassword.jsp` + `/actions/ForgotPasswordAction.jsp` | Send password reset OTP |
+| `/resetPassword.jsp` + `/actions/ResetPasswordAction.jsp` | Reset password after OTP verification |
+| `/login.jsp` + `/actions/LoginAction.jsp` | Admin/officer login |
+| `/registerComplaint.jsp` + `/actions/RegisterComplaintAction.jsp` | Submit a new complaint |
+| `/trackComplaint.jsp` + `/actions/TrackComplaintAction.jsp` | Track complaint status as a user |
+| `/trackResult.jsp` | Display complaint tracking result |
+| `/userDashboard.jsp` | User complaint summary and quick actions |
+| `/adminDashboard.jsp` + `/actions/GetComplaintByCode.jsp` | Admin complaint search and management |
+| `/officerDashboard.jsp` + `/actions/FieldOfficerUpdate.jsp` | Officer complaint review and report submission |
+| `/analytics.jsp` + `/actions/SendPendingReminders.jsp` + `/actions/ArchiveSolved.jsp` | Complaint analytics, reminders, and archiving |
+| `/adminConfigHealth.jsp` | Database and SMTP configuration checks and health verification |
+| `/actions/LogoutAction.jsp` | Logout and session cleanup |
 
 ## Core Backend Components
 
-- `src/util/ConfigLoader.java` loads configuration in this order: environment variables, Java system properties, local `config.properties`, then default values.
-- `WEB-INF/web.xml` sets `index.html` and `index.jsp` as welcome pages and configures the session timeout.
-- The root `WEB-INF/web.xml` is part of the deployed runtime layout, while `WebContent/WEB-INF/web.xml` is kept alongside the editable web content layout.
-- `db/schema.sql` defines the MySQL schema used by the application.
+- `src/util/ConfigLoader.java` loads configuration in this prioritized order:
+  1. Environment variables (`DB_URL`, `DB_USER`, `DB_PASSWORD`, `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD`)
+  2. Java system properties (`-Ddb.url`, `-Dsmtp.host`, etc.)
+  3. `config.properties` on classpath (`WebContent/WEB-INF/classes/config.properties`)
+  4. Sensible application defaults
+- `WebContent/WEB-INF/web.xml` defines web application configuration, welcome files, and session timeout.
+- `db/schema.sql` defines the MySQL schema and relational tables.
 
 ## Database Tables
 
-- `users` stores citizens, officers, and admins.
-- `complaints` stores complaint details and status.
-- `notifications` stores complaint notification history.
-- `otp_codes` stores OTP hashes and expiry timestamps.
-- `officer_reports` stores field officer visit reports.
+- `users`: Stores citizens, officers, and admins.
+- `complaints`: Stores complaint details, tracking codes, priority, and status.
+- `notifications`: Stores complaint notification history.
+- `otp_codes`: Stores OTP hashes and expiry timestamps.
+- `officer_reports`: Stores field officer visit reports and inspection findings.
 
 ## Configuration
 
-The application expects database and SMTP settings through environment variables or a local properties file.
+The application expects database and SMTP settings through environment variables, system properties, or a local `config.properties` file.
 
-Common keys:
+### Expected Configuration Keys
 
-- `db.url`
-- `db.user`
-- `db.password`
-- `smtp.host`
-- `smtp.port`
-- `smtp.user`
-- `smtp.password`
+- `db.url`: JDBC connection URL (e.g. `jdbc:mysql://localhost:3306/complaint_portal?useSSL=false&allowPublicKeyRetrieval=true`)
+- `db.user`: MySQL database user
+- `db.password`: MySQL database password
+- `smtp.host`: SMTP server host
+- `smtp.port`: SMTP server port (e.g. 587 or 465)
+- `smtp.user`: SMTP username / email address
+- `smtp.password`: SMTP app password / secret
 
-`config.properties.template` can be copied to a local `config.properties` file for development.
+`config.properties.template` is provided in the repository root and can be copied to `WebContent/WEB-INF/classes/config.properties` for local development.
 
-## Runtime Notes
+### Security Warnings
 
-- The app is JSP-based and intended for deployment on a Jakarta-compatible servlet container such as Tomcat.
-- `WEB-INF/lib/` at the deployment root should contain required libraries such as the MySQL connector, mail, and JSTL dependencies.
-- Uploaded complaint and report photos are written under `WebContent/assets/images/uploads/` at runtime.
-- The root shims exist so the app keeps working when the container serves the deployment root directly.
-- `WebContent/` remains the editable source layout, but runtime access should still be validated from the root deployment URLs.
+- **Never commit real database passwords.**
+- **Never commit SMTP passwords or app secrets.**
+- **Never commit API keys or production credentials.**
+- Use environment variables in production or maintain `config.properties` locally (which is ignored by Git).
+- See [SECURITY_SETUP.md](SECURITY_SETUP.md) for credential cleanup and security guidelines.
 
-## Security Notes
+## Dependencies & Runtime
 
-- Do not commit real database or SMTP credentials.
-- [SECURITY_SETUP.md](SECURITY_SETUP.md) documents the cleanup steps for exposed secrets.
-- Admin and officer accounts should be created manually with strong passwords.
+### Target Runtime Environment
+
+- **Java**: Java 17 (Java 11+ compatible)
+- **Servlet Container**: Apache Tomcat 10.1.x / 11.x
+- **Namespace**: Jakarta EE (`jakarta.servlet.*`, `jakarta.mail.*`)
+
+### Deployed Runtime JARs (`WebContent/WEB-INF/lib/`)
+
+The following verified JARs are bundled directly in `WebContent/WEB-INF/lib/`:
+
+| Library | File | Version | Purpose |
+|---|---|---|---|
+| **MySQL Connector/J** | `mysql-connector-java-8.0.26.jar` | 8.0.26 | MySQL JDBC driver |
+| **Jakarta Mail** | `jakarta.mail-2.0.1.jar` | 2.0.1 | Email & OTP delivery |
+| **Jakarta Activation API** | `jakarta.activation-api-2.1.3.jar` | 2.1.3 | MIME type / mail support |
+| **Jakarta Servlet JSP API** | `jakarta.servlet.jsp-api-3.0.0.jar` | 3.0.0 | JSP specification API |
+| **JSTL API** | `jakarta.servlet.jsp.jstl-api-3.0.0.jar` | 3.0.0 | Standard Tag Library API |
+| **JSTL Implementation** | `jakarta.servlet.jsp.jstl-impl-3.0.1.jar` | 3.0.1 | Standard Tag Library Impl |
+
+## File Uploads & Security
+
+- **Upload Directory**: `WebContent/assets/images/uploads/`
+- **Permissions**: The Tomcat service process must have write permission to `WebContent/assets/images/uploads/` when complaint attachments, officer reports, or resolution photos are uploaded.
+- **Sanitization**: Uploaded filenames are sanitized and stored using unique IDs to prevent path traversal.
 
 ## Entry Pages
 
-- Public home: `index.jsp`
-- User login: `userLogin.jsp`
-- User registration: `userRegister.jsp`
-- Admin/officer login: `login.jsp`
-- User dashboard: `userDashboard.jsp`
-- Admin dashboard: `adminDashboard.jsp`
-- Officer dashboard: `officerDashboard.jsp`
-- Admin config health: `adminConfigHealth.jsp`
+- Public home: `/index.jsp`
+- User login: `/userLogin.jsp`
+- User registration: `/userRegister.jsp`
+- Admin/officer login: `/login.jsp`
+- User dashboard: `/userDashboard.jsp`
+- Admin dashboard: `/adminDashboard.jsp`
+- Officer dashboard: `/officerDashboard.jsp`
+- Admin config health: `/adminConfigHealth.jsp`
 
-## Typical Use Cases
+## Deployment & Local Run Steps
 
-- A citizen registers, verifies OTP, submits a complaint, and later tracks its status.
-- A field officer reviews pending complaints and uploads a field report.
-- An admin updates a complaint to solved, attaches a solved photo, and archives solved items after reporting.
+### 1. Tomcat Context Configuration
 
-## Database Setup
+The canonical web application root is `c:\advjavaproject\WebContent`. Do **not** deploy the repository root `c:\advjavaproject` as the webapp docBase.
 
-Use `db/schema.sql` to create the database and tables, then add privileged users manually for each environment.
+Configure your Tomcat context (in `conf/server.xml` or `conf/Catalina/localhost/advjavaproject.xml`):
 
-## Smoke Testing
+```xml
+<Context path="/advjavaproject"
+         docBase="c:\advjavaproject\WebContent"
+         reloadable="true" />
+```
 
-Use [SMOKE_TEST_CHECKLIST.md](SMOKE_TEST_CHECKLIST.md) after each redeploy or route-related change.
+- **Tomcat context**: `/advjavaproject`
+- **DocBase**: `c:\advjavaproject\WebContent`
+- **Expected URL**: `http://localhost:8081/advjavaproject/` (or `http://localhost:8081/advjavaproject/index.jsp`)
 
-The checklist currently verifies:
+### 2. Database Setup
 
-- Root app startup and landing page resolution.
-- User login, OTP verification, and user dashboard access.
-- Complaint registration and complaint row refresh.
-- Complaint tracking and tracking result rendering.
-- Admin and officer dashboard access, plus logout.
-- Basic route regression checks for `/actions/...` URLs and JSP compilation failures.
-- Required runtime libraries in `WEB-INF/lib/`.
+1. Run `db/schema.sql` to create the schema and relational tables.
+2. Add initial admin or officer accounts with hashed credentials if needed for your environment.
+3. Apply migration scripts under `db/` only if upgrading from an earlier schema version.
 
-If you are validating a route-related change, start with the checklist before trying to debug deeper application behavior.
+### 3. Configuration Setup
 
-## Local Run Steps
+Copy `config.properties.template` to `WebContent/WEB-INF/classes/config.properties` (or set environment variables `DB_URL`, `DB_USER`, `DB_PASSWORD`, `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD`).
 
-1. Install a Java 11+ JDK and a Jakarta-compatible servlet container such as Tomcat 10.x.
-2. Create the database and tables by running `db/schema.sql` in MySQL.
-3. Copy `config.properties.template` to a local `config.properties` file and set the database and SMTP values.
-4. Place the MySQL JDBC driver, Jakarta Mail libraries, and JSTL libraries in `WEB-INF/lib/` at the deployed app root if they are not already bundled.
-5. Deploy the project so the root shims and `WEB-INF/` are in the webapp root, with WebContent kept as the source layout.
-6. Start the server and open `http://localhost:8081/advjavaproject/` (with trailing slash) or `http://localhost:8081/advjavaproject/index.jsp`.
-7. Avoid opening `http://localhost:8081/advjavaproject` without the trailing slash on environments where Tomcat context-root redirect behavior is customized, because it may return 500 even when the app itself is healthy.
+### 4. Build Java Classes
+
+Compile `src/util/ConfigLoader.java` into `WebContent/WEB-INF/classes/`:
+
+```powershell
+javac -d WebContent/WEB-INF/classes src/util/ConfigLoader.java
+```
+
+### 5. Start Server and Smoke Test
+
+1. Start Apache Tomcat.
+2. Open `http://localhost:8081/advjavaproject/` in your browser.
+3. Validate user registration, OTP email delivery, complaint submission, and admin dashboard according to [SMOKE_TEST_CHECKLIST.md](SMOKE_TEST_CHECKLIST.md).
 
 ### Redeploy Note
 
-- After JSP or class-level compatibility/configuration changes, clear `tomcat/work/Catalina/localhost/<app-context>/` before restart so stale compiled JSP artifacts are not reused.
-- If a Tomcat context-root redirect returns 500 without the trailing slash, keep using the trailing-slash URL and verify the page-level routes instead of assuming the application is broken.
-
-### Suggested SQL Import Order
-
-1. Run `db/schema.sql` first to create the schema and core tables.
-2. Add or update admin and officer accounts manually for your environment.
-3. Use the migration SQL files only if you are applying a specific database migration path.
-
-### Local Configuration Checklist
-
-- `db.url` points to the active MySQL instance.
-- `db.user` and `db.password` match the database account.
-- `smtp.host`, `smtp.port`, `smtp.user`, and `smtp.password` are set for OTP and notification mail.
-- Uploaded files can be written to `WebContent/assets/images/uploads/` by the server process.
-- The deployed root contains `WEB-INF/` and the root JSP compatibility shims.
-- The admin dashboard exposes Config Health so operators can quickly verify database and SMTP settings.
+After JSP or class-level configuration changes, clear `tomcat/work/Catalina/localhost/advjavaproject/` before server restart so stale compiled JSP class artifacts are not reused.
 
 ## Notes
 
 - The repository contains both live and archive SQL files to support complaint retention workflows.
-- `index.html` is present for static entry support, but `index.jsp` is the primary welcome page.
-- The current route model expects both root shims and the maintained `WebContent/` pages to stay in sync.
+- `index.jsp` is the primary welcome page configured in `web.xml`.
+- All requests navigate directly to the actual JSP pages under the web application root without any intermediary mediator or forwarder layer.

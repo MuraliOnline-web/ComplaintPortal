@@ -18,7 +18,7 @@
     
     String role = (String) session.getAttribute("role");
     if (role == null || !"user".equals(role)) {
-        safeRedirect(response, request.getContextPath() + (request.getRequestURI().contains("/WebContent/") ? "/WebContent" : "") + "/userLogin.jsp?required=1");
+        safeRedirect(response, request.getContextPath() + "/userLogin.jsp?required=1");
         return;
     }
 
@@ -27,24 +27,14 @@
     String userEmail = session.getAttribute("userEmail") != null ? String.valueOf(session.getAttribute("userEmail")) : "";
     String userMobile = session.getAttribute("userMobile") != null ? String.valueOf(session.getAttribute("userMobile")) : "";
     String ctx = request.getContextPath();
-    String base = request.getRequestURI().contains("/WebContent/") ? (ctx + "/WebContent") : ctx;
-    String homeHref = base + "/index.jsp";
-    String registerComplaintHref = base + "/registerComplaint.jsp";
-    String trackComplaintHref = base + "/trackComplaint.jsp";
-    String logoutHref = base + "/actions/LogoutAction.jsp";
-    String styleHref = base + "/assets/css/style.css";
-    String scriptHref = base + "/assets/js/main.js";
-    String logoHref = base + "/assets/images/logo.svg";
-    try {
-        if (application.getResource("/index.jsp") != null) homeHref = ctx + "/index.jsp";
-        if (application.getResource("/registerComplaint.jsp") != null) registerComplaintHref = ctx + "/registerComplaint.jsp";
-        if (application.getResource("/trackComplaint.jsp") != null) trackComplaintHref = ctx + "/trackComplaint.jsp";
-        if (application.getResource("/actions/LogoutAction.jsp") != null) logoutHref = ctx + "/actions/LogoutAction.jsp";
-        if (application.getResource("/assets/js/main.js") != null) scriptHref = ctx + "/assets/js/main.js";
-        if (application.getResource("/assets/images/logo.svg") != null) logoHref = ctx + "/assets/images/logo.svg";
-    } catch (Exception ignore) {
-        // Use computed fallbacks.
-    }
+    String base = ctx;
+    String homeHref = ctx + "/index.jsp";
+    String registerComplaintHref = ctx + "/registerComplaint.jsp";
+    String trackComplaintHref = ctx + "/trackComplaint.jsp";
+    String logoutHref = ctx + "/actions/LogoutAction.jsp";
+    String styleHref = ctx + "/assets/css/style.css";
+    String scriptHref = ctx + "/assets/js/main.js";
+    String logoHref = ctx + "/assets/images/logo.svg";
 
     List<Map<String, Object>> complaintRows = new ArrayList<>();
     int totalCount = 0;

@@ -1,5 +1,8 @@
 # Credentials and Local Configuration
 config.properties
+**/config.properties
+WebContent/WEB-INF/classes/config.properties
+!config.properties.template
 *.env
 .env
 .env.local
@@ -18,11 +21,14 @@ config.properties
 *.iml
 .metadata/
 
-# Build
+# Build and Output
 target/
 build/
+out/
+work/
 *.class
 *.jar
+!WebContent/WEB-INF/lib/*.jar
 *.war
 *.ear
 WebContent/WEB-INF/classes/
@@ -43,3 +49,4 @@ replay_pid*
 
 # VS Code / workspace caches
 .history/
+

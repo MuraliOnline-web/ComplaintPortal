@@ -53,7 +53,7 @@
     response.setDateHeader("Expires", 0);
 
     String ctx = request.getContextPath();
-    String base = request.getRequestURI().contains("/WebContent/") ? (ctx + "/WebContent") : ctx;
+    String base = ctx;
 
     String email = request.getParameter("email");
     String requestedRole = request.getParameter("role");

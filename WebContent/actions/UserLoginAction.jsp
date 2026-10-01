@@ -23,7 +23,7 @@
 <%
     final int OTP_VALIDITY_MINUTES = 14;
     String ctx = request.getContextPath();
-    String base = request.getRequestURI().contains("/WebContent/") ? (ctx + "/WebContent") : ctx;
+    String base = ctx;
 
     String loginMode = request.getParameter("loginMode");
     String identifier = request.getParameter("identifier");
